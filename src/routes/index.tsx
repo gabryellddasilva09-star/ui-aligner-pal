@@ -1,24 +1,153 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear } from "lucide-react";
+import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
+import {
+  ProgressRing, StatusBadge, Trend, PillSelect, LineChart, SectionHeader, indicatorMeta,
+} from "@/components/vl/primitives";
+import { patient, weeklyIndicators, insight, focus, painMonth } from "@/data/mock";
+import hero from "@/assets/hero-mist.jpg";
+import { cn } from "@/lib/utils";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Início — VivaLeve" },
+      { name: "description", content: "Seu acompanhamento da fibromialgia: panorama da semana, percepções e seu foco agora." },
+      { property: "og:title", content: "Início — VivaLeve" },
+      { property: "og:description", content: "Seu acompanhamento da fibromialgia, sempre ao seu lado." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const [open, setOpen] = useState(false);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <AppShell>
+      {/* Greeting */}
+      <header className="relative -mx-5 -mt-4 overflow-hidden px-5 pb-6 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-8 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
+        <img src={hero} alt="" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
+        <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 lg:hidden">
+              <Logo className="size-6" />
+              <span className="text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+            </div>
+            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá, {patient.name}</h1>
+            <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
+              Seu acompanhamento está ativo. Você não está sozinha!{" "}
+              <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
+            </p>
+          </div>
+          <div className="lg:hidden"><IconButtons /></div>
+        </div>
+      </header>
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
+        <div className="space-y-8">
+          {/* Check-in */}
+          <section className="relative overflow-hidden rounded-3xl bg-checkin p-6 shadow-float sm:p-7">
+            <div className="absolute -right-10 -top-10 size-48 rounded-full bg-card/40 blur-2xl" />
+            <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+              <div>
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-accent-foreground">HOJE</p>
+                <h2 className="mt-2 text-2xl font-normal leading-snug">Como você<br />está se sentindo hoje?</h2>
+                <button className="group mt-5 flex w-full items-center gap-3 rounded-full bg-card px-4 py-3.5 text-left text-sm text-muted-foreground shadow-soft transition hover:shadow-float sm:max-w-sm" style={{ boxShadow: "var(--shadow-soft)" }}>
+                  <MessageCircleMore className="size-5 text-primary" />
+                  <span className="flex-1">Conte para mim...</span>
+                  <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
+                </button>
+              </div>
+              <div className="hidden items-center gap-2 rounded-2xl bg-card/50 px-4 py-3 text-sm text-accent-foreground backdrop-blur sm:flex">
+                <Ear className="size-4" /> Eu te escuto, sempre.
+              </div>
+            </div>
+          </section>
+
+          {/* Weekly panorama */}
+          <section>
+            <SectionHeader title="Seu panorama da semana" subtitle="Veja como estão seus principais indicadores." action={<PillSelect label="7 dias" />} />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {weeklyIndicators.map((ind, i) => {
+                const m = indicatorMeta[ind.key];
+                const Icon = m.icon;
+                return (
+                  <button key={ind.key} className="card-soft pressable animate-rise p-4 text-left" style={{ animationDelay: `${i * 60}ms` }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <ProgressRing value={ind.progress} color={m.color} size={54}>
+                        <Icon className="size-5" strokeWidth={1.8} />
+                      </ProgressRing>
+                      <StatusBadge status={ind.status} className="hidden" />
+                    </div>
+                    <p className="mt-3 text-sm text-muted-foreground">{ind.label}</p>
+                    <p className="mt-0.5 font-display text-2xl font-medium">
+                      {ind.value}<span className="ml-0.5 text-sm font-normal text-muted-foreground">{ind.unit}</span>
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <Trend change={ind.change} improving={ind.improving} />
+                      <span className="text-[11px] text-muted-foreground">{ind.caption}</span>
+                    </div>
+                    <StatusBadge status={ind.status} className="mt-2.5" />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <div className="space-y-4">
+          {/* Insight */}
+          <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="w-full rounded-3xl border bg-insight p-5 text-left transition hover:shadow-float">
+            <div className="flex gap-4">
+              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-primary"><Lightbulb className="size-5" /></span>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium">{insight.title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{insight.text}</p>
+                <div className={cn("grid transition-all duration-500", open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                  <p className="overflow-hidden text-sm leading-relaxed text-accent-foreground">{insight.detail}</p>
+                </div>
+              </div>
+              <ChevronRight className={cn("mt-1 size-5 shrink-0 text-muted-foreground transition", open && "rotate-90")} />
+            </div>
+          </button>
+
+          {/* Focus */}
+          <div className="rounded-3xl border bg-focus p-5">
+            <div className="flex gap-4">
+              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-good"><Target className="size-5" /></span>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium text-good">{focus.title}</h3>
+                <p className="mt-1 text-sm text-foreground">{focus.text}</p>
+                <div className="mt-3 flex items-center gap-1.5" aria-label={`Dia ${focus.day} de ${focus.total}`}>
+                  {Array.from({ length: focus.total }).map((_, i) => (
+                    <span key={i} className={cn("h-1.5 flex-1 rounded-full", i < focus.day ? "bg-good" : "bg-card")} />
+                  ))}
+                </div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">Dia {focus.day} de {focus.total}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Evolution */}
+          <section className="pt-4">
+            <SectionHeader title="Evolução" subtitle="Você está no caminho certo!" action={<PillSelect label="Últimos 30 dias" />} />
+            <div className="card-soft p-5">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-[11px] font-medium text-primary">Média atual da dor</p>
+                  <p className="font-display text-3xl font-medium">{painMonth.average}</p>
+                </div>
+                <div className="text-right">
+                  <Trend change={painMonth.change} improving={false} />
+                  <p className="text-[11px] text-muted-foreground">vs. mês anterior</p>
+                </div>
+              </div>
+              <div className="mt-4"><LineChart data={painMonth.data} height={110} /></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </AppShell>
   );
 }
