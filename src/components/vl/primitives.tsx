@@ -22,7 +22,7 @@ export function ProgressRing({ value, color, size = 64, stroke = 5, children }: 
   useEffect(() => { const t = setTimeout(() => setV(value), 80); return () => clearTimeout(t); }, [value]);
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
-  const id = useId();
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -54,7 +54,7 @@ export function StatusBadge({ status, className }: { status: Status; className?:
   const m = statusMeta[status];
   const Icon = m.icon;
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium", m.cls, className)}>
+    <span className={cn("inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium", m.cls, className)}>
       <Icon className="size-3" aria-hidden /> {m.label}
     </span>
   );
@@ -102,7 +102,7 @@ export function Segmented<T extends string | number>({ options, value, onChange 
 export function LineChart({ data, color = "var(--primary)", height = 120, dots = true }: {
   data: number[]; color?: string; height?: number; dots?: boolean;
 }) {
-  const id = useId();
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const w = 300;
   const min = Math.min(...data), max = Math.max(...data);
   const pad = 10;
@@ -112,11 +112,11 @@ export function LineChart({ data, color = "var(--primary)", height = 120, dots =
   ]);
   const path = pts.map((p, i) => {
     if (i === 0) return `M${p[0]},${p[1]}`;
-    const [px, py] = pts[i - 1];
+    const [px, py] = pts[i - 1]!;
     const cx = (px + p[0]) / 2;
     return `C${cx},${py} ${cx},${p[1]} ${p[0]},${p[1]}`;
   }).join(" ");
-  const area = `${path} L${pts[pts.length - 1][0]},${height} L${pts[0][0]},${height} Z`;
+  const area = `${path} L${pts[pts.length - 1]![0]},${height} L${pts[0]![0]},${height} Z`;
   const step = data.length > 20 ? Math.ceil(data.length / 15) : 1;
   return (
     <svg viewBox={`0 0 ${w} ${height}`} className="h-full w-full overflow-visible" preserveAspectRatio="none" style={{ height }}>
