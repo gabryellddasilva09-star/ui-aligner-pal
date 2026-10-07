@@ -112,8 +112,9 @@ export function LineChart({ data, color = "var(--primary)", height = 120, dots =
   ]);
   const path = pts.map((p, i) => {
     if (i === 0) return `M${p[0]},${p[1]}`;
-    const [px, py] = pts[i - 1]!!;
-    const cx = (px + p[0]) / 2;
+    const prev = pts[i - 1] as number[];
+    const px = prev[0] as number, py = prev[1] as number;
+    const cx = (px + (p[0] as number)) / 2;
     return `C${cx},${py} ${cx},${p[1]} ${p[0]},${p[1]}`;
   }).join(" ");
   const area = `${path} L${pts[pts.length - 1]![0]},${height} L${pts[0]![0]},${height} Z`;
