@@ -41,9 +41,10 @@ function load<T>(key: string, fallback: T): T {
 function Alimentacao() {
   const [tab, setTab] = useState<Tab>("planejar");
   const [day, setDay] = useState<WeekDayKey>("seg");
-  const [plan, setPlan] = useState<Plan>(() => load("vl-plan", initialPlan));
-  const [favorites, setFavorites] = useState<string[]>(() => load("vl-favs", ["mingau-banana"]));
-  const [items, setItems] = useState<ShoppingItem[]>(() => load("vl-shopping", []));
+  const [plan, setPlan] = useState<Plan>(initialPlan);
+  const [favorites, setFavorites] = useState<string[]>(["mingau-banana"]);
+  const [items, setItems] = useState<ShoppingItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<RecipeFilter>("todas");
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
