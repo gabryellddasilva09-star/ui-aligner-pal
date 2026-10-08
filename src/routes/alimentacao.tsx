@@ -53,9 +53,15 @@ function Alimentacao() {
   const [confirmClear, setConfirmClear] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => { localStorage.setItem("vl-plan", JSON.stringify(plan)); }, [plan]);
-  useEffect(() => { localStorage.setItem("vl-favs", JSON.stringify(favorites)); }, [favorites]);
-  useEffect(() => { localStorage.setItem("vl-shopping", JSON.stringify(items)); }, [items]);
+  useEffect(() => {
+    setPlan(load("vl-plan", initialPlan));
+    setFavorites(load("vl-favs", ["mingau-banana"]));
+    setItems(load("vl-shopping", []));
+    setHydrated(true);
+  }, []);
+  useEffect(() => { if (hydrated) localStorage.setItem("vl-plan", JSON.stringify(plan)); }, [plan, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("vl-favs", JSON.stringify(favorites)); }, [favorites, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("vl-shopping", JSON.stringify(items)); }, [items, hydrated]);
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 2600);
