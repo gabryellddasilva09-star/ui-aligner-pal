@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
@@ -7,6 +7,7 @@ import { patient } from "@/data/mock";
 const nav = [
   { to: "/", label: "Início", icon: Home },
   { to: "/diario", label: "Diário", icon: CalendarDays },
+  { to: "/plano", label: "Movimento", icon: PersonStanding },
   { to: "/evolucao", label: "Evolução", icon: LineChart },
   { to: "/profissional", label: "Profissional", icon: UserRound },
 ] as const;
@@ -65,7 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-4 rounded-3xl border bg-card/90 px-2 py-2 shadow-float backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 rounded-3xl border bg-card/90 px-2 py-2 shadow-float backdrop-blur-xl lg:hidden">
         {nav.map(({ to, label, icon: Icon }) => {
           const active = path === to;
           return (
