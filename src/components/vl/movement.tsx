@@ -13,7 +13,7 @@ const tileMeta: Record<string, { icon: LucideIcon; bg: CSSProperties }> = {
 };
 
 export function ActivityTile({ id, large = false, className }: { id: string; large?: boolean; className?: string }) {
-  const m = tileMeta[id] ?? tileMeta.mobilidade!;
+  const m = tileMeta[id] ?? tileMeta["mobilidade"]!;
   const Icon = m.icon;
   return (
     <div
