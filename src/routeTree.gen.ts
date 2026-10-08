@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DiarioRouteImport } from './routes/diario'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
+import { Route as PlanoRouteImport } from './routes/plano'
 import { Route as ProfissionalRouteImport } from './routes/profissional'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const EvolucaoRoute = EvolucaoRouteImport.update({
   path: '/evolucao',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlanoRoute = PlanoRouteImport.update({
+  id: '/plano',
+  path: '/plano',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfissionalRoute = ProfissionalRouteImport.update({
   id: '/profissional',
   path: '/profissional',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
+  '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
+  '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
+  '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/diario' | '/evolucao' | '/profissional'
+  fullPaths: '/' | '/diario' | '/evolucao' | '/plano' | '/profissional'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/diario' | '/evolucao' | '/profissional'
-  id: '__root__' | '/' | '/diario' | '/evolucao' | '/profissional'
+  to: '/' | '/diario' | '/evolucao' | '/plano' | '/profissional'
+  id: '__root__' | '/' | '/diario' | '/evolucao' | '/plano' | '/profissional'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DiarioRoute: typeof DiarioRoute
   EvolucaoRoute: typeof EvolucaoRoute
+  PlanoRoute: typeof PlanoRoute
   ProfissionalRoute: typeof ProfissionalRoute
 }
 
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EvolucaoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plano': {
+      id: '/plano'
+      path: '/plano'
+      fullPath: '/plano'
+      preLoaderRoute: typeof PlanoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profissional': {
       id: '/profissional'
       path: '/profissional'
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DiarioRoute: DiarioRoute,
   EvolucaoRoute: EvolucaoRoute,
+  PlanoRoute: PlanoRoute,
   ProfissionalRoute: ProfissionalRoute,
 }
 export const routeTree = rootRouteImport
