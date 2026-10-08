@@ -1,0 +1,349 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck, Sparkles,
+} from "lucide-react";
+import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
+import { SectionHeader, PillSelect } from "@/components/vl/primitives";
+import { ActivityTile, ProgressBar, DailyStateSelector, WeekHistoryStrip, DialogShell } from "@/components/vl/movement";
+import { movementActivities, dailyStates, weekHistory, weekSummaryBase } from "@/data/movement";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/plano")({
+  head: () => ({
+    meta: [
+      { title: "Meu plano de movimento — VivaLeve" },
+      { name: "description", content: "Atividades físicas e exercícios sugeridos para o seu dia, no seu ritmo." },
+      { property: "og:title", content: "Meu plano de movimento — VivaLeve" },
+      { property: "og:description", content: "Movimente-se no seu ritmo, com acolhimento e autonomia." },
+    ],
+  }),
+  component: Plano,
+});
+
+type Phase = "details" | "doing" | "feedback" | "thanks";
+
+const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui concluir", "Prefiro não responder"];
+
+function Plano() {
+  const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
+  const [daily, setDaily] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [phase, setPhase] = useState<Phase>("details");
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [todayDone, setTodayDone] = useState(false);
+  const [weekCount, setWeekCount] = useState(weekSummaryBase);
+
+  const total = movementActivities.length;
+  const doneCount = movementActivities.filter((a) => doneMap[a.id]).length;
+  const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  const open = movementActivities.find((a) => a.id === openId) ?? null;
+  const dailyMessage = dailyStates.find((d) => d.key === daily)?.message;
+  const week = weekHistory.map((d) => (d.isToday && todayDone ? { ...d, state: "done" as const } : d));
+
+  function openActivity(id: string) {
+    setOpenId(id);
+    setPhase("details");
+    setFeedback(null);
+  }
+  function close() {
+    setOpenId(null);
+    setPhase("details");
+    setFeedback(null);
+  }
+  function complete() {
+    if (openId) {
+      setDoneMap((m) => ({ ...m, [openId]: true }));
+      if (!todayDone) {
+        setTodayDone(true);
+        setWeekCount((c) => c + 1);
+      }
+    }
+    setPhase("feedback");
+  }
+
+  return (
+    <AppShell>
+      {/* Cabeçalho */}
+      <header className="relative -mx-5 -mt-4 px-5 pb-2 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
+        <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 lg:hidden">
+              <Logo className="size-6" />
+              <span className="text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+            </div>
+            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Meu plano de movimento</h1>
+            <p className="mt-2 text-[15px] text-muted-foreground">Movimente-se no seu ritmo.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Olá, Ana <span aria-hidden>🌿</span> — Pequenos passos também são progresso.
+            </p>
+          </div>
+          <div className="lg:hidden"><IconButtons /></div>
+        </div>
+        <div className="relative mt-4">
+          <PillSelect label="Hoje, 7 out" />
+        </div>
+      </header>
+
+      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="space-y-8">
+          {/* Plano de hoje */}
+          <section className="relative overflow-hidden rounded-3xl bg-checkin p-6 shadow-float sm:p-7" aria-label="Seu plano de hoje">
+            <div className="absolute -right-10 -top-10 size-48 rounded-full bg-card/40 blur-2xl" />
+            <div className="relative">
+              <p className="text-[11px] font-semibold tracking-[0.18em] text-accent-foreground">HOJE</p>
+              <h2 className="mt-2 text-2xl font-normal">Seu plano de hoje</h2>
+              <p className="mt-1 text-sm text-accent-foreground">
+                Preparamos uma sequência de atividades para acompanhar sua rotina.
+              </p>
+              <div className="mt-5 flex items-end justify-between gap-4">
+                <p className="text-sm font-medium">
+                  {doneCount} de {total} atividades concluídas
+                </p>
+                <p className="font-display text-2xl font-medium">{pct}%</p>
+              </div>
+              <div className="mt-2">
+                <ProgressBar value={total ? doneCount / total : 0} />
+              </div>
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-accent-foreground">
+                <Clock className="size-3.5" aria-hidden /> Tempo estimado: ≈ 30 min no total
+              </p>
+            </div>
+          </section>
+
+          {/* Como você está hoje? */}
+          <section aria-label="Como você está hoje?">
+            <SectionHeader title="Como você está hoje?" subtitle="Isso nos ajuda a apresentar opções mais adequadas à sua rotina." />
+            <DailyStateSelector value={daily} onChange={setDaily} />
+            {dailyMessage && (
+              <p className="animate-rise mt-3 rounded-2xl border bg-insight px-4 py-3 text-sm leading-relaxed text-accent-foreground">
+                {dailyMessage}
+              </p>
+            )}
+          </section>
+
+          {/* Atividades do dia */}
+          <section aria-label="Suas atividades">
+            <SectionHeader title="Suas atividades" subtitle="Uma etapa de cada vez." />
+            {total === 0 ? (
+              <div className="card-soft p-6 text-center">
+                <p className="font-medium">Seu plano está sendo preparado.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Volte mais tarde para consultar as atividades disponíveis.</p>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {movementActivities.map((a, i) => (
+                  <li key={a.id} className="animate-rise" style={{ animationDelay: `${i * 60}ms` }}>
+                    <button
+                      onClick={() => openActivity(a.id)}
+                      className="card-soft pressable flex w-full items-center gap-4 p-3.5 text-left sm:p-4"
+                      aria-label={`${a.name} — abrir detalhes`}
+                    >
+                      <ActivityTile id={a.id} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          <p className="font-medium">{a.name}</p>
+                          <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] text-muted-foreground">{a.category}</span>
+                          {a.duration && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                              <Clock className="size-3" aria-hidden /> {a.duration}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-0.5 truncate text-sm text-muted-foreground">{a.description}</p>
+                      </div>
+                      <span
+                        className={cn(
+                          "grid size-8 shrink-0 place-items-center rounded-full",
+                          doneMap[a.id] ? "bg-good-soft text-good" : "bg-secondary text-muted-foreground",
+                        )}
+                        aria-label={doneMap[a.id] ? "Concluída" : "Não iniciada"}
+                      >
+                        {doneMap[a.id] ? <CheckCircle2 className="size-4.5" /> : <ChevronDown className="size-4.5 -rotate-90" />}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+
+        <div className="space-y-4">
+          {/* Minha evolução */}
+          <section className="card-soft p-5" aria-label="Minha evolução">
+            <div className="flex gap-4">
+              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-primary"><Sparkles className="size-5" /></span>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-medium">Minha evolução</h3>
+                <p className="mt-1 text-sm text-muted-foreground">Veja sua regularidade ao longo do tempo.</p>
+              </div>
+            </div>
+            <div className="mt-5">
+              <WeekHistoryStrip days={week} />
+            </div>
+            <p className="mt-4 border-t pt-4 text-sm">
+              <span className="font-medium">{weekCount}</span>{" "}
+              <span className="text-muted-foreground">atividades registradas nesta semana</span>
+            </p>
+          </section>
+
+          <p className="rounded-2xl border bg-card px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+            As atividades são sugeridas a partir de um plano geral de autocuidado. Elas não substituem a orientação da
+            sua profissional — combinado, Ana? <span aria-hidden>💚</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Detalhes da atividade */}
+      {open && (
+        <DialogShell title={open.name} onClose={close}>
+          {phase === "details" && (
+            <div>
+              <button
+                onClick={close}
+                className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              >
+                <ChevronLeft className="size-4" aria-hidden /> Voltar
+              </button>
+              <div className="flex items-center gap-4">
+                <ActivityTile id={open.id} large />
+                <div className="min-w-0">
+                  <h2 className="font-display text-2xl font-medium">{open.name}</h2>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[11px] text-muted-foreground">{open.category}</span>
+                    {open.duration && (
+                      <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                        <Clock className="size-3" aria-hidden /> {open.duration}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground">Objetivo: </span>
+                {open.objective}
+              </p>
+              <h3 className="mt-5 text-sm font-semibold">Passo a passo</h3>
+              <ol className="mt-2 space-y-2">
+                {open.steps.map((s, i) => (
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary">
+                      {i + 1}
+                    </span>
+                    {s}
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-5 flex gap-3 rounded-2xl bg-secondary p-4">
+                <ShieldCheck className="size-5 shrink-0 text-primary" aria-hidden />
+                <div>
+                  <p className="text-sm font-medium">Orientações de segurança</p>
+                  <ul className="mt-1 space-y-0.5">
+                    {open.safety.map((s, i) => (
+                      <li key={i} className="text-xs leading-relaxed text-muted-foreground">• {s}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <button
+                onClick={() => setPhase("doing")}
+                className="pressable mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+              >
+                Iniciar atividade
+              </button>
+            </div>
+          )}
+
+          {phase === "doing" && (
+            <div>
+              <button
+                onClick={() => setPhase("details")}
+                className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              >
+                <ChevronLeft className="size-4" aria-hidden /> Voltar
+              </button>
+              <div className="flex items-center gap-4">
+                <ActivityTile id={open.id} large />
+                <div>
+                  <h2 className="font-display text-2xl font-medium">{open.name}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">No seu tempo. Sem pressa.</p>
+                </div>
+              </div>
+              <ol className="mt-6 space-y-3">
+                {open.steps.map((s, i) => (
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-primary-soft text-[11px] font-semibold text-primary">
+                      {i + 1}
+                    </span>
+                    {s}
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
+                Lembre-se: faça apenas o que for confortável. Você pode parar a qualquer momento.
+              </p>
+              <button
+                onClick={complete}
+                className="pressable mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+              >
+                Concluir atividade
+              </button>
+            </div>
+          )}
+
+          {phase === "feedback" && (
+            <div>
+              <h2 className="font-display text-xl font-medium">Como você se sentiu?</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Sua resposta é opcional e ajuda a registrar sua experiência.</p>
+              <div className="mt-5 grid gap-2">
+                {feedbackOptions.map((o) => (
+                  <button
+                    key={o}
+                    onClick={() => {
+                      setFeedback(o);
+                      setPhase("thanks");
+                    }}
+                    className="rounded-2xl border bg-card px-4 py-3 text-sm font-medium transition hover:bg-secondary"
+                  >
+                    {o}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={close}
+                className="mt-4 w-full rounded-full py-3 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              >
+                Prefiro fazer isso depois
+              </button>
+            </div>
+          )}
+
+          {phase === "thanks" && (
+            <div className="py-4 text-center">
+              <span className="mx-auto grid size-14 place-items-center rounded-full bg-good-soft text-good">
+                <CheckCircle2 className="size-7" aria-hidden />
+              </span>
+              <h2 className="mt-4 font-display text-xl font-medium">Atividade registrada</h2>
+              <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Obrigado por registrar como foi sua experiência.
+              </p>
+              {feedback === "Não consegui concluir" && (
+                <p className="mx-auto mt-3 max-w-xs rounded-2xl bg-secondary px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                  Se sentir piora importante ou sintomas novos, não é preciso continuar. Consulte as orientações de
+                  segurança e procure avaliação da sua profissional quando necessário.
+                </p>
+              )}
+              <button
+                onClick={close}
+                className="pressable mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+              >
+                Fechar
+              </button>
+            </div>
+          )}
+        </DialogShell>
+      )}
+    </AppShell>
+  );
+}
