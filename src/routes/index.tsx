@@ -34,7 +34,7 @@ export const Route = createFileRoute("/")({
 const quickActions: { label: string; description: string; icon: LucideIcon; image: string; to?: string }[] = [
   { label: "Exercitar", description: "Seu plano de movimento", icon: PersonStanding, image: qaMove, to: "/plano" },
   { label: "Receitas", description: "Refeições e lista de compras", icon: Utensils, image: qaFood, to: "/alimentacao" },
-  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2, image: qaRelax },
+  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2, image: qaRelax, to: "/relaxamento" },
   { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake, image: qaCommunity },
   { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, image: qaEvolution, to: "/evolucao" },
   { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen, image: qaLibrary },

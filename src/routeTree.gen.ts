@@ -15,6 +15,7 @@ import { Route as DiarioRouteImport } from './routes/diario'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as PlanoRouteImport } from './routes/plano'
 import { Route as ProfissionalRouteImport } from './routes/profissional'
+import { Route as RelaxamentoRouteImport } from './routes/relaxamento'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,6 +47,11 @@ const ProfissionalRoute = ProfissionalRouteImport.update({
   path: '/profissional',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelaxamentoRoute = RelaxamentoRouteImport.update({
+  id: '/relaxamento',
+  path: '/relaxamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
+  '/relaxamento': typeof RelaxamentoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
+  '/relaxamento': typeof RelaxamentoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,14 +79,27 @@ export interface FileRoutesById {
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
   '/profissional': typeof ProfissionalRoute
+  '/relaxamento': typeof RelaxamentoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/alimentacao' | '/diario' | '/evolucao' | '/plano' | '/profissional'
+    | '/'
+    | '/alimentacao'
+    | '/diario'
+    | '/evolucao'
+    | '/plano'
+    | '/profissional'
+    | '/relaxamento'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/alimentacao' | '/diario' | '/evolucao' | '/plano' | '/profissional'
+    | '/'
+    | '/alimentacao'
+    | '/diario'
+    | '/evolucao'
+    | '/plano'
+    | '/profissional'
+    | '/relaxamento'
   id:
     | '__root__'
     | '/'
@@ -87,6 +108,7 @@ export interface FileRouteTypes {
     | '/evolucao'
     | '/plano'
     | '/profissional'
+    | '/relaxamento'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -96,6 +118,7 @@ export interface RootRouteChildren {
   EvolucaoRoute: typeof EvolucaoRoute
   PlanoRoute: typeof PlanoRoute
   ProfissionalRoute: typeof ProfissionalRoute
+  RelaxamentoRoute: typeof RelaxamentoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -142,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfissionalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relaxamento': {
+      id: '/relaxamento'
+      path: '/relaxamento'
+      fullPath: '/relaxamento'
+      preLoaderRoute: typeof RelaxamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -152,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   EvolucaoRoute: EvolucaoRoute,
   PlanoRoute: PlanoRoute,
   ProfissionalRoute: ProfissionalRoute,
+  RelaxamentoRoute: RelaxamentoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
