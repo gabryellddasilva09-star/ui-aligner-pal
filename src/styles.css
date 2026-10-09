@@ -136,7 +136,7 @@
 :root { --gradient-checkin-invitation: linear-gradient(115deg, oklch(0.50 0.18 295), oklch(0.59 0.16 310)); }
 .checkin-invitation { background: var(--gradient-checkin-invitation); }
 @media (max-width: 639px) {
-  .checkin-dialog { top: 0; left: 0; width: 100%; height: 100dvh; max-width: none; transform: none; border-radius: 0; }
+  .checkin-dialog { top: 0; left: 0; width: 100%; height: 100dvh; max-width: none; transform: none; translate: none; border-radius: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .checkin-dialog, .checkin-dialog * { animation: none !important; transition: none !important; }
