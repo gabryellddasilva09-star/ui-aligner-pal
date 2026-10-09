@@ -136,18 +136,18 @@
 :root { --gradient-checkin-invitation: linear-gradient(115deg, oklch(0.50 0.18 295), oklch(0.59 0.16 310)); }
 .checkin-invitation { background: var(--gradient-checkin-invitation); }
 @keyframes breathe {
-  0%, 100% { opacity: 0.3; transform: scale(0.85); }
-  50% { opacity: 0.65; transform: scale(1.1); }
+  0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.78); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.08); }
 }
 .breathe-glow {
   position: absolute;
-  top: -55%;
-  right: -12%;
-  width: min(75%, 26rem);
+  top: 50%;
+  left: 50%;
+  width: min(130%, 30rem);
   aspect-ratio: 1;
   border-radius: 9999px;
-  background: radial-gradient(circle, oklch(0.98 0.02 320 / 0.4) 0%, oklch(0.98 0.02 320 / 0) 70%);
-  animation: breathe 9s ease-in-out infinite;
+  background: radial-gradient(circle, oklch(0.99 0.02 320 / 0.55) 0%, oklch(0.99 0.02 320 / 0) 65%);
+  animation: breathe 7s ease-in-out infinite;
   pointer-events: none;
 }
 @media (max-width: 639px) {
