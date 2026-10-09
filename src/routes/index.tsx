@@ -7,6 +7,12 @@ import {
 } from "@/components/vl/primitives";
 import { patient, insight, focus, painMonth } from "@/data/mock";
 import hero from "@/assets/hero-mist.jpg";
+import qaMove from "@/assets/qa-move.jpg";
+import qaFood from "@/assets/qa-food.jpg";
+import qaRelax from "@/assets/qa-relax.jpg";
+import qaCommunity from "@/assets/qa-community.jpg";
+import qaEvolution from "@/assets/qa-evolution.jpg";
+import qaLibrary from "@/assets/qa-library.jpg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
@@ -25,13 +31,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const quickActions: { label: string; description: string; icon: LucideIcon; to?: string }[] = [
-  { label: "Exercitar", description: "Seu plano de movimento", icon: PersonStanding, to: "/plano" },
-  { label: "Receitas", description: "Refeições e lista de compras", icon: Utensils, to: "/alimentacao" },
-  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2 },
-  { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake },
-  { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, to: "/evolucao" },
-  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen },
+const quickActions: { label: string; description: string; icon: LucideIcon; image: string; to?: string }[] = [
+  { label: "Exercitar", description: "Seu plano de movimento", icon: PersonStanding, image: qaMove, to: "/plano" },
+  { label: "Receitas", description: "Refeições e lista de compras", icon: Utensils, image: qaFood, to: "/alimentacao" },
+  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2, image: qaRelax },
+  { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake, image: qaCommunity },
+  { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, image: qaEvolution, to: "/evolucao" },
+  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen, image: qaLibrary },
 ];
 
 function Index() {
@@ -88,15 +94,19 @@ function Index() {
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
                 const inner = <>
-                  <span className="grid size-10 place-items-center rounded-full bg-secondary text-primary">
-                    <Icon className="size-5" strokeWidth={1.8} />
-                  </span>
-                  <p className="mt-3 font-medium leading-snug">{action.label}</p>
-                  <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{action.description}</p>
+                  <img src={action.image} alt="" loading="lazy" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/45 to-background/5" />
+                  <div className="relative flex h-full flex-col justify-end p-4">
+                    <span className="grid size-9 place-items-center rounded-full bg-card/90 text-primary shadow-soft">
+                      <Icon className="size-[18px]" strokeWidth={1.8} />
+                    </span>
+                    <p className="mt-2.5 text-base font-semibold leading-snug">{action.label}</p>
+                    <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{action.description}</p>
+                  </div>
                 </>;
                 return action.to
-                  ? <Link key={action.label} to={action.to} className="card-soft pressable animate-rise block p-4" style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
-                  : <button key={action.label} type="button" className="card-soft pressable animate-rise p-4 text-left" style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
+                  ? <Link key={action.label} to={action.to} className="card-soft pressable animate-rise group relative block min-h-44 overflow-hidden sm:min-h-48" style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
+                  : <button key={action.label} type="button" className="card-soft pressable animate-rise group relative min-h-44 overflow-hidden text-left sm:min-h-48" style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
               })}
             </div>
           </section>
