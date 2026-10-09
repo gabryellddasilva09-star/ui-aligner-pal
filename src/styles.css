@@ -156,3 +156,17 @@
 @media (prefers-reduced-motion: reduce) {
   .checkin-dialog, .checkin-dialog *, .breathe-glow { animation: none !important; transition: none !important; }
 }
+
+@keyframes relax-breath {
+  0%, 100% { transform: scale(0.85); }
+  40% { transform: scale(1.15); }
+}
+.relax-breath-moving { animation: relax-breath 10s ease-in-out infinite; }
+.relax-breath-paused { animation-play-state: paused; }
+.relax-session { letter-spacing: 0; }
+@media (max-width: 639px) {
+  .relax-session { top: 0; left: 0; width: 100%; height: 100dvh; max-height: 100dvh; max-width: none; transform: none; translate: none !important; animation: none !important; border-radius: 0; padding-top: 2rem; padding-bottom: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .relax-breath-moving { animation: none; }
+}
