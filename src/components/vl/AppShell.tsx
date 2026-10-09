@@ -78,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className={cn("grid h-8 w-12 place-items-center rounded-full transition", active && "bg-primary-soft")}>
                 <Icon className="size-5" strokeWidth={active ? 2.2 : 1.7} />
               </span>
-              {label}
+              <span className="w-full truncate text-center text-[10px] leading-none">{label}</span>
             </Link>
           );
         })}
