@@ -54,6 +54,7 @@ function Index() {
         <div className="space-y-8">
           {/* Check-in */}
           <section className="checkin-invitation relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
+            <div aria-hidden className="breathe-glow" />
             <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
                 <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
