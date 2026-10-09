@@ -25,6 +25,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+const quickActions: { label: string; description: string; icon: LucideIcon; to?: string }[] = [
+  { label: "Exercitar", description: "Seu plano de movimento", icon: PersonStanding, to: "/plano" },
+  { label: "Receitas", description: "Refeições e lista de compras", icon: Utensils, to: "/alimentacao" },
+  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2 },
+  { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake },
+  { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, to: "/evolucao" },
+  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen },
+];
+
 function Index() {
   const [open, setOpen] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
