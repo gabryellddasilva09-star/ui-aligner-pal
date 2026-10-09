@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear } from "lucide-react";
+import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, type LucideIcon } from "lucide-react";
 import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
 import {
-  ProgressRing, StatusBadge, Trend, PillSelect, LineChart, SectionHeader, indicatorMeta,
+  Trend, PillSelect, LineChart, SectionHeader,
 } from "@/components/vl/primitives";
-import { patient, weeklyIndicators, insight, focus, painMonth } from "@/data/mock";
+import { patient, insight, focus, painMonth } from "@/data/mock";
 import hero from "@/assets/hero-mist.jpg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,15 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
+
+const quickActions: { label: string; description: string; icon: LucideIcon; to?: string }[] = [
+  { label: "Exercitar", description: "Seu plano de movimento", icon: PersonStanding, to: "/plano" },
+  { label: "Receitas", description: "Refeições e lista de compras", icon: Utensils, to: "/alimentacao" },
+  { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2 },
+  { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake },
+  { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, to: "/evolucao" },
+  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen },
+];
 
 function Index() {
   const [open, setOpen] = useState(false);
@@ -72,32 +81,22 @@ function Index() {
             </div>
           </section>
 
-          {/* Weekly panorama */}
+          {/* Quick actions */}
           <section>
-            <SectionHeader title="Seu panorama da semana" subtitle="Veja como estão seus principais indicadores." action={<PillSelect label="7 dias" />} />
+            <SectionHeader title="O que você quer fazer hoje?" subtitle="Toque em um atalho para começar." />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {weeklyIndicators.map((ind, i) => {
-                const m = indicatorMeta[ind.key];
-                const Icon = m.icon;
-                return (
-                  <button key={ind.key} className="card-soft pressable animate-rise p-4 text-left" style={{ animationDelay: `${i * 60}ms` }}>
-                    <div className="flex items-start justify-between gap-2">
-                      <ProgressRing value={ind.progress} color={m.color} size={54}>
-                        <Icon className="size-5" strokeWidth={1.8} />
-                      </ProgressRing>
-                      <StatusBadge status={ind.status} className="hidden" />
-                    </div>
-                    <p className="mt-3 text-sm text-muted-foreground">{ind.label}</p>
-                    <p className="mt-0.5 font-display text-2xl font-medium">
-                      {ind.value}<span className="ml-0.5 text-sm font-normal text-muted-foreground">{ind.unit}</span>
-                    </p>
-                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <Trend change={ind.change} improving={ind.improving} />
-                      <span className="text-[11px] text-muted-foreground">{ind.caption}</span>
-                    </div>
-                    <StatusBadge status={ind.status} className="mt-2.5" />
-                  </button>
-                );
+              {quickActions.map((action, i) => {
+                const Icon = action.icon;
+                const inner = <>
+                  <span className="grid size-10 place-items-center rounded-full bg-secondary text-primary">
+                    <Icon className="size-5" strokeWidth={1.8} />
+                  </span>
+                  <p className="mt-3 font-medium leading-snug">{action.label}</p>
+                  <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{action.description}</p>
+                </>;
+                return action.to
+                  ? <Link key={action.label} to={action.to} className="card-soft pressable animate-rise block p-4" style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
+                  : <button key={action.label} type="button" className="card-soft pressable animate-rise p-4 text-left" style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
               })}
             </div>
           </section>
