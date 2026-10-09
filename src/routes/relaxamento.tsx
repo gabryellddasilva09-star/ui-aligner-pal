@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Wind, Leaf, Brain, Moon, Flower2, Heart, History, Clock, Bell, Smile, CloudRain, BatteryLow, HeartHandshake, Sparkles } from "lucide-react";
+import { ArrowLeft, Wind, Waves, Leaf, Brain, Moon, Flower2, Heart, History, Clock, Bell, Smile, CloudRain, BatteryLow, HeartHandshake, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { NatureSounds, RelaxationSession } from "@/components/vl/relaxation";

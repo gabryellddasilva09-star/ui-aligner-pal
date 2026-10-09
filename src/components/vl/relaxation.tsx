@@ -8,7 +8,7 @@ import rain from "@/assets/relax-rain.mp3.asset.json";
 import stream from "@/assets/relax-stream.mp3.asset.json";
 import sea from "@/assets/relax-sea.mp3.asset.json";
 
-const soundscapes = [{ id: "rain", name: "Chuva suave", icon: CloudRain, url: rain.url }, { id: "stream", name: "Água corrente", icon: Droplets, url: stream.url }, { id: "sea", name: "Mar tranquilo", icon: Waves, url: sea.url }];
+const soundscapes = [{ id: "rain", name: "Chuva suave", icon: CloudRain, url: rain.url }, { id: "stream", name: "Água corrente", icon: Droplets, url: stream.url }, { id: "sea", name: "Mar tranquilo", icon: Waves, url: sea.url }] as const;
 export function NatureSounds({ paused = false }: { paused?: boolean }) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [selected, setSelected] = useState("rain");
