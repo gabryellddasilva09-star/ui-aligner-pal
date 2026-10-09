@@ -7,6 +7,8 @@ import { evolutionSeries, weeklyIndicators } from "@/data/mock";
 export const Route = createFileRoute("/evolucao")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Evolução — VivaLeve" },
       { name: "description", content: "Acompanhe a evolução dos seus indicadores em 7, 30 ou 90 dias." },
       { property: "og:title", content: "Evolução — VivaLeve" },

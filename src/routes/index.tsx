@@ -8,10 +8,14 @@ import {
 import { patient, weeklyIndicators, insight, focus, painMonth } from "@/data/mock";
 import hero from "@/assets/hero-mist.jpg";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Início — VivaLeve" },
       { name: "description", content: "Seu acompanhamento da fibromialgia: panorama da semana, percepções e seu foco agora." },
       { property: "og:title", content: "Início — VivaLeve" },
@@ -23,6 +27,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [checkInOpen, setCheckInOpen] = useState(false);
+  const [record, setRecord] = useState<DailyRecord | null>(null);
   return (
     <AppShell>
       {/* Greeting */}
@@ -47,19 +53,19 @@ function Index() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
         <div className="space-y-8">
           {/* Check-in */}
-          <section className="relative overflow-hidden rounded-3xl bg-checkin p-6 shadow-float sm:p-7">
-            <div className="absolute -right-10 -top-10 size-48 rounded-full bg-card/40 blur-2xl" />
+          <section className="checkin-invitation relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
             <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
-                <p className="text-[11px] font-semibold tracking-[0.18em] text-accent-foreground">HOJE</p>
-                <h2 className="mt-2 text-2xl font-normal leading-snug">Como você<br />está se sentindo hoje?</h2>
-                <button className="group mt-5 flex w-full items-center gap-3 rounded-full bg-card px-4 py-3.5 text-left text-sm text-muted-foreground shadow-soft transition hover:shadow-float sm:max-w-sm" style={{ boxShadow: "var(--shadow-soft)" }}>
-                  <MessageCircleMore className="size-5 text-primary" />
-                  <span className="flex-1">Conte para mim...</span>
+                <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
+                <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
+                <Button onClick={() => setCheckInOpen(true)} variant="secondary" className="group mt-6 flex h-14 w-full items-center justify-start gap-3 rounded-2xl bg-card px-5 text-left text-base text-primary shadow-soft transition hover:bg-card/90 sm:max-w-sm">
+                  <MessageCircleMore className="size-5" />
+                  <span className="flex-1">{record ? "Ver meu registro" : "Conte para mim"}</span>
                   <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
-                </button>
+                </Button>
+                {record && <p role="status" className="mt-3 text-sm text-primary-foreground">Registro de hoje salvo nesta sessão.</p>}
               </div>
-              <div className="hidden items-center gap-2 rounded-2xl bg-card/50 px-4 py-3 text-sm text-accent-foreground backdrop-blur sm:flex">
+              <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
                 <Ear className="size-4" /> Eu te escuto, sempre.
               </div>
             </div>
@@ -148,6 +154,7 @@ function Index() {
           </section>
         </div>
       </div>
+      {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={setRecord} />}
     </AppShell>
   );
 }

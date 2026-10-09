@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/alimentacao")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Minha alimentação — VivaLeve" },
       { name: "description", content: "Organize suas refeições, descubra receitas práticas e monte sua lista de compras." },
       { property: "og:title", content: "Minha alimentação — VivaLeve" },

@@ -8,6 +8,8 @@ import nadya from "@/assets/dra-nadya.jpg";
 export const Route = createFileRoute("/profissional")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Sua profissional — VivaLeve" },
       { name: "description", content: "Sua profissional acompanha sua evolução através do VivaLeve." },
       { property: "og:title", content: "Sua profissional — VivaLeve" },

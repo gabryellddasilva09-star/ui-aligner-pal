@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep the daily check-in in a reusable frontend dialog with schema-validated session state; this visual prototype must not introduce clinical logic or a backend.

@@ -7,6 +7,8 @@ import { diary } from "@/data/mock";
 export const Route = createFileRoute("/diario")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Diário — VivaLeve" },
       { name: "description", content: "Seus registros recentes de dor, sono e energia." },
       { property: "og:title", content: "Diário — VivaLeve" },

@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/plano")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Meu plano de movimento — VivaLeve" },
       { name: "description", content: "Atividades físicas e exercícios sugeridos para o seu dia, no seu ritmo." },
       { property: "og:title", content: "Meu plano de movimento — VivaLeve" },
