@@ -18,7 +18,7 @@ const sleeps = [{ label: "Dormi bem", icon: Moon }, { label: "Dormi mais ou meno
 
 function Choices({ title, icon: Icon, options, value, onChange, className }: {
   title: string; icon: LucideIcon; options: { label: string; icon?: LucideIcon }[];
-  value?: string; onChange: (value: string) => void; className?: string;
+  value: string | undefined; onChange: (value: string) => void; className?: string;
 }) {
   return <fieldset className="min-w-0">
     <legend className="mb-3 flex items-center gap-2 text-base font-semibold"><Icon className="size-5 text-primary" />{title}</legend>
