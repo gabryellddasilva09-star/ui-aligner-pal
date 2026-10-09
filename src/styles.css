@@ -164,6 +164,7 @@
 .relax-breath-moving { animation: relax-breath 10s ease-in-out infinite; }
 .relax-breath-paused { animation-play-state: paused; }
 .relax-session { letter-spacing: 0; }
+.relax-session > button:last-child { min-width: 44px; min-height: 44px; display: grid; place-items: center; top: 0.5rem; right: 0.5rem; }
 @media (max-width: 639px) {
   .relax-session { top: 0; left: 0; width: 100%; height: 100dvh; max-height: 100dvh; max-width: none; transform: none; translate: none !important; animation: none !important; border-radius: 0; padding-top: 2rem; padding-bottom: 2rem; }
 }

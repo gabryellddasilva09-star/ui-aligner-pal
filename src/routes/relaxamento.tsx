@@ -25,6 +25,8 @@ function RelaxationPage() {
   const [session, setSession] = useState<{ activity: RelaxationActivity; duration: number } | null>(null);
   const [emotion, setEmotion] = useState<number | null>(null);
   const [records, setRecords] = useState<RelaxationRecord[]>([]);
+  const recordsRef = useRef<RelaxationRecord[]>([]);
+  recordsRef.current = records;
   const [reminder, setReminder] = useState(defaultReminder);
   const [ready, setReady] = useState(false);
   const [message, setMessage] = useState(welcomingMessages[0]);
@@ -48,7 +50,12 @@ function RelaxationPage() {
   }, [records, ready]);
   function start(activity: RelaxationActivity) { setSession({ activity, duration: activity.id === "breathing" ? duration * 60 : activity.seconds }); }
   function saveRecord(record: RelaxationRecord) {
-    setRecords(previous => previous.some(item => item.id === record.id) ? previous : [record, ...previous]);
+    if (recordsRef.current.some(item => item.id === record.id)) return;
+    const next = [record, ...recordsRef.current];
+    recordsRef.current = next;
+    try { localStorage.setItem("vl-relax-history", JSON.stringify(next)); }
+    catch { setError("Não foi possível salvar o histórico neste dispositivo. O registro permanece nesta tela."); }
+    setRecords(next);
     setConfirmation("Seu tempo de relaxamento foi registrado.");
   }
   function updateReminder(next: typeof reminder) {
