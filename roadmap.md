@@ -1,4 +1,5 @@
 # Daily check-in
+- [x] Adicionar mapa corporal frente/costas, intensidade por região e verificar salvamento e edição.
 - [x] Highlight the home invitation and add the touch-friendly daily form.
 - [x] Validate inputs and verify selection, saving, and reopening in the browser.
 

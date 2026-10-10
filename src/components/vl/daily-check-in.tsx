@@ -4,6 +4,8 @@ import { BatteryLow, Check, CheckCircle2, Frown, Heart, Meh, Moon, Smile, Sparkl
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { BodyPainMap } from "@/components/vl/body-pain-map";
+import { bodyPainSchema, type BodyPainDraft } from "@/data/body-pain";
 
 export const dailyRecordSchema = z.object({
   mood: z.enum(["Feliz", "Tranquila", "Neutra", "Triste", "Ansiosa"]),
@@ -11,6 +13,7 @@ export const dailyRecordSchema = z.object({
   pain: z.number().int().min(0).max(10),
   fatigue: z.enum(["Nenhum", "Leve", "Moderado", "Intenso"]),
   disposition: z.enum(["Boa", "Mais ou menos", "Baixa"]),
+  bodyPain: bodyPainSchema.optional(),
 });
 export type DailyRecord = z.infer<typeof dailyRecordSchema>;
 const moods = [{ label: "Feliz", icon: Smile }, { label: "Tranquila", icon: Wind }, { label: "Neutra", icon: Meh }, { label: "Triste", icon: Frown }, { label: "Ansiosa", icon: Heart }];
@@ -35,13 +38,14 @@ export function DailyCheckIn({ open, onOpenChange, record, onSave }: { open: boo
   const [draft, setDraft] = useState<Partial<DailyRecord>>(record ?? {});
   const [error, setError] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [bodyPain, setBodyPain] = useState<BodyPainDraft>(record?.bodyPain ?? {});
   function select(key: keyof DailyRecord, value: string | number) {
     setDraft(current => ({ ...current, [key]: value }));
     setError(false);
   }
   function submit(event: FormEvent) {
     event.preventDefault();
-    const result = dailyRecordSchema.safeParse(draft);
+    const result = dailyRecordSchema.safeParse({ ...draft, ...(Object.keys(bodyPain).length ? { bodyPain } : {}) });
     if (!result.success) { setError(true); return; }
     onSave(result.data);
     setSaved(true);
@@ -55,6 +59,7 @@ export function DailyCheckIn({ open, onOpenChange, record, onSave }: { open: boo
         <dl className="my-7 grid grid-cols-2 gap-3 rounded-2xl bg-secondary p-5 text-left text-sm">
           {[["Humor", draft.mood], ["Sono", draft.sleep], ["Dor", `${draft.pain}/10`], ["Cansaço", draft.fatigue], ["Disposição", draft.disposition]].map(([label, value]) => <div key={label}><dt className="text-muted-foreground">{label}</dt><dd className="mt-1 font-medium">{value}</dd></div>)}
         </dl>
+        {Object.keys(bodyPain).length > 0 && <div className="mb-7 text-left"><h3 className="mb-3 font-semibold">Mapa corporal da dor</h3><dl className="space-y-2 text-sm">{Object.entries(bodyPain).map(([region, intensity]) => <div key={region} className="flex justify-between gap-3"><dt className="text-muted-foreground">{region}</dt><dd className="font-medium text-primary">{intensity}/10</dd></div>)}</dl></div>}
         <Button className="h-14 w-full rounded-xl text-base" onClick={() => onOpenChange(false)}>Voltar ao início</Button>
         <Button variant="ghost" className="mt-2 h-12" onClick={() => setSaved(false)}>Editar meu registro</Button>
       </div> : <form onSubmit={submit} noValidate>
@@ -74,9 +79,10 @@ export function DailyCheckIn({ open, onOpenChange, record, onSave }: { open: boo
             </div>
             <div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>0 · Sem dor</span><span>10 · Dor máxima</span></div>
           </fieldset>
+          <BodyPainMap value={bodyPain} onChange={value => { setBodyPain(value); setError(false); }} />
           <Choices title="Cansaço" icon={BatteryLow} options={["Nenhum", "Leve", "Moderado", "Intenso"].map(label => ({ label }))} value={draft.fatigue} onChange={value => select("fatigue", value)} className="grid-cols-2 sm:grid-cols-4" />
           <Choices title="Como foi sua disposição hoje?" icon={Sun} options={[{ label: "Boa", icon: Zap }, { label: "Mais ou menos", icon: Meh }, { label: "Baixa", icon: BatteryLow }]} value={draft.disposition} onChange={value => select("disposition", value)} />
-          {error && <p role="alert" className="text-sm text-destructive">Selecione uma opção em cada pergunta para salvar seu registro.</p>}
+          {error && <p role="alert" className="text-sm text-destructive">Selecione uma opção em cada pergunta e a intensidade de cada região marcada para salvar seu registro.</p>}
           <Button type="submit" className="h-14 w-full rounded-xl text-base shadow-float"><Check className="size-5" />Salvar meu registro</Button>
         </div>
       </form>}
