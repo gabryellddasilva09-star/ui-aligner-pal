@@ -37,7 +37,7 @@ export function Tabs({ tabs, value, onChange }: {
   onChange: (key: string) => void;
 }) {
   return (
-    <div role="tablist" aria-label="Seções de alimentação" className="grid grid-cols-3 gap-1 rounded-full border bg-card p-1">
+    <div role="tablist" aria-label="Seções de alimentação" className="grid gap-1 rounded-full border bg-card p-1" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
       {tabs.map((t) => (
         <button
           key={t.key}
