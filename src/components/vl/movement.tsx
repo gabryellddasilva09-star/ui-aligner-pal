@@ -1,3 +1,5 @@
+import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import {
   BatteryLow, CloudRainWind, Smile, Waves, Wind, PersonStanding, Flower2, type LucideIcon,
@@ -114,12 +116,28 @@ export function WeekHistoryStrip({ days }: { days: WeekDay[] }) {
 }
 
 export function DialogShell({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={title}>
-      <button aria-label="Fechar detalhes" onClick={onClose} className="absolute inset-0 bg-foreground/25 backdrop-blur-sm" />
-      <div className="animate-rise relative max-h-[92vh] w-full overflow-y-auto rounded-t-4xl border bg-card p-6 shadow-float sm:max-w-lg sm:rounded-4xl sm:p-8">
-        {children}
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [onClose]);
+  if (!mounted) return null;
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-stretch justify-center sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label={title}>
+      <button aria-label="Fechar detalhes" onClick={onClose} className="absolute inset-0 hidden bg-foreground/25 backdrop-blur-sm sm:block" />
+      <div className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-card shadow-float sm:h-auto sm:max-h-[90dvh] sm:max-w-lg sm:rounded-4xl sm:border">
+        <div className="flex shrink-0 justify-end px-4 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-5 sm:pt-4">
+          <button onClick={onClose} aria-label="Fechar" className="grid size-11 place-items-center rounded-full bg-secondary text-foreground">
+            <X className="size-5" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-8 sm:pb-8">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

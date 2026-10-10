@@ -87,7 +87,7 @@ function Plano() {
         </div>
       </header>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="mt-6 grid grid-cols-1 gap-8 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <div className="space-y-8">
           {/* Plano de hoje */}
           <section className="relative overflow-hidden rounded-3xl bg-checkin p-6 shadow-float sm:p-7" aria-label="Seu plano de hoje">
