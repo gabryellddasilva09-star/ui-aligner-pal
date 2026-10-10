@@ -9,9 +9,10 @@ const DURATION = 550; // ms da passagem lateral
  * Carrossel em loop lateral: avança sozinho, pode ser arrastado com o dedo
  * e nunca para no fim — ao cruzar a borda volta ao meio sem salto visível.
  */
-export function LoopCarousel<T>({ items, label, renderItem, autoMs = 5200, suspended = false }: {
+export function LoopCarousel<T>({ items, label, itemName = "item", renderItem, autoMs = 5200, suspended = false }: {
   items: readonly T[];
   label: string;
+  itemName?: string;
   renderItem: (item: T, index: number) => ReactNode;
   autoMs?: number;
   suspended?: boolean;
@@ -32,12 +33,6 @@ export function LoopCarousel<T>({ items, label, renderItem, autoMs = 5200, suspe
   }, []);
 
   // ao cruzar a borda, volta para o bloco do meio sem transição (posição idêntica)
-  useEffect(() => {
-    if (index < n || index >= 2 * n) return;
-    if (index === 2 * n - 1 || index === n) return; // sem necessidade
-    return;
-  }, [index, n]);
-
   useEffect(() => {
     if (n < 2) return;
     if (index >= 2 * n || index < n) {
@@ -92,19 +87,19 @@ export function LoopCarousel<T>({ items, label, renderItem, autoMs = 5200, suspe
         </div>
       </div>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <Button variant="outline" size="icon" className="size-12 shrink-0 rounded-full" aria-label="Meditação anterior"
-          onClick={() => { setPaused(false); setIndex((i) => i - 1); }}><ChevronLeft className="size-5" /></Button>
-        <div className="flex items-center gap-2" role="tablist" aria-label={`Escolher ${label.toLowerCase()}`}>
+        <Button variant="outline" size="icon" className="size-12 shrink-0 rounded-full" aria-label={`${itemName} anterior`}
+          onClick={() => setIndex((i) => i - 1)}><ChevronLeft className="size-5" /></Button>
+        <div className="flex items-center gap-1">
           {items.map((item, position) => (
             <Button key={position} variant="ghost" className="grid size-11 place-items-center rounded-full p-0"
-              role="tab" aria-selected={active === position} aria-label={`Ir para a meditação ${position + 1}`}
+              aria-current={active === position ? "true" : undefined} aria-label={`Ir para ${itemName} ${position + 1}`}
               onClick={() => setIndex(n + position)}>
               <span aria-hidden className={cn("size-3 rounded-full transition-colors", active === position ? "bg-primary" : "bg-primary-soft")} />
             </Button>
           ))}
         </div>
-        <Button variant="outline" size="icon" className="size-12 shrink-0 rounded-full" aria-label="Próxima meditação"
-          onClick={() => { setPaused(false); setIndex((i) => i + 1); }}><ChevronRight className="size-5" /></Button>
+        <Button variant="outline" size="icon" className="size-12 shrink-0 rounded-full" aria-label={`Próxima ${itemName}`}
+          onClick={() => setIndex((i) => i + 1)}><ChevronRight className="size-5" /></Button>
       </div>
     </div>
   );
