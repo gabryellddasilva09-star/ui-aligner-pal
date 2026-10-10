@@ -66,23 +66,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-6 rounded-3xl border bg-card/90 px-2 py-2 shadow-float backdrop-blur-xl lg:hidden">
-        {nav.map(({ to, label, icon: Icon }) => {
-          const active = path === to;
-          return (
-            <Link key={to} to={to} className={cn(
-              "flex flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-medium transition",
-              active ? "text-primary" : "text-muted-foreground",
-            )}>
-              <span className={cn("grid h-8 w-12 place-items-center rounded-full transition", active && "bg-primary-soft")}>
-                <Icon className="size-5" strokeWidth={active ? 2.2 : 1.7} />
-              </span>
-              <span className="w-full truncate text-center text-[10px] leading-none">{label}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </div>
   );
 }
