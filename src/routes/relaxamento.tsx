@@ -5,6 +5,8 @@ import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { RelaxationSession } from "@/components/vl/relaxation";
 import { InlineBreathing } from "@/components/vl/inline-breathing";
+import { LoopCarousel } from "@/components/vl/carousel";
+
 import { historySchema, relaxationActivities, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
 
 export const Route = createFileRoute("/relaxamento")({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/relaxamento")({
 });
 
 const activityIcons = [Wind, Brain, Leaf, Moon, Flower2];
+const meditations = relaxationActivities.slice(1, 4);
+
 function RelaxationPage() {
   const [session, setSession] = useState<{ activity: RelaxationActivity; duration: number } | null>(null);
   const [records, setRecords] = useState<RelaxationRecord[]>([]);
@@ -58,7 +62,7 @@ function RelaxationPage() {
     {confirmation && <p role="status" className="mb-6 text-sm text-good">{confirmation}</p>}
     <div className="max-w-3xl space-y-10">
       <InlineBreathing onRecord={saveRecord} suspended={session !== null} />
-      <section><h2 className="text-2xl font-medium">Meditação guiada</h2><p className="mt-2 text-base text-muted-foreground">Uma pausa, um passo de cada vez.</p><div className="mt-5 space-y-3">{relaxationActivities.slice(1, 4).map((activity, index) => { const Icon = activityIcons[index + 1] ?? Leaf; return <article key={activity.id} className="card-soft flex items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Icon className="size-5" /></span><div className="min-w-0 flex-1"><h3 className="text-lg font-medium">{activity.name}</h3><p className="mt-1 text-sm text-muted-foreground">{activity.seconds / 60} minutos</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{activity.description}</p><Button variant="secondary" className="mt-3 h-11 rounded-xl" onClick={() => start(activity)}><PlayIcon />Começar</Button></div></article>; })}</div></section>
+      <section><h2 className="text-2xl font-medium">Meditação guiada</h2><p className="mt-2 text-base text-muted-foreground">Uma pausa, um passo de cada vez.</p><div className="mt-5"><LoopCarousel items={meditations} label="Meditações guiadas" itemName="meditação" suspended={session !== null} renderItem={(activity, index) => { const Icon = activityIcons[index + 1] ?? Leaf; return <article className="card-soft flex h-full min-h-72 flex-col p-5 sm:p-6"><span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Icon className="size-6" /></span><h3 className="mt-4 text-xl font-medium">{activity.name}</h3><p className="mt-1 text-base text-muted-foreground">{activity.seconds / 60} minutos</p><p className="mt-3 flex-1 text-base leading-relaxed text-muted-foreground">{activity.description}</p><Button variant="secondary" className="mt-5 h-12 w-full rounded-xl text-base" onClick={() => start(activity)}><PlayIcon />Começar</Button></article>; }} /></div></section>
       <section className="border-t pt-8"><h2 className="flex items-center gap-3 text-2xl font-medium"><Flower2 className="size-6 text-primary" />Relaxamento corporal</h2><p className="mt-3 text-base leading-relaxed text-muted-foreground">{relaxationActivities[4].description}</p><Button variant="outline" className="mt-5 h-14 w-full rounded-xl text-base" onClick={() => start(relaxationActivities[4])}>Começar relaxamento corporal</Button></section>
       </div>
     </div>
