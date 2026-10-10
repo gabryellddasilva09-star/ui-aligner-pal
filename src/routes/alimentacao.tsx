@@ -99,6 +99,12 @@ function Alimentacao() {
           <h1 className="sr-only text-3xl font-medium sm:text-4xl lg:not-sr-only">Minha alimentação</h1>
           <p className="mt-2 hidden text-base text-muted-foreground sm:text-lg lg:block">Organize suas refeições de um jeito mais leve.</p>
         </div>
+        <div className="mt-6 grid grid-cols-4 gap-1 rounded-2xl bg-secondary p-1.5 sm:gap-2" role="tablist" aria-label="Minha alimentação">
+          {tabs.map(({ key, label, icon: Icon }) => <Button key={key} id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} variant="ghost"
+            onClick={() => setTab(key as TabKey)} className={cn("h-auto min-h-16 min-w-0 flex-col gap-1 rounded-xl px-1 text-sm sm:flex-row sm:text-base", tab === key ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground" : "text-foreground")}>
+            <Icon className="size-5" />{label}
+          </Button>)}
+        </div>
         <div className="relative mt-6 h-40 overflow-hidden rounded-3xl sm:h-48">
           <img src={tableImage} alt="Prato colorido com frango, folhas e legumes" width={1536} height={768} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
@@ -108,12 +114,7 @@ function Alimentacao() {
             <p className="mt-2 text-sm text-muted-foreground">No seu ritmo, sem cobranças.</p>
           </div>
         </div>
-        <div className="mt-6 grid grid-cols-4 gap-1 rounded-2xl bg-secondary p-1.5 sm:gap-2" role="tablist" aria-label="Minha alimentação">
-          {tabs.map(({ key, label, icon: Icon }) => <Button key={key} id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} variant="ghost"
-            onClick={() => setTab(key as TabKey)} className={cn("h-auto min-h-16 min-w-0 flex-col gap-1 rounded-xl px-1 text-sm sm:flex-row sm:text-base", tab === key ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground" : "text-foreground")}>
-            <Icon className="size-5" />{label}
-          </Button>)}
-        </div>
+
       </header>
       <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}>
 
