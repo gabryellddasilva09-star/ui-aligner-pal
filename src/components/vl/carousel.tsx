@@ -80,7 +80,7 @@ export function LoopCarousel<T>({ items, label, itemName = "item", renderItem, a
           transition: animate && !reduced ? `transform ${DURATION}ms cubic-bezier(0.2, 0.7, 0.2, 1)` : "none",
         }}>
           {copies.map((item, position) => (
-            <div key={position} className="w-full shrink-0" aria-hidden={position !== index} inert={position !== index}>
+            <div key={position} className="w-full shrink-0 px-0.5" aria-hidden={position !== index} inert={position !== index}>
               {renderItem(item, position % n)}
             </div>
           ))}
