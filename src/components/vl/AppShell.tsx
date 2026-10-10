@@ -61,7 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="hidden items-center justify-end gap-3 px-10 pt-6 lg:flex">
           <IconButtons />
         </div>
-        <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-32 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
+        <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
           {children}
         </main>
       </div>
