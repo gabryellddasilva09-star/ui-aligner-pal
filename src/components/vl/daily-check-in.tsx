@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { BodyPainMap } from "@/components/vl/body-pain-map";
+import { PainSlider } from "@/components/vl/pain-slider";
 import { bodyPainSchema, type BodyPainDraft } from "@/data/body-pain";
 
 export const dailyRecordSchema = z.object({
@@ -73,11 +74,7 @@ export function DailyCheckIn({ open, onOpenChange, record, onSave }: { open: boo
           <Choices title="Sono" icon={Moon} options={sleeps} value={draft.sleep} onChange={value => select("sleep", value)} />
           <fieldset>
             <legend className="mb-3 flex items-center gap-2 text-base font-semibold"><Heart className="size-5 text-pain" />Nível de dor{draft.pain !== undefined && <span className="ml-1 text-sm font-medium text-primary">{draft.pain}/10</span>}</legend>
-            <div className="grid grid-cols-6 gap-2">
-              {Array.from({ length: 11 }, (_, value) => <Button key={value} type="button" variant="outline" aria-label={`Dor ${value} de 10`} aria-pressed={draft.pain === value} onClick={() => select("pain", value)}
-                className={cn("h-12 rounded-xl px-0 text-base shadow-none", value <= 3 ? "bg-good-soft" : value <= 6 ? "bg-warn-soft" : "bg-alert-soft", draft.pain === value && "border-primary bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background")}>{value}</Button>)}
-            </div>
-            <div className="mt-2 flex justify-between text-xs text-muted-foreground"><span>0 · Sem dor</span><span>10 · Dor máxima</span></div>
+            <PainSlider label="Nível de dor" value={draft.pain} onChange={value => select("pain", value)} />
           </fieldset>
           <BodyPainMap value={bodyPain} onChange={value => { setBodyPain(value); setError(false); }} />
           <Choices title="Cansaço" icon={BatteryLow} options={["Nenhum", "Leve", "Moderado", "Intenso"].map(label => ({ label }))} value={draft.fatigue} onChange={value => select("fatigue", value)} className="grid-cols-2 sm:grid-cols-4" />

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PainSlider } from "@/components/vl/pain-slider";
 import { painRegions, type PainRegion, type BodyPainDraft } from "@/data/body-pain";
 
 const shapes: { region: PainRegion; path: string }[] = [
@@ -36,8 +37,7 @@ export function BodyPainMap({ value, onChange }: { value: BodyPainDraft; onChang
     <div className="grid grid-cols-2 gap-2">{painRegions.map(region => <Button key={region} type="button" variant="outline" aria-pressed={selected(region)} className={cn("h-auto min-h-12 whitespace-normal rounded-xl px-2 py-3 text-sm", selected(region) && "border-primary bg-primary-soft text-primary")} onClick={() => toggle(region)}>{selected(region) && <Check className="size-4 shrink-0" />}{region}</Button>)}</div>
     {painRegions.filter(selected).map(region => <fieldset key={region} className={cn("rounded-xl border p-3", active === region && "border-primary/50 bg-primary-soft/30")}>
       <legend className="px-1 text-sm font-semibold">{region}{typeof value[region] === "number" && <span className="ml-2 text-primary">{value[region]}/10</span>}</legend>
-      <div className="grid grid-cols-6 gap-2">{Array.from({ length: 11 }, (_, intensity) => <Button key={intensity} type="button" variant="outline" aria-label={`${region}: dor ${intensity} de 10`} aria-pressed={value[region] === intensity} onClick={() => { onChange({ ...value, [region]: intensity }); setActive(region); }} className={cn("h-11 rounded-lg px-0 text-base shadow-none", value[region] === intensity && "border-primary bg-primary text-primary-foreground")}>{intensity}</Button>)}</div>
-      <div className="mt-2 flex justify-between gap-2 text-xs text-muted-foreground"><span>0 · Sem dor</span><span>10 · Dor máxima</span></div>
+      <PainSlider label={`${region}: intensidade da dor`} value={typeof value[region] === "number" ? value[region] : undefined} onChange={intensity => { onChange({ ...value, [region]: intensity }); setActive(region); }} />
     </fieldset>)}
   </section>;
 }
