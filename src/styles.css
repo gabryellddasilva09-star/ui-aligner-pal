@@ -139,6 +139,11 @@
 
 :root { --gradient-checkin-invitation: linear-gradient(115deg, oklch(0.50 0.18 295), oklch(0.59 0.16 310)); }
 .checkin-invitation { background: var(--gradient-checkin-invitation); }
+@keyframes checkin-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.checkin-float { animation: checkin-float 6s ease-in-out infinite; }
 @keyframes breathe {
   0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.78); }
   50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.08); }
@@ -158,7 +163,7 @@
   .checkin-dialog { top: 0; left: 0; width: 100%; height: 100dvh; max-width: none; transform: none; translate: none !important; animation: none !important; border-radius: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .checkin-dialog, .checkin-dialog *, .breathe-glow { animation: none !important; transition: none !important; }
+  .checkin-dialog, .checkin-dialog *, .breathe-glow, .checkin-float { animation: none !important; transition: none !important; }
 }
 
 @keyframes relax-breath {
