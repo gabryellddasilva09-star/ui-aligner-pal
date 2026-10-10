@@ -66,7 +66,7 @@ function Index() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
         <div className="space-y-8">
           {/* Check-in */}
-          <section className="checkin-invitation relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
+          <section className="checkin-invitation checkin-float relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
             <div aria-hidden className="breathe-glow" />
             <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
