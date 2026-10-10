@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { CloudRain, Waves, Droplets, Play, Pause, Volume2, VolumeX, SkipForward, Check, Wind } from "lucide-react";
+import { Bird, Music2, Sparkles, Play, Pause, Volume2, VolumeX, SkipForward, Check, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatSessionTime, safetyMessage, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
-import rain from "@/assets/relax-rain.mp3.asset.json";
-import stream from "@/assets/relax-stream.mp3.asset.json";
-import sea from "@/assets/relax-sea.mp3.asset.json";
+import meditacao from "@/assets/relax-meditacao.mp3.asset.json";
+import passaros from "@/assets/relax-passaros.mp3.asset.json";
+import musica from "@/assets/relax-musica.mp3.asset.json";
 
-const soundscapes = [{ id: "rain", name: "Chuva suave", icon: CloudRain, url: rain.url }, { id: "stream", name: "Água corrente", icon: Droplets, url: stream.url }, { id: "sea", name: "Mar tranquilo", icon: Waves, url: sea.url }] as const;
+const soundscapes = [{ id: "meditacao", name: "Som de meditação", icon: Sparkles, url: meditacao.url }, { id: "passaros", name: "Pássaros cantando", icon: Bird, url: passaros.url }, { id: "musica", name: "Música relaxante", icon: Music2, url: musica.url }] as const;
 export function NatureSounds({ paused = false }: { paused?: boolean }) {
   const audio = useRef<HTMLAudioElement | null>(null);
-  const [selected, setSelected] = useState("rain");
+  const [selected, setSelected] = useState("meditacao");
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(30);
   const [error, setError] = useState("");
@@ -82,7 +82,7 @@ export function RelaxationSession({ activity, duration, onClose, onRecord }: { a
       {activity.id === "breathing" && <label className="flex min-h-12 items-center justify-center gap-3 text-base"><input type="checkbox" checked={!motion} onChange={event => setMotion(!event.target.checked)} className="size-5 accent-primary" />Somente instruções, sem animação</label>}
       {activity.id === "body" && <div className="flex gap-3"><Button variant="outline" className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(); }}><SkipForward />Pular etapa</Button><Button className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(); }}>{step === activity.steps.length - 1 ? "Concluir" : "Próximo"}</Button></div>}
       <div className="flex gap-3"><Button className="h-14 flex-1 rounded-xl text-base" onClick={() => setPaused(!paused)}>{paused ? <Play /> : <Pause />}{paused ? "Retomar" : "Pausar"}</Button><Button variant="outline" className="h-14 flex-1 rounded-xl text-base" onClick={end}>Encerrar sessão</Button></div>
-      <details className="rounded-xl border p-4"><summary className="cursor-pointer text-sm font-medium text-primary">Sons de natureza · opcionais</summary><div className="mt-4"><NatureSounds paused={paused} /></div></details>
+      <details className="rounded-xl border p-4"><summary className="cursor-pointer text-sm font-medium text-primary">Sons para acompanhar · opcionais</summary><div className="mt-4"><NatureSounds paused={paused} /></div></details>
       <p className="text-sm leading-relaxed text-muted-foreground">{safetyMessage} {activity.id === "body" && "Se uma etapa aumentar o desconforto, interrompa essa etapa. Não force os movimentos."}</p>
     </>}
   </DialogContent></Dialog>;
