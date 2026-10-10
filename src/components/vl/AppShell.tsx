@@ -26,6 +26,7 @@ export function Logo({ className }: { className?: string }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const showMobileBack = path !== "/" && path !== "/relaxamento";
   return (
     <div className="min-h-screen lg:flex">
       {/* Desktop sidebar */}
@@ -62,6 +63,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           <IconButtons />
         </div>
         <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
+          {showMobileBack && (
+            <Link to="/" className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary lg:hidden">
+              <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
+            </Link>
+          )}
           {children}
         </main>
       </div>
