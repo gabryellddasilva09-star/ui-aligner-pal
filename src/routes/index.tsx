@@ -2,10 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, type LucideIcon } from "lucide-react";
 import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
-import {
-  Trend, PillSelect, LineChart, SectionHeader,
-} from "@/components/vl/primitives";
-import { patient, insight, focus, painMonth } from "@/data/mock";
+import { SectionHeader } from "@/components/vl/primitives";
+import { patient, insight, focus } from "@/data/mock";
 import hero from "@/assets/hero-mist.jpg";
 import qaMove from "@/assets/qa-move.jpg";
 import qaFood from "@/assets/qa-food.jpg";
@@ -145,23 +143,6 @@ function Index() {
             </div>
           </div>
 
-          {/* Evolution */}
-          <section className="pt-4">
-            <SectionHeader title="Evolução" subtitle="Você está no caminho certo!" action={<PillSelect label="Últimos 30 dias" />} />
-            <div className="card-soft p-5">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-medium text-primary">Média atual da dor</p>
-                  <p className="font-display text-3xl font-medium">{painMonth.average}</p>
-                </div>
-                <div className="text-right">
-                  <Trend change={painMonth.change} improving={false} />
-                  <p className="text-[11px] text-muted-foreground">vs. mês anterior</p>
-                </div>
-              </div>
-              <div className="mt-4"><LineChart data={painMonth.data} height={110} /></div>
-            </div>
-          </section>
         </div>
       </div>
       {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={setRecord} />}
