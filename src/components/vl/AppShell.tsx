@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
@@ -26,6 +26,7 @@ export function Logo({ className }: { className?: string }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const showMobileBack = path !== "/" && path !== "/relaxamento";
   return (
     <div className="min-h-screen lg:flex">
       {/* Desktop sidebar */}
@@ -61,28 +62,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="hidden items-center justify-end gap-3 px-10 pt-6 lg:flex">
           <IconButtons />
         </div>
-        <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-32 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
+        <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
+          {showMobileBack && (
+            <Link to="/" className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary lg:hidden">
+              <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
+            </Link>
+          )}
           {children}
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-6 rounded-3xl border bg-card/90 px-2 py-2 shadow-float backdrop-blur-xl lg:hidden">
-        {nav.map(({ to, label, icon: Icon }) => {
-          const active = path === to;
-          return (
-            <Link key={to} to={to} className={cn(
-              "flex flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-medium transition",
-              active ? "text-primary" : "text-muted-foreground",
-            )}>
-              <span className={cn("grid h-8 w-12 place-items-center rounded-full transition", active && "bg-primary-soft")}>
-                <Icon className="size-5" strokeWidth={active ? 2.2 : 1.7} />
-              </span>
-              <span className="w-full truncate text-center text-[10px] leading-none">{label}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </div>
   );
 }
