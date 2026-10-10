@@ -27,13 +27,13 @@ describe("Daily check-in", () => {
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Ombros: dor 7 de 10" }));
-    fireEvent.click(screen.getByRole("button", { name: "Costas", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Costas" }));
     fireEvent.click(screen.getByRole("button", { name: "Costas: dor 3 de 10" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ bodyPain: { Ombros: 7, Costas: 3 } }));
     fireEvent.click(screen.getByRole("button", { name: "Editar meu registro" }));
     expect(screen.getByRole("button", { name: "Ombros: dor 7 de 10" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Ombros", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Ombros" }));
     expect(screen.queryByRole("button", { name: "Ombros: dor 7 de 10" })).not.toBeInTheDocument();
   });
   it("rejects unknown regions and out-of-range regional intensity", () => {
