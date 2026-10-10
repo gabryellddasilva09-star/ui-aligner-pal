@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Check, ChevronLeft, ChevronRight, Clock, Droplets, Leaf, ShoppingBasket, Users, X, Ban, Sparkles, RefreshCw, BookOpen, Utensils, ChefHat, Search, Minus, Plus, ArrowRight,
 } from "lucide-react";
-import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
+import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
 import { FoodVisual, NutritionDisclosure } from "@/components/vl/nutrition-visuals";
@@ -95,12 +95,9 @@ function Alimentacao() {
     <AppShell>
       <div className="nutrition-screen">
       <header className="pt-4 sm:pt-6">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-          <div className="min-w-0">
-            <h1 className="text-3xl font-medium sm:text-4xl">Minha alimentação</h1>
-            <p className="mt-2 text-base text-muted-foreground sm:text-lg">Organize suas refeições de um jeito mais leve.</p>
-          </div>
-          <div className="shrink-0 lg:hidden"><IconButtons /></div>
+        <div className="min-w-0">
+          <h1 className="sr-only text-3xl font-medium sm:text-4xl lg:not-sr-only">Minha alimentação</h1>
+          <p className="mt-2 hidden text-base text-muted-foreground sm:text-lg lg:block">Organize suas refeições de um jeito mais leve.</p>
         </div>
         <div className="relative mt-6 h-40 overflow-hidden rounded-3xl sm:h-48">
           <img src={tableImage} alt="Prato colorido com frango, folhas e legumes" width={1536} height={768} className="h-full w-full object-cover" />
