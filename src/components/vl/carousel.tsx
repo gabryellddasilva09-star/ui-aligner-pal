@@ -34,31 +34,34 @@ export function LoopCarousel<T>({ items, label, itemName = "item", renderItem, a
 
   // ao cruzar a borda, volta para o bloco do meio sem transição (posição idêntica)
   useEffect(() => {
-    if (n < 2) return;
-    if (index >= 2 * n || index < n) {
-      const jump = window.setTimeout(() => {
+    let jump: number | undefined;
+    if (n >= 2 && (index >= 2 * n || index < n)) {
+      jump = window.setTimeout(() => {
         setAnimate(false);
         setIndex((i) => (i >= 2 * n ? i - n : i + n));
       }, DURATION + 40);
-      return () => window.clearTimeout(jump);
     }
+    return () => { if (jump !== undefined) window.clearTimeout(jump); };
   }, [index, n]);
 
   useEffect(() => {
-    if (animate) return;
-    const back = window.setTimeout(() => setAnimate(true), 60);
-    return () => window.clearTimeout(back);
+    let back: number | undefined;
+    if (!animate) back = window.setTimeout(() => setAnimate(true), 60);
+    return () => { if (back !== undefined) window.clearTimeout(back); };
   }, [animate]);
 
   const auto = n > 1 && !reduced && !paused && !suspended;
   useEffect(() => {
-    if (!auto) return;
-    const tick = window.setInterval(() => setIndex((i) => i + 1), autoMs);
-    return () => window.clearInterval(tick);
+    let tick: number | undefined;
+    if (auto) tick = window.setInterval(() => setIndex((i) => i + 1), autoMs);
+    return () => { if (tick !== undefined) window.clearInterval(tick); };
   }, [auto, autoMs]);
 
   if (n === 0) return null;
-  if (n === 1) return <div className="w-full">{renderItem(items[0], 0)}</div>;
+  if (n === 1) {
+    const only = items[0];
+    return only === undefined ? null : <div className="w-full">{renderItem(only, 0)}</div>;
+  }
 
   const copies = [...items, ...items, ...items];
   const active = index % n;
