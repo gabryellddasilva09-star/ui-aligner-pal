@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bird, Music2, Sparkles, Play, Pause, Volume2, VolumeX, SkipForward, Check, Wind } from "lucide-react";
+import { Bird, Music2, Sparkles, Play, Pause, SkipForward, Check, Wind } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -8,15 +8,16 @@ import meditacao from "@/assets/relax-meditacao.mp3.asset.json";
 import passaros from "@/assets/relax-passaros.mp3.asset.json";
 import musica from "@/assets/relax-musica.mp3.asset.json";
 
+const DEFAULT_VOLUME = 0.3;
 const soundscapes = [{ id: "meditacao", name: "Som de meditação", icon: Sparkles, url: meditacao.url }, { id: "passaros", name: "Pássaros cantando", icon: Bird, url: passaros.url }, { id: "musica", name: "Música relaxante", icon: Music2, url: musica.url }] as const;
 export function NatureSounds({ paused = false, running }: { paused?: boolean; running?: boolean }) {
   const audio = useRef<HTMLAudioElement | null>(null);
   const [selected, setSelected] = useState("meditacao");
   const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(30);
   const [error, setError] = useState("");
   const sound = soundscapes.find(item => item.id === selected) ?? soundscapes[0];
-  useEffect(() => { if (audio.current) audio.current.volume = volume / 100; }, [volume]);
+  useEffect(() => { if (audio.current) audio.current.volume = DEFAULT_VOLUME; }, [selected]);
+
   useEffect(() => { if (paused) { audio.current?.pause(); setPlaying(false); } }, [paused]);
   useEffect(() => {
     if (running === undefined) return;
@@ -32,7 +33,7 @@ export function NatureSounds({ paused = false, running }: { paused?: boolean; ru
   return <div className="space-y-4">
     <div className="grid grid-cols-3 gap-2">{soundscapes.map(({ id, name, icon: Icon }) => <Button key={id} variant="outline" aria-pressed={selected === id} className={cn("h-auto min-h-24 flex-col whitespace-normal rounded-2xl px-2 text-sm", selected === id && "border-primary bg-primary-soft text-primary")} onClick={() => { audio.current?.pause(); setPlaying(false); setSelected(id); setError(""); }}><Icon className="size-5" />{name}</Button>)}</div>
     <audio ref={audio} src={sound.url} loop preload="none" onError={() => { setPlaying(false); setError("O som não carregou. Verifique sua conexão e tente novamente."); }} />
-    <div className="flex items-center gap-4">{running === undefined && <Button variant="secondary" className="h-12 shrink-0 rounded-xl" disabled={paused} onClick={() => { if (playing) { audio.current?.pause(); setPlaying(false); } else void play(); }}>{playing ? <Pause /> : <Play />}{playing ? "Pausar som" : "Ouvir som"}</Button>}<label className="flex min-w-0 flex-1 items-center gap-2">{volume === 0 ? <VolumeX className="size-5 shrink-0 text-primary" /> : <Volume2 className="size-5 shrink-0 text-primary" />}<span className="sr-only">Volume</span><input aria-label="Volume" type="range" min="0" max="100" value={volume} onChange={event => setVolume(Number(event.target.value))} className="w-full accent-primary" /></label></div>
+    {running === undefined && <div className="flex items-center"><Button variant="secondary" className="h-12 rounded-xl" disabled={paused} onClick={() => { if (playing) { audio.current?.pause(); setPlaying(false); } else void play(); }}>{playing ? <Pause /> : <Play />}{playing ? "Pausar som" : "Ouvir som"}</Button></div>}
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
   </div>;
 }
