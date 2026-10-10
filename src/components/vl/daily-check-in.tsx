@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { BodyPainMap } from "@/components/vl/body-pain-map";
+import { PainSlider } from "@/components/vl/pain-slider";
 import { bodyPainSchema, type BodyPainDraft } from "@/data/body-pain";
 
 export const dailyRecordSchema = z.object({

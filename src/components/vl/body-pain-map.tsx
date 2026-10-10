@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PainSlider } from "@/components/vl/pain-slider";
 import { painRegions, type PainRegion, type BodyPainDraft } from "@/data/body-pain";
 
 const shapes: { region: PainRegion; path: string }[] = [
