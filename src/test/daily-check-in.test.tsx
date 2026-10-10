@@ -15,7 +15,7 @@ describe("Daily check-in", () => {
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
     for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa"]) fireEvent.click(screen.getByRole("button", { name }));
-    fireEvent.change(screen.getByLabelText("Nível de dor"), { target: { value: "0" } });
+    fireEvent.change(screen.getByLabelText("Nível de dor"), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).toHaveBeenCalledWith({ mood: "Tranquila", sleep: "Dormi bem", pain: 0, fatigue: "Leve", disposition: "Boa" });
     expect(screen.getByText("Seu registro foi salvo")).toBeInTheDocument();
