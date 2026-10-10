@@ -259,8 +259,7 @@ function Alimentacao() {
                     <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border-2", c ? "border-good bg-good text-primary-foreground" : "border-border")}>
                       {c && <Check className="size-3.5" />}
                     </span>
-                    <span className={cn("flex-1 text-sm font-medium", c && "line-through")}>{i.name}</span>
-                    <span className="text-xs text-muted-foreground">{i.qty}</span>
+                    <span className="min-w-0 flex-1"><span className={cn("block text-base font-medium", c && "line-through")}>{i.name}</span><span className="mt-1 block text-base text-muted-foreground">{i.qty}</span></span>
                   </Button>
                 </li>
               );
@@ -291,12 +290,10 @@ function Alimentacao() {
             </ol>
           </NutritionDisclosure>
           <section>
-            <div className="card-soft p-5">
-              <p className="flex items-center gap-2 font-medium text-good"><Sparkles className="size-4" />Consuma livremente</p>
+            <NutritionDisclosure title="O que consumir livremente" className="text-good">
               <ul className="mt-3 space-y-2 text-base">{eatFreely.map((x) => <li key={x} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-good" />{x}</li>)}</ul>
             </NutritionDisclosure>
-            <div className="card-soft p-5">
-              <p className="flex items-center gap-2 font-medium text-alert"><Ban className="size-4" />Evite durante os 21 dias</p>
+            <NutritionDisclosure title="O que evitar durante os 21 dias">
               <ul className="mt-3 space-y-2 text-base">{avoid.map((x) => <li key={x} className="flex gap-2"><X className="mt-0.5 size-4 shrink-0 text-alert" />{x}</li>)}</ul>
             </NutritionDisclosure>
           </section>
