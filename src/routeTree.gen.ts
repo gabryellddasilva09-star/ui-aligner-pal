@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlimentacaoRouteImport } from './routes/alimentacao'
+import { Route as BibliotecaRouteImport } from './routes/biblioteca'
 import { Route as DiarioRouteImport } from './routes/diario'
 import { Route as EvolucaoRouteImport } from './routes/evolucao'
 import { Route as PlanoRouteImport } from './routes/plano'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const AlimentacaoRoute = AlimentacaoRouteImport.update({
   id: '/alimentacao',
   path: '/alimentacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BibliotecaRoute = BibliotecaRouteImport.update({
+  id: '/biblioteca',
+  path: '/biblioteca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiarioRoute = DiarioRouteImport.update({
@@ -56,6 +62,7 @@ const RelaxamentoRoute = RelaxamentoRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alimentacao': typeof AlimentacaoRoute
+  '/biblioteca': typeof BibliotecaRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alimentacao': typeof AlimentacaoRoute
+  '/biblioteca': typeof BibliotecaRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/alimentacao': typeof AlimentacaoRoute
+  '/biblioteca': typeof BibliotecaRoute
   '/diario': typeof DiarioRoute
   '/evolucao': typeof EvolucaoRoute
   '/plano': typeof PlanoRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/alimentacao'
+    | '/biblioteca'
     | '/diario'
     | '/evolucao'
     | '/plano'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/alimentacao'
+    | '/biblioteca'
     | '/diario'
     | '/evolucao'
     | '/plano'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/alimentacao'
+    | '/biblioteca'
     | '/diario'
     | '/evolucao'
     | '/plano'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlimentacaoRoute: typeof AlimentacaoRoute
+  BibliotecaRoute: typeof BibliotecaRoute
   DiarioRoute: typeof DiarioRoute
   EvolucaoRoute: typeof EvolucaoRoute
   PlanoRoute: typeof PlanoRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/alimentacao'
       fullPath: '/alimentacao'
       preLoaderRoute: typeof AlimentacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/biblioteca': {
+      id: '/biblioteca'
+      path: '/biblioteca'
+      fullPath: '/biblioteca'
+      preLoaderRoute: typeof BibliotecaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diario': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlimentacaoRoute: AlimentacaoRoute,
+  BibliotecaRoute: BibliotecaRoute,
   DiarioRoute: DiarioRoute,
   EvolucaoRoute: EvolucaoRoute,
   PlanoRoute: PlanoRoute,
