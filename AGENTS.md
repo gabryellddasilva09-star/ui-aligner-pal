@@ -15,3 +15,5 @@
 - Serve pre-rendered relaxation audio through asset pointers; playback must start only after user interaction and stop when leaving the screen.
 - Keep inline breathing timing in a reusable frontend control and reuse the shared sound selector in controlled playback mode so time, progress, and audio pause together.
 - Keep nutrition source content separate from reusable food visuals and progressive-disclosure controls so presentation changes never rewrite the supplied meal plan.
+- Keep looping card carousels in one reusable frontend component that clones its items for seamless wrap, keeps off-screen slides inert, and stops auto-advance on hover, focus, open dialogs, drag and reduced-motion, so any section can adopt it without new dependencies.
+
