@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck, Sparkles,
 } from "lucide-react";
-import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
+import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader, PillSelect } from "@/components/vl/primitives";
 import { ActivityTile, ProgressBar, DailyStateSelector, WeekHistoryStrip, DialogShell } from "@/components/vl/movement";
 import { movementActivities, dailyStates, weekHistory, weekSummaryBase } from "@/data/movement";
@@ -80,7 +80,6 @@ function Plano() {
               Olá, Ana <span aria-hidden>🌿</span> — Pequenos passos também são progresso.
             </p>
           </div>
-          <div className="lg:hidden"><IconButtons /></div>
         </div>
         <div className="relative mt-4">
           <PillSelect label="Hoje, 7 out" />
