@@ -5,6 +5,8 @@ import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { RelaxationSession } from "@/components/vl/relaxation";
 import { InlineBreathing } from "@/components/vl/inline-breathing";
+import { LoopCarousel } from "@/components/vl/carousel";
+
 import { historySchema, relaxationActivities, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
 
 export const Route = createFileRoute("/relaxamento")({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/relaxamento")({
 });
 
 const activityIcons = [Wind, Brain, Leaf, Moon, Flower2];
+const meditations = relaxationActivities.slice(1, 4);
+
 function RelaxationPage() {
   const [session, setSession] = useState<{ activity: RelaxationActivity; duration: number } | null>(null);
   const [records, setRecords] = useState<RelaxationRecord[]>([]);
