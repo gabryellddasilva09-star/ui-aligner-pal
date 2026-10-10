@@ -53,7 +53,7 @@ function Alimentacao() {
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
-  const [shopWeek, setShopWeek] = useState(1);
+  const [shopWeek, setShopWeek] = useState<1 | 2 | 3>(1);
   const [recipeFilter, setRecipeFilter] = useState<"todas" | Tag>("todas");
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -123,7 +123,7 @@ function Alimentacao() {
             </ul>
             <div className="mt-4 grid grid-cols-3 gap-2" role="group" aria-label="Escolher semana">
               {weeks.map((w) => (
-                <button key={w.n} onClick={() => setDay(w.days[0].day)} aria-pressed={week.n === w.n}
+                <button key={w.n} onClick={() => setDay(w.days[0]!.day)} aria-pressed={week.n === w.n}
                   className={cn("min-h-11 rounded-full text-sm font-medium transition",
                     week.n === w.n ? "bg-primary text-primary-foreground shadow-float" : "bg-card text-muted-foreground hover:text-foreground")}>
                   Semana {w.n}
@@ -249,7 +249,7 @@ function Alimentacao() {
       {tab === "compras" && (
         <div className="mt-6 space-y-5">
           <div className="grid grid-cols-3 gap-2" role="group" aria-label="Lista da semana">
-            {[1, 2, 3].map((n) => (
+            {([1, 2, 3] as const).map((n) => (
               <button key={n} onClick={() => setShopWeek(n)} aria-pressed={shopWeek === n}
                 className={cn("min-h-11 rounded-full border text-sm font-medium transition",
                   shopWeek === n ? "border-primary bg-primary text-primary-foreground shadow-float" : "bg-card text-muted-foreground")}>

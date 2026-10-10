@@ -13,7 +13,7 @@ export const mealLabels: Record<MealKey, string> = {
 };
 export const mealOrder: MealKey[] = ["cafe", "lancheManha", "almoco", "lancheTarde", "jantar"];
 
-export type DayPlan = { day: number; dinnerTime: string; meals: Record<MealKey, string>; tip?: string };
+export type DayPlan = { day: number; dinnerTime: string; meals: Record<MealKey, string>; tip?: string | undefined };
 
 export const tagInfo: Record<Tag, string> = {
   "FÁCIL": "Receita rápida, menos de 15 minutos",
@@ -212,12 +212,12 @@ export const weeks = [
   },
 ];
 
-export function getDay(n: number) {
+export function getDay(n: number): { week: (typeof weeks)[number]; plan: DayPlan } {
   for (const w of weeks) {
     const found = w.days.find((x) => x.day === n);
     if (found) return { week: w, plan: found };
   }
-  return { week: weeks[0], plan: weeks[0].days[0] };
+  return { week: weeks[0]!, plan: weeks[0]!.days[0]! };
 }
 
 /** Separa a marcação [FÁCIL]/[CRISE] do texto da refeição. */
@@ -350,7 +350,7 @@ export const recipes: Recipe[] = [
 ];
 
 export type ShopItem = { name: string; qty: string };
-export const shopping: Record<number, ShopItem[]> = {
+export const shopping: Record<1 | 2 | 3, ShopItem[]> = {
   1: [
     ["Ovos caipiras", "2 dúzias"], ["Frango (peito ou coxa sem pele)", "1,5 kg"], ["Sardinha fresca ou atum em água", "500 g"],
     ["Tilápia ou outro peixe branco", "500 g"], ["Carne moída", "500 g"], ["Brócolis", "1 cabeça grande"], ["Abobrinha", "4 unidades"],
@@ -362,7 +362,7 @@ export const shopping: Record<number, ShopItem[]> = {
     ["Massa de konjac", "10 pacotes"], ["Cacau em pó 100%", "200 g"], ["Azeite extra virgem", "500 ml"], ["Canela em pó", "100 g"],
     ["Biomassa de banana verde", "500 g"], ["Psyllium", "200 g"], ["Cúrcuma em pó", "1 pote"], ["Gengibre fresco", "3 pedaços grandes"],
     ["Sal do Himalaia ou marinho", "1 embalagem"], ["Chás: verde, gengibre, camomila, hibisco", "1 caixa cada"],
-  ].map(([name, qty]) => ({ name, qty })),
+  ].map(([name, qty]) => ({ name: name!, qty: qty! })),
   2: [
     ["Salmão", "400 g"], ["Atum em água", "3 latas"], ["Peru (filé ou cozido)", "500 g"], ["Frango (peito)", "1 kg"],
     ["Costela bovina para caldo", "500 g"], ["Ovos caipiras", "1 dúzia e meia"], ["Bife bovino", "500 g"], ["Fígado de boi", "3 unidades"],
@@ -374,7 +374,7 @@ export const shopping: Record<number, ShopItem[]> = {
     ["Nozes", "100 g"], ["Alho-poró", "1 talo"], ["Farinha de coco", "300 g"], ["Amêndoas", "100 g"], ["Castanha-do-pará", "100 g"],
     ["Psyllium", "500 g"], ["Azeite extra virgem", "500 ml"], ["Chia e linhaça", "200 g cada"],
     ["Cúrcuma, gengibre, canela, curry", "repor se necessário"], ["Chás variados", "repor se necessário"],
-  ].map(([name, qty]) => ({ name, qty })),
+  ].map(([name, qty]) => ({ name: name!, qty: qty! })),
   3: [
     ["Salmão", "500 g"], ["Sardinha fresca", "400 g"], ["Frango (peito e coxa)", "1,5 kg"], ["Carne moída", "400 g"],
     ["Costela bovina para caldo", "500 g"], ["Atum em água", "2 latas"], ["Ovos caipiras", "2 dúzias"], ["Coração de galinha", "300 g"],
@@ -385,5 +385,5 @@ export const shopping: Record<number, ShopItem[]> = {
     ["Água de coco", "1 litro"], ["Nozes, amêndoas, castanha-do-pará", "150 g cada"], ["Chia, linhaça, girassol", "200 g cada"],
     ["Cacau em pó 100%", "100 g"], ["Mel puro", "200 ml"], ["Azeite extra virgem", "500 ml"],
     ["Cúrcuma, gengibre, açafrão, canela", "repor se necessário"], ["Tomate seco em azeite", "1 pote"], ["Chás variados", "repor se necessário"],
-  ].map(([name, qty]) => ({ name, qty })),
+  ].map(([name, qty]) => ({ name: name!, qty: qty! })),
 };
