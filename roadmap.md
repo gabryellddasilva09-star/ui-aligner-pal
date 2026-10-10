@@ -1,7 +1,7 @@
 # Daily check-in
 # Minha alimentação
-- [ ] Simplificar a apresentação do cardápio, receitas, compras e guia sem perder o conteúdo do PDF.
-- [ ] Adicionar imagens, cores e controles confortáveis e verificar as escolhas e os diálogos no celular.
+- [x] Simplificar a apresentação do cardápio, receitas, compras e guia sem perder o conteúdo do PDF.
+- [x] Adicionar imagens, cores e controles confortáveis e verificar as escolhas e os diálogos no celular.
 
 # Daily check-in
 - [x] Adicionar mapa corporal frente/costas, intensidade por região e verificar salvamento e edição.
