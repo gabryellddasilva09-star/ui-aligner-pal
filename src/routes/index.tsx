@@ -35,7 +35,7 @@ const quickActions: { label: string; description: string; icon: LucideIcon; imag
   { label: "Relaxamento e controle", description: "Pausas para respirar e desacelerar", icon: Flower2, image: qaRelax, to: "/relaxamento" },
   { label: "Acolhimento e comunidade", description: "Você não está sozinha", icon: HeartHandshake, image: qaCommunity },
   { label: "Evolução e relatórios", description: "Como você está ao longo do tempo", icon: TrendingUp, image: qaEvolution, to: "/evolucao" },
-  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen, image: qaLibrary },
+  { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen, image: qaLibrary, to: "/biblioteca" },
 ];
 
 function Index() {
