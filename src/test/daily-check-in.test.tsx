@@ -24,6 +24,7 @@ describe("Daily check-in", () => {
     const onSave = vi.fn();
     render(<DailyCheckIn open onOpenChange={vi.fn()} record={null} onSave={onSave} />);
     for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa", "Ombros · frente"]) fireEvent.click(screen.getByRole("button", { name }));
+    fireEvent.change(screen.getByLabelText("Nível de dor"), { target: { value: "4" } });
     expect(screen.getByRole("button", { name: "Ombros · costas" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).not.toHaveBeenCalled();
