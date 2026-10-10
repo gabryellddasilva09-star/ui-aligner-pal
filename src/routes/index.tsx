@@ -145,7 +145,37 @@ function Index() {
 
         </div>
       </div>
+
+      <HomeFooter />
+
       {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={setRecord} />}
     </AppShell>
+  );
+}
+
+function HomeFooter() {
+  return (
+    <footer className="mt-12 lg:mt-14">
+      <div className="rounded-3xl border bg-checkin px-6 py-8 text-center shadow-soft">
+        <Logo className="mx-auto size-8" />
+        <p className="mt-3 text-lg font-medium leading-snug">Você não precisa dar conta de tudo hoje.</p>
+        <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
+          Um passo leve por vez já é progresso. Sua profissional acompanha cada um deles.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <Link to="/profissional" className="inline-flex min-h-11 items-center gap-2 rounded-full border bg-card px-5 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary">
+            <HeartHandshake className="size-4" aria-hidden /> Falar com sua profissional
+          </Link>
+          <Link to="/biblioteca" className="inline-flex min-h-11 items-center gap-2 rounded-full border bg-card/70 px-5 text-sm font-medium text-muted-foreground transition hover:bg-card hover:text-foreground">
+            <BookOpen className="size-4" aria-hidden /> Tirar uma dúvida
+          </Link>
+        </div>
+      </div>
+      <p className="mx-auto mt-5 max-w-md text-center text-xs leading-relaxed text-muted-foreground">
+        O VivaLeve é um apoio para o seu dia a dia e não substitui a consulta com sua profissional.
+        Em um momento difícil, ligue 188 (CVV) — gratuito, 24 horas.
+      </p>
+      <p className="mt-2 text-center text-[11px] text-muted-foreground">VivaLeve · feito com carinho para o seu dia a dia</p>
+    </footer>
   );
 }
