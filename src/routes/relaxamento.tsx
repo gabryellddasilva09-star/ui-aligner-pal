@@ -56,7 +56,7 @@ function RelaxationPage() {
     </header>
     {error && <p role="alert" className="mb-6 rounded-xl bg-alert-soft p-4 text-alert">{error}</p>}
     {confirmation && <p role="status" className="mb-6 text-sm text-good">{confirmation}</p>}
-    <div className="mx-auto max-w-3xl space-y-10">
+    <div className="max-w-3xl space-y-10">
       <section className="scroll-mt-6">
         <h2 className="flex items-center gap-3 text-2xl font-medium"><Wind className="size-6 text-primary" />Respiração guiada</h2>
         <p className="mt-3 text-base leading-relaxed text-muted-foreground">{relaxationActivities[0].description}</p>
