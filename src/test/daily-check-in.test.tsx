@@ -34,7 +34,7 @@ describe("Daily check-in", () => {
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ bodyPain: { Ombros: 7, Costas: 3 } }));
     fireEvent.click(screen.getByRole("button", { name: "Editar meu registro" }));
-    expect(screen.getByLabelText("Ombros: intensidade da dor")).toHaveAttribute("aria-valuenow", "7");
+    expect(screen.getByLabelText("Ombros: intensidade da dor")).toHaveValue(7);
     fireEvent.click(screen.getByRole("button", { name: "Ombros" }));
     expect(screen.queryByLabelText("Ombros: intensidade da dor")).not.toBeInTheDocument();
   });
