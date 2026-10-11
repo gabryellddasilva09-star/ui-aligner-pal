@@ -1,5 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
@@ -80,6 +81,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 }
 
 export function IconButtons() {
+  const navigate = useNavigate();
+  async function signOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/login" });
+  }
   return (
     <div className="flex shrink-0 items-center gap-2">
       <button aria-label="Notificações" className="relative grid size-10 place-items-center rounded-full border bg-card transition hover:bg-secondary">
@@ -89,6 +95,9 @@ export function IconButtons() {
       <Link to="/profissional" aria-label="Perfil" className="grid size-10 place-items-center rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
         A
       </Link>
+      <button onClick={signOut} aria-label="Sair" title="Sair" className="grid size-10 place-items-center rounded-full border bg-card text-muted-foreground transition hover:bg-secondary">
+        <LogOut className="size-[18px]" />
+      </button>
     </div>
   );
 }

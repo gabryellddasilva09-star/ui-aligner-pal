@@ -4,7 +4,7 @@ import { AppShell } from "@/components/vl/AppShell";
 import { StatusBadge, indicatorMeta, SectionHeader } from "@/components/vl/primitives";
 import { diary } from "@/data/mock";
 
-export const Route = createFileRoute("/diario")({
+export const Route = createFileRoute("/_authenticated/diario")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },

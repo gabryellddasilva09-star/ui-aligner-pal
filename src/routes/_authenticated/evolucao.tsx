@@ -4,7 +4,7 @@ import { AppShell } from "@/components/vl/AppShell";
 import { LineChart, Segmented, SectionHeader, StatusBadge, Trend, indicatorMeta } from "@/components/vl/primitives";
 import { evolutionSeries, weeklyIndicators } from "@/data/mock";
 
-export const Route = createFileRoute("/evolucao")({
+export const Route = createFileRoute("/_authenticated/evolucao")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },

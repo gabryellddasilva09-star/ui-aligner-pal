@@ -9,7 +9,7 @@ import { LoopCarousel } from "@/components/vl/carousel";
 
 import { historySchema, relaxationActivities, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
 
-export const Route = createFileRoute("/relaxamento")({
+export const Route = createFileRoute("/_authenticated/relaxamento")({
   head: () => ({ meta: [
     { title: "Respiração guiada — VivaLeve" },
     { name: "description", content: "Reserve uma pausa no seu ritmo com respiração guiada, meditação e relaxamento corporal." },

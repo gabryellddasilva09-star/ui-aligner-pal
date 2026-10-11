@@ -12,7 +12,7 @@ import bodyImg from "@/assets/lib-body.jpg";
 import careImg from "@/assets/lib-care.jpg";
 import doctorImg from "@/assets/lib-doctor.jpg";
 
-export const Route = createFileRoute("/biblioteca")({
+export const Route = createFileRoute("/_authenticated/biblioteca")({
   head: () => ({ meta: [
     { title: "Biblioteca de conhecimento — VivaLeve" },
     { name: "description", content: "Tudo sobre fibromialgia em linguagem simples: sintomas, causas, tratamento, sono, alimentação, emoções e como o VivaLeve ajuda." },

@@ -9,7 +9,7 @@ import { ActivityTile, ProgressBar, DailyStateSelector, WeekHistoryStrip, Dialog
 import { movementActivities, dailyStates, weekHistory, weekSummaryBase } from "@/data/movement";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/plano")({
+export const Route = createFileRoute("/_authenticated/plano")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
