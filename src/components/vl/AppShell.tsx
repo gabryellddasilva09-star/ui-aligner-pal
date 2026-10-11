@@ -65,7 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="hidden items-center justify-end gap-3 px-10 pt-6 lg:flex">
           <IconButtons />
         </div>
-        <main key={path} className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 animate-rise sm:px-8 lg:px-10 lg:pb-16">
+        <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 sm:px-8 lg:px-10 lg:pb-16">
           {showMobileBack && (
             <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
               <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
