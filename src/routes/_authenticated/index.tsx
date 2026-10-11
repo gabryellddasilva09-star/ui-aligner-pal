@@ -113,7 +113,6 @@ function Index() {
               <Link to="/remedios" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Pill className="size-5" /></span><span className="font-medium leading-snug">Meus remédios</span></Link>
               <Link to="/consultas" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><CalendarHeart className="size-5" /></span><span className="font-medium leading-snug">Consultas e exames</span></Link>
             </div>
-            <InstallAppButton />
           </div>
 
           {/* Quick actions */}
@@ -176,7 +175,11 @@ function Index() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <InstallAppButton />
+      </div>
       <HomeFooter />
+
       <CrisisMode open={crisis} onOpenChange={setCrisis} />
 
       {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={r => save.mutateAsync(r)} />}
