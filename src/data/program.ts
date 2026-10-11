@@ -1,6 +1,6 @@
 // Conteúdo educativo do Programa guiado de 30 dias — precisa de revisão profissional.
 export type ProgramKind = "Movimento" | "Respiração" | "Sono" | "Alimentação" | "Mente" | "Autocuidado" | "Reflexão";
-export interface ProgramDay { day: number; week: number; title: string; kind: ProgramKind; minutes: number; intro: string; steps: string[]; tip: string; link?: "/plano" | "/relaxamento" | "/alimentacao" | "/biblioteca" | "/diario" | "/comunidade"; }
+export interface ProgramDay { day: number; week: number; title: string; kind: ProgramKind; minutes: number; intro: string; steps: string[]; tip: string; link?: "/evolucao" | "/plano" | "/relaxamento" | "/alimentacao" | "/biblioteca" | "/diario" | "/comunidade"; }
 
 export const programWeeks = [
   { week: 1, title: "Conhecer o seu corpo", text: "Começar devagar, observar e criar uma rotina leve." },
@@ -32,7 +32,7 @@ export const programDays: ProgramDay[] = [
   d(18, "Respiração antes de dormir", "Respiração", 5, "Preparar o corpo para descansar.", ["Já deitada, coloque a mão na barriga.", "Inspire sentindo a barriga subir.", "Solte o ar devagar. Repita 10 vezes."], "Combine com o relaxamento corporal do app.", "/relaxamento"),
   d(19, "Lanche que acalma", "Alimentação", 5, "Escolhas leves à noite podem ajudar o sono.", ["Evite café, chá preto e refrigerante à tarde e à noite.", "Prefira um chá de camomila ou erva-cidreira.", "Jante mais cedo e mais leve."], "Observe se isso muda seu sono.", "/alimentacao"),
   d(20, "Força leve", "Movimento", 8, "Um pouco de força ajuda a proteger as articulações.", ["Sentada, levante-se da cadeira devagar e sente-se de novo (3 a 5 vezes).", "Use as mãos como apoio se precisar.", "Descanse entre cada repetição."], "Comece com poucas repetições. Menos é mais.", "/plano"),
-  d(21, "Revisão do sono e energia", "Reflexão", 5, "Três semanas! O que mudou no seu descanso?", ["Veja seus registros de sono.", "Qual hábito ajudou mais?", "Mantenha esse hábito como parte da rotina."], "Pequenas vitórias contam muito.", "/evolucao" as never),
+  d(21, "Revisão do sono e energia", "Reflexão", 5, "Três semanas! O que mudou no seu descanso?", ["Veja seus registros de sono.", "Qual hábito ajudou mais?", "Mantenha esse hábito como parte da rotina."], "Pequenas vitórias contam muito.", "/evolucao"),
   d(22, "Atenção plena no agora", "Mente", 5, "Trazer a mente para o presente acalma a ansiedade.", ["Diga 5 coisas que você vê.", "4 que você pode tocar, 3 que você ouve.", "2 cheiros e 1 sabor."], "Use sempre que sentir ansiedade."),
   d(23, "Conversar sobre a dor", "Mente", 5, "Dividir o que sente com quem você confia alivia.", ["Escolha uma pessoa de confiança.", "Conte como a fibromialgia afeta seu dia.", "Se quiser, mostre o material para família do app."], "Você não precisa carregar tudo sozinha.", "/comunidade"),
   d(24, "Caminhada um pouco maior", "Movimento", 10, "Se a caminhada curta foi bem, aumente um pouquinho.", ["Caminhe de 7 a 10 minutos em ritmo leve.", "Se a dor aumentar, volte para 5 minutos.", "Beba água depois."], "Aumentar devagar é o segredo."),
