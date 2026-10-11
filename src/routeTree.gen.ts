@@ -19,7 +19,6 @@ import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
-import { Route as ApiPublicSeedUserRouteImport } from './routes/api/public/seed-user'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -73,11 +72,6 @@ const AuthenticatedRelaxamentoRoute =
     path: '/relaxamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicSeedUserRoute = ApiPublicSeedUserRouteImport.update({
-  id: '/api/public/seed-user',
-  path: '/api/public/seed-user',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -89,7 +83,6 @@ export interface FileRoutesByFullPath {
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
-  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -101,7 +94,6 @@ export interface FileRoutesByTo {
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/': typeof AuthenticatedIndexRoute
-  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,7 +107,6 @@ export interface FileRoutesById {
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,7 +120,6 @@ export interface FileRouteTypes {
     | '/plano'
     | '/profissional'
     | '/relaxamento'
-    | '/api/public/seed-user'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
     | '/profissional'
     | '/relaxamento'
     | '/'
-    | '/api/public/seed-user'
   id:
     | '__root__'
     | '/_authenticated'
@@ -154,13 +143,11 @@ export interface FileRouteTypes {
     | '/_authenticated/profissional'
     | '/_authenticated/relaxamento'
     | '/_authenticated/'
-    | '/api/public/seed-user'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-  ApiPublicSeedUserRoute: typeof ApiPublicSeedUserRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -235,13 +222,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelaxamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/seed-user': {
-      id: '/api/public/seed-user'
-      path: '/api/public/seed-user'
-      fullPath: '/api/public/seed-user'
-      preLoaderRoute: typeof ApiPublicSeedUserRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -273,7 +253,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
-  ApiPublicSeedUserRoute: ApiPublicSeedUserRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
