@@ -29,7 +29,6 @@ export const Route = createFileRoute("/_authenticated/")({
       rel: "preload",
       as: "image",
       href,
-      fetchpriority: "high",
     })),
   }),
   component: Index,
