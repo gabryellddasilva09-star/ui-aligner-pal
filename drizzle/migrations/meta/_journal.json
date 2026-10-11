@@ -8,6 +8,20 @@
       "when": 1791752698354,
       "tag": "0000_patient_records",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791753329473,
+      "tag": "0001_meds_appointments_push",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791753629232,
+      "tag": "0002_enable_cron",
+      "breakpoints": true
     }
   ]
 }

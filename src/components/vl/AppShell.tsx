@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut, Pill, CalendarHeart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ const nav = [
   { to: "/diario", label: "Diário", icon: CalendarDays },
   { to: "/plano", label: "Movimento", icon: PersonStanding },
   { to: "/alimentacao", label: "Alimentação", icon: Utensils },
+  { to: "/remedios", label: "Remédios", icon: Pill },
+  { to: "/consultas", label: "Consultas", icon: CalendarHeart },
   { to: "/evolucao", label: "Evolução", icon: LineChart },
   { to: "/profissional", label: "Quem criou", icon: UserRound },
 ] as const;

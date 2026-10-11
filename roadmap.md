@@ -5,12 +5,12 @@
 - [x] Sono completo, névoa mental, ciclo/menopausa e gatilhos no registro.
 - [x] Tela da doutora vira "Quem criou o VivaLeve" (sem troca de dados).
 ## Etapa 2
-- [ ] Remédios (lista, horários, efeitos colaterais) com aviso no celular.
-- [ ] Consultas e exames com lembrete e dúvidas para a consulta.
-- [ ] Lembretes reais no celular (pausa diária, remédio, consulta).
-- [ ] Modo crise "Estou em crise".
+- [x] Remédios (lista, horários, efeitos colaterais) com aviso no celular.
+- [x] Consultas e exames com lembrete e dúvidas para a consulta.
+- [x] Lembretes reais no celular (pausa diária, remédio, consulta).
+- [x] Modo crise "Estou em crise".
 ## Etapa 3
 - [ ] Comunidade com grupo moderado.
 - [ ] Apoio psicológico (CVV, CAPS, SUS).
 - [ ] Material para família e trabalho.
-- [ ] Instalar como aplicativo no celular.
+- [x] Instalar como aplicativo no celular.

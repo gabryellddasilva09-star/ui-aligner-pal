@@ -14,6 +14,8 @@ import qaEvolution from "@/assets/qa-evolution.jpg";
 import qaLibrary from "@/assets/qa-library.jpg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { CrisisMode } from "@/components/vl/crisis-mode";
+import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -47,6 +49,7 @@ const quickActions: { label: string; description: string; icon: LucideIcon; imag
 function Index() {
   const [open, setOpen] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
+  const [crisis, setCrisis] = useState(false);
   const { data: records = [] } = useRecords();
   const save = useSaveRecord();
   const record: DailyRecord | null = records.find(r => r.date === todayKey()) ?? null;
@@ -99,6 +102,17 @@ function Index() {
               </div>
             </div>
           </section>
+
+          <div className="grid gap-3">
+            <Button onClick={() => setCrisis(true)} variant="outline" className="h-16 justify-start gap-3 rounded-2xl border-pain/40 bg-card px-5 text-left text-lg font-medium text-pain shadow-soft">
+              <LifeBuoy className="size-6" /> Estou em crise
+              <span className="ml-auto text-sm font-normal text-muted-foreground">passo a passo calmo</span>
+            </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Link to="/remedios" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Pill className="size-5" /></span><span className="font-medium leading-snug">Meus remédios</span></Link>
+              <Link to="/consultas" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><CalendarHeart className="size-5" /></span><span className="font-medium leading-snug">Consultas e exames</span></Link>
+            </div>
+          </div>
 
           {/* Quick actions */}
           <section>
@@ -161,6 +175,7 @@ function Index() {
       </div>
 
       <HomeFooter />
+      <CrisisMode open={crisis} onOpenChange={setCrisis} />
 
       {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={r => save.mutateAsync(r)} />}
     </AppShell>
