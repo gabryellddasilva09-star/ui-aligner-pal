@@ -11,9 +11,10 @@
 
 - Keep the daily check-in in a reusable frontend dialog with schema-validated state; persist records per user through the shared records hooks with owner-only RLS so every screen reads the same real data.
 - Keep the interactive body pain map in a reusable frontend component with browser-safe region definitions and schema-validated per-region intensities; silhouette and list selections share the same state for accessibility.
-- Keep relaxation content, session timing, and reusable frontend controls separate; persist finished sessions to the user's account; reminder preferences stay browser-local until real notifications exist.
+- Keep relaxation content, session timing, and reusable frontend controls separate; persist finished sessions to the user's account; relaxation reminder preferences stay browser-local.
 - Serve pre-rendered relaxation audio through asset pointers; playback must start only after user interaction and stop when leaving the screen.
 - Keep inline breathing timing in a reusable frontend control and reuse the shared sound selector in controlled playback mode so time, progress, and audio pause together.
 - Keep nutrition source content separate from reusable food visuals and progressive-disclosure controls so presentation changes never rewrite the supplied meal plan.
 - Keep looping card carousels in one reusable frontend component that clones its items for seamless wrap, keeps off-screen slides inert, and stops auto-advance on hover, focus, open dialogs, drag and reduced-motion, so any section can adopt it without new dependencies.
-
+- Send reminders as payload-less Web Push signed with a database-stored VAPID key and fetch the message from the service worker, because Workers lack Node push libraries and payload encryption; the scheduler authenticates with a token kept only in a service-role table.
+- Keep the messaging service worker separate from any app-shell caching so installability never introduces offline caching.
