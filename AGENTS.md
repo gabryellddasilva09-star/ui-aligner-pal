@@ -18,3 +18,4 @@
 - Keep looping card carousels in one reusable frontend component that clones its items for seamless wrap, keeps off-screen slides inert, and stops auto-advance on hover, focus, open dialogs, drag and reduced-motion, so any section can adopt it without new dependencies.
 - Send reminders as payload-less Web Push signed with a database-stored VAPID key and fetch the message from the service worker, because Workers lack Node push libraries and payload encryption; the scheduler authenticates with a token kept only in a service-role table.
 - Keep the messaging service worker separate from any app-shell caching so installability never introduces offline caching.
+- Keep guided-program content in a browser-safe data module separate from progress, which is stored per user with owner-only RLS; daily program reminders reuse the shared push scheduler.

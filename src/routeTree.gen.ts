@@ -20,6 +20,7 @@ import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticated/evolucao'
 import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
+import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
 import { Route as AuthenticatedRemediosRouteImport } from './routes/_authenticated/remedios'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
@@ -81,6 +82,11 @@ const AuthenticatedProfissionalRoute =
     path: '/profissional',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProgramaRoute = AuthenticatedProgramaRouteImport.update({
+  id: '/programa',
+  path: '/programa',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRelaxamentoRoute =
   AuthenticatedRelaxamentoRouteImport.update({
     id: '/relaxamento',
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
+  '/programa': typeof AuthenticatedProgramaRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/remedios': typeof AuthenticatedRemediosRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
+  '/programa': typeof AuthenticatedProgramaRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/remedios': typeof AuthenticatedRemediosRoute
   '/': typeof AuthenticatedIndexRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/evolucao': typeof AuthenticatedEvolucaoRoute
   '/_authenticated/plano': typeof AuthenticatedPlanoRoute
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
+  '/_authenticated/programa': typeof AuthenticatedProgramaRoute
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/_authenticated/remedios': typeof AuthenticatedRemediosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/evolucao'
     | '/plano'
     | '/profissional'
+    | '/programa'
     | '/relaxamento'
     | '/remedios'
     | '/api/public/cron/reminders'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/evolucao'
     | '/plano'
     | '/profissional'
+    | '/programa'
     | '/relaxamento'
     | '/remedios'
     | '/'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/evolucao'
     | '/_authenticated/plano'
     | '/_authenticated/profissional'
+    | '/_authenticated/programa'
     | '/_authenticated/relaxamento'
     | '/_authenticated/remedios'
     | '/_authenticated/'
@@ -291,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfissionalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/programa': {
+      id: '/_authenticated/programa'
+      path: '/programa'
+      fullPath: '/programa'
+      preLoaderRoute: typeof AuthenticatedProgramaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/relaxamento': {
       id: '/_authenticated/relaxamento'
       path: '/relaxamento'
@@ -331,6 +350,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEvolucaoRoute: typeof AuthenticatedEvolucaoRoute
   AuthenticatedPlanoRoute: typeof AuthenticatedPlanoRoute
   AuthenticatedProfissionalRoute: typeof AuthenticatedProfissionalRoute
+  AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRoute
   AuthenticatedRelaxamentoRoute: typeof AuthenticatedRelaxamentoRoute
   AuthenticatedRemediosRoute: typeof AuthenticatedRemediosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -345,6 +365,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEvolucaoRoute: AuthenticatedEvolucaoRoute,
   AuthenticatedPlanoRoute: AuthenticatedPlanoRoute,
   AuthenticatedProfissionalRoute: AuthenticatedProfissionalRoute,
+  AuthenticatedProgramaRoute: AuthenticatedProgramaRoute,
   AuthenticatedRelaxamentoRoute: AuthenticatedRelaxamentoRoute,
   AuthenticatedRemediosRoute: AuthenticatedRemediosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
