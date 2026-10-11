@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { dailyRecordSchema, type DailyRecord } from "@/components/vl/daily-check-in";
 
 export type StoredRecord = DailyRecord & { date: string };
@@ -9,17 +10,17 @@ export function todayKey(d = new Date()) {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-function fromRow(row: Record<string, unknown>): StoredRecord | null {
+function fromRow(row: Tables<"daily_records">): StoredRecord | null {
   const parsed = dailyRecordSchema.safeParse({
     mood: row.mood, sleep: row.sleep, pain: row.pain, fatigue: row.fatigue, disposition: row.disposition,
-    bodyPain: row.body_pain && Object.keys(row.body_pain as object).length ? row.body_pain : undefined,
+    bodyPain: row.body_pain && typeof row.body_pain === "object" && Object.keys(row.body_pain).length ? row.body_pain : undefined,
     bedTime: row.bed_time ? String(row.bed_time).slice(0, 5) : undefined,
     wakeTime: row.wake_time ? String(row.wake_time).slice(0, 5) : undefined,
     awakenings: row.awakenings ?? undefined,
     brainFog: row.brain_fog ?? undefined,
     brainFogNote: row.brain_fog_note ?? undefined,
     cycle: row.cycle ?? undefined,
-    triggers: (row.triggers as string[] | null)?.length ? row.triggers : undefined,
+    triggers: row.triggers?.length ? row.triggers : undefined,
   });
   return parsed.success ? { ...parsed.data, date: String(row.record_date) } : null;
 }
@@ -32,7 +33,7 @@ export function useRecords() {
     queryFn: async () => {
       const { data, error } = await supabase.from("daily_records").select("*").order("record_date", { ascending: false }).limit(120);
       if (error) throw error;
-      return (data ?? []).map(r => fromRow(r as Record<string, unknown>)).filter((r): r is StoredRecord => r !== null);
+      return (data ?? []).map(r => fromRow(r)).filter((r): r is StoredRecord => r !== null);
     },
   });
 }
@@ -59,8 +60,8 @@ export function useSaveRecord() {
 /** Hours slept from bed/wake times (crosses midnight). */
 export function sleepHours(r: DailyRecord): number | null {
   if (!r.bedTime || !r.wakeTime) return null;
-  const [bh, bm] = r.bedTime.split(":").map(Number);
-  const [wh, wm] = r.wakeTime.split(":").map(Number);
+  const [bh = 0, bm = 0] = r.bedTime.split(":").map(Number);
+  const [wh = 0, wm = 0] = r.wakeTime.split(":").map(Number);
   let mins = wh * 60 + wm - (bh * 60 + bm);
   if (mins <= 0) mins += 24 * 60;
   return Math.round((mins / 60) * 10) / 10;
@@ -80,7 +81,7 @@ export function describePatterns(records: StoredRecord[]) {
   const found: { label: string; with: number; without: number }[] = [];
   const tests: [string, (r: StoredRecord) => boolean][] = [
     ["dormiu mal", r => r.sleep === "Dormi mal"],
-    ...["Chuva ou frio", "Estresse", "Esforço físico", "Comida diferente", "Preocupação"].map(t => [t.toLowerCase(), (r: StoredRecord) => !!r.triggers?.includes(t)] as [string, (r: StoredRecord) => boolean]),
+    ...["Chuva ou frio", "Estresse", "Esforço físico", "Comida diferente", "Preocupação"].map(t => [t.toLowerCase(), (r: StoredRecord) => !!r.triggers?.includes(t as never)] as [string, (r: StoredRecord) => boolean]),
   ];
   for (const [label, fn] of tests) {
     const a = records.filter(fn).map(r => r.pain), b = records.filter(r => !fn(r)).map(r => r.pain);

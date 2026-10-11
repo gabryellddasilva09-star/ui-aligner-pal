@@ -28,7 +28,7 @@ const metrics: { key: string; label: string; unit: string; icon: typeof Zap; col
   { key: "sleepq", label: "Qualidade do sono", unit: "/10", icon: Moon, color: "var(--sleep)", get: r => scoreMaps.sleepQuality[r.sleep] ?? null },
   { key: "energy", label: "Disposição", unit: "/10", icon: BatteryMedium, color: "var(--energy)", get: r => scoreMaps.disposition[r.disposition] ?? null },
   { key: "mood", label: "Humor", unit: "/10", icon: Smile, color: "var(--mood)", get: r => scoreMaps.mood[r.mood] ?? null },
-  { key: "fog", label: "Névoa mental", unit: "/10", icon: Brain, color: "var(--primary)", get: r => (r.brainFog ? fogScore[r.brainFog] : null) },
+  { key: "fog", label: "Névoa mental", unit: "/10", icon: Brain, color: "var(--primary)", get: r => (r.brainFog ? fogScore[r.brainFog] ?? null : null) },
 ];
 
 function Evolucao() {
