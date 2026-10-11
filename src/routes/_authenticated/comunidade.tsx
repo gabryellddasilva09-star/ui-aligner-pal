@@ -41,7 +41,8 @@ function Comunidade() {
     mutationFn: async (body: string) => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) throw new Error("Sem sessão");
-      const name = (u.user.user_metadata?.name as string | undefined)?.split(" ")[0] || "Paciente";
+      const meta = u.user.user_metadata as Record<string, unknown>;
+      const name = (typeof meta["name"] === "string" ? meta["name"] : "").split(" ")[0] || "Paciente";
       const { error } = await supabase.from("community_messages").insert({ user_id: u.user.id, author_name: name, body });
       if (error) throw error;
     },
