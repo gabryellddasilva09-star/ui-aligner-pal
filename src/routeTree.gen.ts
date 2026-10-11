@@ -14,11 +14,13 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAlimentacaoRouteImport } from './routes/_authenticated/alimentacao'
 import { Route as AuthenticatedBibliotecaRouteImport } from './routes/_authenticated/biblioteca'
+import { Route as AuthenticatedConsultasRouteImport } from './routes/_authenticated/consultas'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticated/evolucao'
 import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
+import { Route as AuthenticatedRemediosRouteImport } from './routes/_authenticated/remedios'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as ApiPublicPushNextRouteImport } from './routes/api/public/push/next'
 
@@ -45,6 +47,11 @@ const AuthenticatedAlimentacaoRoute =
 const AuthenticatedBibliotecaRoute = AuthenticatedBibliotecaRouteImport.update({
   id: '/biblioteca',
   path: '/biblioteca',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedConsultasRoute = AuthenticatedConsultasRouteImport.update({
+  id: '/consultas',
+  path: '/consultas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
@@ -74,6 +81,11 @@ const AuthenticatedRelaxamentoRoute =
     path: '/relaxamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRemediosRoute = AuthenticatedRemediosRouteImport.update({
+  id: '/remedios',
+  path: '/remedios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
   id: '/api/public/cron/reminders',
   path: '/api/public/cron/reminders',
@@ -90,11 +102,13 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/remedios': typeof AuthenticatedRemediosRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
@@ -102,11 +116,13 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/remedios': typeof AuthenticatedRemediosRoute
   '/': typeof AuthenticatedIndexRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
@@ -117,11 +133,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/_authenticated/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/_authenticated/consultas': typeof AuthenticatedConsultasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/evolucao': typeof AuthenticatedEvolucaoRoute
   '/_authenticated/plano': typeof AuthenticatedPlanoRoute
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/_authenticated/remedios': typeof AuthenticatedRemediosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
@@ -133,11 +151,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/alimentacao'
     | '/biblioteca'
+    | '/consultas'
     | '/diario'
     | '/evolucao'
     | '/plano'
     | '/profissional'
     | '/relaxamento'
+    | '/remedios'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
   fileRoutesByTo: FileRoutesByTo
@@ -145,11 +165,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/alimentacao'
     | '/biblioteca'
+    | '/consultas'
     | '/diario'
     | '/evolucao'
     | '/plano'
     | '/profissional'
     | '/relaxamento'
+    | '/remedios'
     | '/'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
@@ -159,11 +181,13 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/alimentacao'
     | '/_authenticated/biblioteca'
+    | '/_authenticated/consultas'
     | '/_authenticated/diario'
     | '/_authenticated/evolucao'
     | '/_authenticated/plano'
     | '/_authenticated/profissional'
     | '/_authenticated/relaxamento'
+    | '/_authenticated/remedios'
     | '/_authenticated/'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
@@ -213,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBibliotecaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/consultas': {
+      id: '/_authenticated/consultas'
+      path: '/consultas'
+      fullPath: '/consultas'
+      preLoaderRoute: typeof AuthenticatedConsultasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/diario': {
       id: '/_authenticated/diario'
       path: '/diario'
@@ -248,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelaxamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/remedios': {
+      id: '/_authenticated/remedios'
+      path: '/remedios'
+      fullPath: '/remedios'
+      preLoaderRoute: typeof AuthenticatedRemediosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/cron/reminders': {
       id: '/api/public/cron/reminders'
       path: '/api/public/cron/reminders'
@@ -268,22 +306,26 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlimentacaoRoute: typeof AuthenticatedAlimentacaoRoute
   AuthenticatedBibliotecaRoute: typeof AuthenticatedBibliotecaRoute
+  AuthenticatedConsultasRoute: typeof AuthenticatedConsultasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedEvolucaoRoute: typeof AuthenticatedEvolucaoRoute
   AuthenticatedPlanoRoute: typeof AuthenticatedPlanoRoute
   AuthenticatedProfissionalRoute: typeof AuthenticatedProfissionalRoute
   AuthenticatedRelaxamentoRoute: typeof AuthenticatedRelaxamentoRoute
+  AuthenticatedRemediosRoute: typeof AuthenticatedRemediosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlimentacaoRoute: AuthenticatedAlimentacaoRoute,
   AuthenticatedBibliotecaRoute: AuthenticatedBibliotecaRoute,
+  AuthenticatedConsultasRoute: AuthenticatedConsultasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedEvolucaoRoute: AuthenticatedEvolucaoRoute,
   AuthenticatedPlanoRoute: AuthenticatedPlanoRoute,
   AuthenticatedProfissionalRoute: AuthenticatedProfissionalRoute,
   AuthenticatedRelaxamentoRoute: AuthenticatedRelaxamentoRoute,
+  AuthenticatedRemediosRoute: AuthenticatedRemediosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
