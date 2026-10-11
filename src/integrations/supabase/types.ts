@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_records: {
+        Row: {
+          awakenings: number | null
+          bed_time: string | null
+          body_pain: Json
+          brain_fog: string | null
+          brain_fog_note: string | null
+          created_at: string
+          cycle: string | null
+          disposition: string
+          fatigue: string
+          id: string
+          mood: string
+          pain: number
+          record_date: string
+          sleep: string
+          triggers: string[]
+          updated_at: string
+          user_id: string
+          wake_time: string | null
+        }
+        Insert: {
+          awakenings?: number | null
+          bed_time?: string | null
+          body_pain?: Json
+          brain_fog?: string | null
+          brain_fog_note?: string | null
+          created_at?: string
+          cycle?: string | null
+          disposition: string
+          fatigue: string
+          id?: string
+          mood: string
+          pain: number
+          record_date?: string
+          sleep: string
+          triggers?: string[]
+          updated_at?: string
+          user_id?: string
+          wake_time?: string | null
+        }
+        Update: {
+          awakenings?: number | null
+          bed_time?: string | null
+          body_pain?: Json
+          brain_fog?: string | null
+          brain_fog_note?: string | null
+          created_at?: string
+          cycle?: string | null
+          disposition?: string
+          fatigue?: string
+          id?: string
+          mood?: string
+          pain?: number
+          record_date?: string
+          sleep?: string
+          triggers?: string[]
+          updated_at?: string
+          user_id?: string
+          wake_time?: string | null
+        }
+        Relationships: []
+      }
+      relaxation_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          seconds: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          seconds: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          seconds?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
