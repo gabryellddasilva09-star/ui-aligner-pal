@@ -19,6 +19,8 @@ import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
+import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
+import { Route as ApiPublicPushNextRouteImport } from './routes/api/public/push/next'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -72,6 +74,16 @@ const AuthenticatedRelaxamentoRoute =
     path: '/relaxamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
+  id: '/api/public/cron/reminders',
+  path: '/api/public/cron/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPushNextRoute = ApiPublicPushNextRouteImport.update({
+  id: '/api/public/push/next',
+  path: '/api/public/push/next',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -83,6 +95,8 @@ export interface FileRoutesByFullPath {
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
+  '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/': typeof AuthenticatedIndexRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
+  '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
+  '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +138,8 @@ export interface FileRouteTypes {
     | '/plano'
     | '/profissional'
     | '/relaxamento'
+    | '/api/public/cron/reminders'
+    | '/api/public/push/next'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -131,6 +151,8 @@ export interface FileRouteTypes {
     | '/profissional'
     | '/relaxamento'
     | '/'
+    | '/api/public/cron/reminders'
+    | '/api/public/push/next'
   id:
     | '__root__'
     | '/_authenticated'
@@ -143,11 +165,15 @@ export interface FileRouteTypes {
     | '/_authenticated/profissional'
     | '/_authenticated/relaxamento'
     | '/_authenticated/'
+    | '/api/public/cron/reminders'
+    | '/api/public/push/next'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
+  ApiPublicPushNextRoute: typeof ApiPublicPushNextRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -222,6 +248,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelaxamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/cron/reminders': {
+      id: '/api/public/cron/reminders'
+      path: '/api/public/cron/reminders'
+      fullPath: '/api/public/cron/reminders'
+      preLoaderRoute: typeof ApiPublicCronRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/push/next': {
+      id: '/api/public/push/next'
+      path: '/api/public/push/next'
+      fullPath: '/api/public/push/next'
+      preLoaderRoute: typeof ApiPublicPushNextRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -253,6 +293,8 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
+  ApiPublicPushNextRoute: ApiPublicPushNextRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
