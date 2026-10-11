@@ -10,7 +10,7 @@
 - [x] Lembretes reais no celular (pausa diária, remédio, consulta).
 - [x] Modo crise "Estou em crise".
 ## Etapa 3
-- [ ] Comunidade com grupo moderado.
-- [ ] Apoio psicológico (CVV, CAPS, SUS).
-- [ ] Material para família e trabalho.
+- [x] Comunidade com grupo moderado.
+- [x] Apoio psicológico (CVV, CAPS, SUS).
+- [x] Material para família e trabalho.
 - [x] Instalar como aplicativo no celular.
