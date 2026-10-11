@@ -113,29 +113,35 @@ function Index() {
               <Link to="/remedios" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Pill className="size-5" /></span><span className="font-medium leading-snug">Meus remédios</span></Link>
               <Link to="/consultas" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><CalendarHeart className="size-5" /></span><span className="font-medium leading-snug">Consultas e exames</span></Link>
             </div>
-            <InstallAppButton />
           </div>
 
           {/* Quick actions */}
           <section>
             <SectionHeader title="O que você quer fazer hoje?" subtitle="Toque em um atalho para começar." />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 sm:gap-4">
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
+                const featured = i < 3;
                 const inner = <>
-                  <img src={action.image} alt="" loading="eager" fetchPriority="high" decoding="async" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/45 to-background/5" />
-                  <div className="relative flex h-full flex-col justify-end p-4">
-                    <span className="grid size-9 place-items-center rounded-full bg-card/90 text-primary shadow-soft">
-                      <Icon className="size-[18px]" strokeWidth={1.8} />
+                  <img src={action.image} alt="" loading="eager" fetchPriority="high" decoding="async" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-110" />
+                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10" />
+                  <div aria-hidden className={cn("absolute inset-0 transition duration-500", featured ? "bg-gradient-to-b from-primary/20 via-transparent to-transparent" : "bg-gradient-to-b from-primary/10 via-transparent to-transparent")} />
+                  <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
+                    <span className="grid size-10 place-items-center rounded-full bg-card/90 text-primary shadow-soft backdrop-blur-sm transition duration-500 group-hover:scale-110 sm:size-11">
+                      <Icon className="size-5" strokeWidth={1.8} />
                     </span>
-                    <p className="mt-2.5 text-base font-semibold leading-snug">{action.label}</p>
-                    <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{action.description}</p>
+                    <p className="mt-3 text-[17px] font-semibold leading-snug tracking-tight sm:text-lg">{action.label}</p>
+                    <p className="mt-1 text-[13px] leading-snug text-muted-foreground sm:text-sm">{action.description}</p>
+                    <span aria-hidden className="mt-3 h-0.5 w-8 rounded-full bg-primary/40 transition-all duration-500 group-hover:w-14 group-hover:bg-primary/60" />
                   </div>
                 </>;
+                const cardClass = cn(
+                  "card-soft pressable animate-rise group relative block overflow-hidden rounded-3xl border border-primary/10 shadow-soft ring-1 ring-inset ring-card/40 transition duration-300 hover:-translate-y-1 hover:shadow-float",
+                  featured ? "min-h-56 sm:min-h-60" : "min-h-48 sm:min-h-52",
+                );
                 return action.to
-                  ? <Link key={action.label} to={action.to} className="card-soft pressable animate-rise group relative block min-h-44 overflow-hidden sm:min-h-48" style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
-                  : <button key={action.label} type="button" className="card-soft pressable animate-rise group relative min-h-44 overflow-hidden text-left sm:min-h-48" style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
+                  ? <Link key={action.label} to={action.to} className={cardClass} style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
+                  : <button key={action.label} type="button" className={cn(cardClass, "text-left")} style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
               })}
             </div>
           </section>
@@ -176,7 +182,11 @@ function Index() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <InstallAppButton />
+      </div>
       <HomeFooter />
+
       <CrisisMode open={crisis} onOpenChange={setCrisis} />
 
       {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={r => save.mutateAsync(r)} />}
