@@ -3,7 +3,8 @@ import { useState } from "react";
 import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, type LucideIcon } from "lucide-react";
 import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
 import { SectionHeader } from "@/components/vl/primitives";
-import { patient, insight, focus } from "@/data/mock";
+import { patient } from "@/data/mock";
+import { useRecords, useSaveRecord, todayKey, describePatterns, fmt } from "@/lib/records";
 import hero from "@/assets/hero-mist.jpg";
 import qaMove from "@/assets/qa-move.jpg";
 import qaFood from "@/assets/qa-food.jpg";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Início — VivaLeve" },
-      { name: "description", content: "Seu acompanhamento da fibromialgia: panorama da semana, percepções e seu foco agora." },
+      { name: "description", content: "Seu cuidado diário com a fibromialgia: registro do dia, percepções e atalhos." },
       { property: "og:title", content: "Início — VivaLeve" },
       { property: "og:description", content: "Seu acompanhamento da fibromialgia, sempre ao seu lado." },
     ],
@@ -46,7 +47,16 @@ const quickActions: { label: string; description: string; icon: LucideIcon; imag
 function Index() {
   const [open, setOpen] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
-  const [record, setRecord] = useState<DailyRecord | null>(null);
+  const { data: records = [] } = useRecords();
+  const save = useSaveRecord();
+  const record: DailyRecord | null = records.find(r => r.date === todayKey()) ?? null;
+  const pattern = describePatterns(records);
+  const insight = pattern
+    ? { title: "O que percebemos", text: `Nos dias em que ${pattern.label === "dormiu mal" ? "você dormiu mal" : `você marcou “${pattern.label}”`}, sua dor média foi ${fmt(pattern.with)}. Nos outros dias, ${fmt(pattern.without)}.`, detail: "Isso é só uma observação dos seus próprios registros, não um diagnóstico. Vale levar para conversar na sua próxima consulta." }
+    : { title: "O que percebemos", text: records.length < 5 ? `Com alguns dias de registro, vamos mostrar aqui o que se repete no seu dia a dia. Você já tem ${records.length} ${records.length === 1 ? "dia" : "dias"}.` : "Ainda não apareceu nenhuma relação clara nos seus registros. Continue no seu ritmo.", detail: "As observações usam apenas o que você registrou. Ninguém além de você vê essas informações." };
+  const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - 6);
+  const weekDays = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate() + i); return todayKey(d); });
+  const weekDone = weekDays.filter(d => records.some(r => r.date === d)).length;
   return (
     <AppShell>
       {/* Greeting */}
@@ -82,7 +92,7 @@ function Index() {
                   <span className="flex-1">{record ? "Ver meu registro" : "Conte para mim"}</span>
                   <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
                 </Button>
-                {record && <p role="status" className="mt-3 text-sm text-primary-foreground">Registro de hoje salvo nesta sessão.</p>}
+                {record && <p role="status" className="mt-3 text-sm text-primary-foreground">Registro de hoje salvo na sua conta.</p>}
               </div>
               <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
                 <Ear className="size-4" /> Eu te escuto, sempre.
@@ -136,14 +146,13 @@ function Index() {
             <div className="flex gap-4">
               <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-good"><Target className="size-5" /></span>
               <div className="min-w-0 flex-1">
-                <h3 className="font-medium text-good">{focus.title}</h3>
-                <p className="mt-1 text-sm text-foreground">{focus.text}</p>
-                <div className="mt-3 flex items-center gap-1.5" aria-label={`Dia ${focus.day} de ${focus.total}`}>
-                  {Array.from({ length: focus.total }).map((_, i) => (
-                    <span key={i} className={cn("h-1.5 flex-1 rounded-full", i < focus.day ? "bg-good" : "bg-card")} />
+                <h3 className="font-medium text-good">Seus últimos 7 dias</h3>
+                <p className="mt-1 text-sm text-foreground">Você registrou {weekDone} de 7 dias. Cada registro ajuda você a se conhecer melhor — sem cobranças.</p>
+                <div className="mt-3 flex items-center gap-1.5" aria-label={`${weekDone} de 7 dias registrados`}>
+                  {weekDays.map(d => (
+                    <span key={d} className={cn("h-1.5 flex-1 rounded-full", records.some(r => r.date === d) ? "bg-good" : "bg-card")} />
                   ))}
                 </div>
-                <p className="mt-1.5 text-[11px] text-muted-foreground">Dia {focus.day} de {focus.total}</p>
               </div>
             </div>
           </div>
@@ -153,7 +162,7 @@ function Index() {
 
       <HomeFooter />
 
-      {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={setRecord} />}
+      {checkInOpen && <DailyCheckIn open={checkInOpen} onOpenChange={setCheckInOpen} record={record} onSave={r => save.mutateAsync(r)} />}
     </AppShell>
   );
 }
@@ -165,11 +174,11 @@ function HomeFooter() {
         <Logo className="mx-auto size-8" />
         <p className="mt-3 text-lg font-medium leading-snug">Você não precisa dar conta de tudo hoje.</p>
         <p className="mx-auto mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-          Um passo leve por vez já é progresso. Sua profissional acompanha cada um deles.
+          Um passo leve por vez já é progresso. Seus registros ficam guardados só para você.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           <Link to="/profissional" className="inline-flex min-h-11 items-center gap-2 rounded-full border bg-card px-5 text-sm font-medium text-primary shadow-soft transition hover:bg-secondary">
-            <HeartHandshake className="size-4" aria-hidden /> Falar com sua profissional
+            <HeartHandshake className="size-4" aria-hidden /> Quem criou o VivaLeve
           </Link>
           <Link to="/biblioteca" className="inline-flex min-h-11 items-center gap-2 rounded-full border bg-card/70 px-5 text-sm font-medium text-muted-foreground transition hover:bg-card hover:text-foreground">
             <BookOpen className="size-4" aria-hidden /> Tirar uma dúvida
