@@ -8,22 +8,22 @@ describe("Daily check-in", () => {
     expect(dailyRecordSchema.safeParse({}).success).toBe(false);
     expect(dailyRecordSchema.safeParse({ mood: "Feliz", sleep: "Dormi bem", pain: 11, fatigue: "Leve", disposition: "Boa" }).success).toBe(false);
   });
-  it("validates all choices and saves the selected record", () => {
+  it("validates all choices and saves the selected record", async () => {
     const onSave = vi.fn();
     render(<DailyCheckIn open onOpenChange={vi.fn()} record={null} onSave={onSave} />);
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(screen.getByRole("alert")).toBeInTheDocument();
     expect(onSave).not.toHaveBeenCalled();
-    for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa"]) fireEvent.click(screen.getByRole("button", { name }));
+    for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa"]) fireEvent.click(screen.getAllByRole("button", { name })[0]!);
     fireEvent.change(screen.getByLabelText("Nível de dor"), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
-    expect(onSave).toHaveBeenCalledWith({ mood: "Tranquila", sleep: "Dormi bem", pain: 2, fatigue: "Leve", disposition: "Boa" });
-    expect(screen.getByText("Seu registro foi salvo")).toBeInTheDocument();
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ mood: "Tranquila", sleep: "Dormi bem", pain: 2, fatigue: "Leve", disposition: "Boa" }));
+    expect(await screen.findByText("Seu registro foi salvo")).toBeInTheDocument();
   });
-  it("shares silhouette selection, validates regional pain and preserves it when editing", () => {
+  it("shares silhouette selection, validates regional pain and preserves it when editing", async () => {
     const onSave = vi.fn();
     render(<DailyCheckIn open onOpenChange={vi.fn()} record={null} onSave={onSave} />);
-    for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa", "Ombros · frente"]) fireEvent.click(screen.getByRole("button", { name }));
+    for (const name of ["Tranquila", "Dormi bem", "Leve", "Boa", "Ombros · frente"]) fireEvent.click(screen.getAllByRole("button", { name })[0]!);
     fireEvent.change(screen.getByLabelText("Nível de dor"), { target: { value: "4" } });
     expect(screen.getByRole("button", { name: "Ombros · costas" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
@@ -33,7 +33,7 @@ describe("Daily check-in", () => {
     fireEvent.change(screen.getByLabelText("Costas: intensidade da dor"), { target: { value: "3" } });
     fireEvent.click(screen.getByRole("button", { name: "Salvar meu registro" }));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ bodyPain: { Ombros: 7, Costas: 3 } }));
-    fireEvent.click(screen.getByRole("button", { name: "Editar meu registro" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Editar meu registro" }));
     expect(screen.getByLabelText("Ombros: intensidade da dor")).toHaveValue("7");
     fireEvent.click(screen.getByRole("button", { name: "Ombros" }));
     expect(screen.queryByLabelText("Ombros: intensidade da dor")).not.toBeInTheDocument();

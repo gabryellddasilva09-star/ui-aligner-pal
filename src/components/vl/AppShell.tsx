@@ -11,7 +11,7 @@ const nav = [
   { to: "/plano", label: "Movimento", icon: PersonStanding },
   { to: "/alimentacao", label: "Alimentação", icon: Utensils },
   { to: "/evolucao", label: "Evolução", icon: LineChart },
-  { to: "/profissional", label: "Profissional", icon: UserRound },
+  { to: "/profissional", label: "Quem criou", icon: UserRound },
 ] as const;
 
 export function Logo({ className }: { className?: string }) {
@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
         <div className="mt-auto rounded-2xl bg-checkin p-4">
           <p className="text-xs font-medium text-accent-foreground">Acompanhamento ativo</p>
-          <p className="mt-1 text-xs text-muted-foreground">Sua profissional vê sua evolução em tempo real.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Seus registros ficam só com você.</p>
         </div>
       </aside>
 
