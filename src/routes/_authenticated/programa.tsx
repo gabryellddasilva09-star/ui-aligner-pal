@@ -8,6 +8,7 @@ import { PushToggle } from "@/components/vl/push-toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { programDays, programWeeks, type ProgramDay } from "@/data/program";
 import { useProgram, unlockedDay } from "@/lib/program";
+import { ProgramActivity } from "@/components/vl/program-activity";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/programa")({
@@ -71,7 +72,7 @@ function Programa() {
           <span className="grid size-14 place-items-center rounded-full bg-primary-soft text-primary"><Sparkles className="size-7" /></span>
           <div>
             <h2 className="font-display text-2xl font-semibold">Quer participar?</h2>
-            <p className="mt-2 text-lg leading-relaxed text-muted-foreground">Em 30 dias você vai passar por movimento suave, respiração, sono, alimentação e cuidado com a mente. Cada atividade leva de 5 a 15 minutos.</p>
+            <p className="mt-2 text-lg leading-relaxed text-muted-foreground">Um cuidado intensivo para aliviar a dor: todo dia um exercício que evolui aos poucos, uma orientação de alimentação, uma de sono e uma atividade interativa nova. De 8 a 25 minutos por dia.</p>
           </div>
           <ul className="grid gap-2 sm:grid-cols-2">{programWeeks.map(w => <li key={w.week} className="rounded-2xl bg-secondary p-4"><p className="text-sm text-primary">Semana {w.week}</p><p className="font-medium">{w.title}</p></li>)}</ul>
           <label className="block">
@@ -144,9 +145,15 @@ function DayDialog({ day, done, saving, onClose, onDone }: { day: ProgramDay; do
       <div role="dialog" aria-modal="true" aria-label={day.title} onClick={e => e.stopPropagation()} className="max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl bg-card p-6 sm:max-w-lg sm:rounded-3xl">
         <p className="text-sm font-medium text-primary">Dia {day.day} · {day.kind}</p>
         <h2 className="mt-1 font-display text-2xl font-semibold">{day.title}</h2>
-        <p className="mt-1 flex items-center gap-1 text-muted-foreground"><Clock className="size-4" /> {day.minutes} minutos</p>
+        <p className="mt-1 flex items-center gap-1 text-muted-foreground"><Clock className="size-4" /> cerca de {day.minutes} minutos</p>
         <p className="mt-4 text-lg leading-relaxed">{day.intro}</p>
-        <ol className="mt-4 space-y-3">{day.steps.map((s, i) => <li key={i} className="flex gap-3 text-lg"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft font-semibold text-primary">{i + 1}</span><span className="leading-relaxed">{s}</span></li>)}</ol>
+        <h3 className="mt-5 font-display text-lg font-semibold">🧘 Exercício · {day.exercise.title} ({day.exercise.minutes} min)</h3>
+        <ol className="mt-3 space-y-3">{day.exercise.steps.map((s, i) => <li key={i} className="flex gap-3 text-lg"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft font-semibold text-primary">{i + 1}</span><span className="leading-relaxed">{s}</span></li>)}</ol>
+        <div className="mt-4 grid gap-2">
+          <p className="rounded-2xl bg-secondary p-4 text-lg leading-relaxed"><span className="font-semibold">🥗 Alimentação: </span>{day.food}</p>
+          <p className="rounded-2xl bg-secondary p-4 text-lg leading-relaxed"><span className="font-semibold">🌙 Sono: </span>{day.sleep}</p>
+        </div>
+        <ProgramActivity key={day.day} activity={day.interactive} />
         <p className="mt-4 rounded-2xl bg-secondary p-4 leading-relaxed">💜 {day.tip}</p>
         {day.link && <Link to={day.link} className="mt-3 inline-flex items-center gap-1 font-medium text-primary">Abrir no app <ChevronRight className="size-4" /></Link>}
         {!done && <>
