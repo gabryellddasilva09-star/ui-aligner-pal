@@ -54,6 +54,17 @@ function Comunidade() {
     setErr(""); setSent(false); send.mutate(r.data);
   }
   const approved = wall.data?.filter(m => m.status === "approved") ?? [];
+  const mod = useQuery({ queryKey: ["is-moderator"], queryFn: async () => { const { data } = await supabase.rpc("is_moderator"); return !!data; } });
+  const pending = mod.data ? (wall.data?.filter(m => m.status === "pending") ?? []) : [];
+  const review = useMutation({
+    mutationFn: async ({ id, ok }: { id: string; ok: boolean }) => {
+      const { error } = ok
+        ? await supabase.from("community_messages").update({ status: "approved" }).eq("id", id)
+        : await supabase.from("community_messages").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["community"] }),
+  });
 
   return (
     <AppShell>
