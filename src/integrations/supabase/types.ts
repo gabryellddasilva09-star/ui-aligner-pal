@@ -226,6 +226,57 @@ export type Database = {
         }
         Relationships: []
       }
+      program_enrollments: {
+        Row: {
+          active: boolean
+          created_at: string
+          remind: boolean
+          remind_time: string
+          started_on: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          remind?: boolean
+          remind_time?: string
+          started_on?: string
+          user_id?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          remind?: boolean
+          remind_time?: string
+          started_on?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      program_progress: {
+        Row: {
+          completed_at: string
+          day: number
+          feeling: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          day: number
+          feeling?: string | null
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          completed_at?: string
+          day?: number
+          feeling?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           created_at: string
