@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ArrowLeft, Wind, Leaf, Brain, Moon, Flower2 } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
