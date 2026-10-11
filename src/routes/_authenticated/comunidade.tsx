@@ -54,6 +54,17 @@ function Comunidade() {
     setErr(""); setSent(false); send.mutate(r.data);
   }
   const approved = wall.data?.filter(m => m.status === "approved") ?? [];
+  const mod = useQuery({ queryKey: ["is-moderator"], queryFn: async () => { const { data } = await supabase.rpc("is_moderator"); return !!data; } });
+  const pending = mod.data ? (wall.data?.filter(m => m.status === "pending") ?? []) : [];
+  const review = useMutation({
+    mutationFn: async ({ id, ok }: { id: string; ok: boolean }) => {
+      const { error } = ok
+        ? await supabase.from("community_messages").update({ status: "approved" }).eq("id", id)
+        : await supabase.from("community_messages").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["community"] }),
+  });
 
   return (
     <AppShell>
@@ -66,6 +77,22 @@ function Comunidade() {
       {/* Mural */}
       <section className="mt-8 space-y-4">
         <SectionHeader title="Mural da comunidade" subtitle="Mensagens de carinho e experiências entre pacientes. Tudo passa por uma revisão antes de aparecer." />
+        {mod.data && (
+          <div className="rounded-3xl border border-primary/30 bg-primary-soft p-5 space-y-3">
+            <p className="text-lg font-medium">Aguardando sua aprovação ({pending.length})</p>
+            {pending.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma mensagem para revisar agora.</p>}
+            {pending.map(m => (
+              <div key={m.id} className="rounded-2xl bg-card p-4">
+                <p className="text-base leading-relaxed">“{m.body}”</p>
+                <p className="mt-1 text-sm text-muted-foreground">{m.author_name} · {new Date(m.created_at).toLocaleDateString("pt-BR")}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button className="h-12 rounded-xl" disabled={review.isPending} onClick={() => review.mutate({ id: m.id, ok: true })}>Aprovar</Button>
+                  <Button variant="outline" className="h-12 rounded-xl" disabled={review.isPending} onClick={() => review.mutate({ id: m.id, ok: false })}>Recusar</Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="card-soft space-y-3 p-5">
           <label htmlFor="mural" className="text-lg font-medium">Deixe sua mensagem</label>
           <textarea id="mural" value={text} onChange={e => setText(e.target.value)} rows={3} maxLength={1000}

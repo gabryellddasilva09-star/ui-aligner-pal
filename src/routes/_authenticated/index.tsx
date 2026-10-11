@@ -15,6 +15,7 @@ import qaLibrary from "@/assets/qa-library.jpg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CrisisMode } from "@/components/vl/crisis-mode";
+import { InstallAppButton } from "@/components/vl/install-app";
 import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
 
@@ -112,6 +113,7 @@ function Index() {
               <Link to="/remedios" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Pill className="size-5" /></span><span className="font-medium leading-snug">Meus remédios</span></Link>
               <Link to="/consultas" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><CalendarHeart className="size-5" /></span><span className="font-medium leading-snug">Consultas e exames</span></Link>
             </div>
+            <InstallAppButton />
           </div>
 
           {/* Quick actions */}
