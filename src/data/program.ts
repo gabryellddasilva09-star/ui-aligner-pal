@@ -9,7 +9,7 @@ export const programWeeks = [
   { week: 4, title: "Mente, rotina e autonomia", text: "Fortalecer o que funcionou e seguir com confiança." },
 ];
 
-const d = (day: number, title: string, kind: ProgramKind, minutes: number, intro: string, steps: string[], tip: string, link?: ProgramDay["link"]): ProgramDay => ({ day, week: Math.min(4, Math.ceil(day / 7)), title, kind, minutes, intro, steps, tip, link });
+const d = (day: number, title: string, kind: ProgramKind, minutes: number, intro: string, steps: string[], tip: string, link?: ProgramDay["link"]): ProgramDay => ({ day, week: Math.min(4, Math.ceil(day / 7)), title, kind, minutes, intro, steps, tip, ...(link ? { link } : {}) });
 
 export const programDays: ProgramDay[] = [
   d(1, "Boas-vindas ao seu programa", "Reflexão", 5, "Hoje é só o começo. Não existe certo ou errado.", ["Sente-se em um lugar confortável.", "Pense em uma coisa que você gostaria de melhorar em 30 dias (ex.: dormir melhor).", "Faça seu registro diário de como está se sentindo."], "Ir no seu ritmo também é cuidar de si.", "/diario"),
