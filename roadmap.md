@@ -1,15 +1,16 @@
-# Daily check-in
-# Minha alimentação
-- [x] Simplificar a apresentação do cardápio, receitas, compras e guia sem perder o conteúdo do PDF.
-- [x] Adicionar imagens, cores e controles confortáveis e verificar as escolhas e os diálogos no celular.
-
-# Daily check-in
-- [x] Adicionar mapa corporal frente/costas, intensidade por região e verificar salvamento e edição.
-- [x] Highlight the home invitation and add the touch-friendly daily form.
-- [x] Validate inputs and verify selection, saving, and reopening in the browser.
-
-# Relaxamento e bem-estar
-- [x] Integrar respiração na própria tela com arco, contador e áudio sincronizados; verificar início, pausa e encerramento.
-- [x] Integrar a tela ao atalho existente com práticas e orientações acessíveis.
-- [x] Adicionar sons reproduzíveis, controles e histórico local sem dados fictícios.
-- [x] Verificar sessões, pausas, áudio, histórico e apresentação em celular e desktop.
+# Cuidado contínuo da paciente
+## Etapa 1
+- [x] Guardar registro diário, mapa da dor e pausas na conta da paciente.
+- [x] Evolução, Diário e "O que percebemos" com dados reais.
+- [x] Sono completo, névoa mental, ciclo/menopausa e gatilhos no registro.
+- [x] Tela da doutora vira "Quem criou o VivaLeve" (sem troca de dados).
+## Etapa 2
+- [ ] Remédios (lista, horários, efeitos colaterais) com aviso no celular.
+- [ ] Consultas e exames com lembrete e dúvidas para a consulta.
+- [ ] Lembretes reais no celular (pausa diária, remédio, consulta).
+- [ ] Modo crise "Estou em crise".
+## Etapa 3
+- [ ] Comunidade com grupo moderado.
+- [ ] Apoio psicológico (CVV, CAPS, SUS).
+- [ ] Material para família e trabalho.
+- [ ] Instalar como aplicativo no celular.
