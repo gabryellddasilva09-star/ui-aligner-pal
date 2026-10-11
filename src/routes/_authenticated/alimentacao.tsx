@@ -14,7 +14,7 @@ import {
 } from "@/data/anti-inflammatory";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/alimentacao")({
+export const Route = createFileRoute("/_authenticated/alimentacao")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },

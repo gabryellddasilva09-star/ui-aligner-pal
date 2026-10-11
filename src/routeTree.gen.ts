@@ -9,86 +9,104 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AlimentacaoRouteImport } from './routes/alimentacao'
-import { Route as BibliotecaRouteImport } from './routes/biblioteca'
-import { Route as DiarioRouteImport } from './routes/diario'
-import { Route as EvolucaoRouteImport } from './routes/evolucao'
-import { Route as PlanoRouteImport } from './routes/plano'
-import { Route as ProfissionalRouteImport } from './routes/profissional'
-import { Route as RelaxamentoRouteImport } from './routes/relaxamento'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAlimentacaoRouteImport } from './routes/_authenticated/alimentacao'
+import { Route as AuthenticatedBibliotecaRouteImport } from './routes/_authenticated/biblioteca'
+import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
+import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticated/evolucao'
+import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
+import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
+import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
+import { Route as ApiPublicSeedUserRouteImport } from './routes/api/public/seed-user'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AlimentacaoRoute = AlimentacaoRouteImport.update({
-  id: '/alimentacao',
-  path: '/alimentacao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BibliotecaRoute = BibliotecaRouteImport.update({
+const AuthenticatedAlimentacaoRoute =
+  AuthenticatedAlimentacaoRouteImport.update({
+    id: '/alimentacao',
+    path: '/alimentacao',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBibliotecaRoute = AuthenticatedBibliotecaRouteImport.update({
   id: '/biblioteca',
   path: '/biblioteca',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const DiarioRoute = DiarioRouteImport.update({
+const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
   id: '/diario',
   path: '/diario',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const EvolucaoRoute = EvolucaoRouteImport.update({
+const AuthenticatedEvolucaoRoute = AuthenticatedEvolucaoRouteImport.update({
   id: '/evolucao',
   path: '/evolucao',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const PlanoRoute = PlanoRouteImport.update({
+const AuthenticatedPlanoRoute = AuthenticatedPlanoRouteImport.update({
   id: '/plano',
   path: '/plano',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProfissionalRoute = ProfissionalRouteImport.update({
-  id: '/profissional',
-  path: '/profissional',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RelaxamentoRoute = RelaxamentoRouteImport.update({
-  id: '/relaxamento',
-  path: '/relaxamento',
+const AuthenticatedProfissionalRoute =
+  AuthenticatedProfissionalRouteImport.update({
+    id: '/profissional',
+    path: '/profissional',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRelaxamentoRoute =
+  AuthenticatedRelaxamentoRouteImport.update({
+    id: '/relaxamento',
+    path: '/relaxamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicSeedUserRoute = ApiPublicSeedUserRouteImport.update({
+  id: '/api/public/seed-user',
+  path: '/api/public/seed-user',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/alimentacao': typeof AlimentacaoRoute
-  '/biblioteca': typeof BibliotecaRoute
-  '/diario': typeof DiarioRoute
-  '/evolucao': typeof EvolucaoRoute
-  '/plano': typeof PlanoRoute
-  '/profissional': typeof ProfissionalRoute
-  '/relaxamento': typeof RelaxamentoRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/alimentacao': typeof AuthenticatedAlimentacaoRoute
+  '/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/diario': typeof AuthenticatedDiarioRoute
+  '/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/plano': typeof AuthenticatedPlanoRoute
+  '/profissional': typeof AuthenticatedProfissionalRoute
+  '/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/alimentacao': typeof AlimentacaoRoute
-  '/biblioteca': typeof BibliotecaRoute
-  '/diario': typeof DiarioRoute
-  '/evolucao': typeof EvolucaoRoute
-  '/plano': typeof PlanoRoute
-  '/profissional': typeof ProfissionalRoute
-  '/relaxamento': typeof RelaxamentoRoute
+  '/alimentacao': typeof AuthenticatedAlimentacaoRoute
+  '/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/diario': typeof AuthenticatedDiarioRoute
+  '/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/plano': typeof AuthenticatedPlanoRoute
+  '/profissional': typeof AuthenticatedProfissionalRoute
+  '/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/alimentacao': typeof AlimentacaoRoute
-  '/biblioteca': typeof BibliotecaRoute
-  '/diario': typeof DiarioRoute
-  '/evolucao': typeof EvolucaoRoute
-  '/plano': typeof PlanoRoute
-  '/profissional': typeof ProfissionalRoute
-  '/relaxamento': typeof RelaxamentoRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/alimentacao': typeof AuthenticatedAlimentacaoRoute
+  '/_authenticated/biblioteca': typeof AuthenticatedBibliotecaRoute
+  '/_authenticated/diario': typeof AuthenticatedDiarioRoute
+  '/_authenticated/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/_authenticated/plano': typeof AuthenticatedPlanoRoute
+  '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
+  '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/api/public/seed-user': typeof ApiPublicSeedUserRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,9 +119,9 @@ export interface FileRouteTypes {
     | '/plano'
     | '/profissional'
     | '/relaxamento'
+    | '/api/public/seed-user'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/alimentacao'
     | '/biblioteca'
     | '/diario'
@@ -111,99 +129,130 @@ export interface FileRouteTypes {
     | '/plano'
     | '/profissional'
     | '/relaxamento'
+    | '/'
+    | '/api/public/seed-user'
   id:
     | '__root__'
-    | '/'
-    | '/alimentacao'
-    | '/biblioteca'
-    | '/diario'
-    | '/evolucao'
-    | '/plano'
-    | '/profissional'
-    | '/relaxamento'
+    | '/_authenticated'
+    | '/_authenticated/alimentacao'
+    | '/_authenticated/biblioteca'
+    | '/_authenticated/diario'
+    | '/_authenticated/evolucao'
+    | '/_authenticated/plano'
+    | '/_authenticated/profissional'
+    | '/_authenticated/relaxamento'
+    | '/_authenticated/'
+    | '/api/public/seed-user'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AlimentacaoRoute: typeof AlimentacaoRoute
-  BibliotecaRoute: typeof BibliotecaRoute
-  DiarioRoute: typeof DiarioRoute
-  EvolucaoRoute: typeof EvolucaoRoute
-  PlanoRoute: typeof PlanoRoute
-  ProfissionalRoute: typeof ProfissionalRoute
-  RelaxamentoRoute: typeof RelaxamentoRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ApiPublicSeedUserRoute: typeof ApiPublicSeedUserRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/alimentacao': {
-      id: '/alimentacao'
+    '/_authenticated/alimentacao': {
+      id: '/_authenticated/alimentacao'
       path: '/alimentacao'
       fullPath: '/alimentacao'
-      preLoaderRoute: typeof AlimentacaoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedAlimentacaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/biblioteca': {
-      id: '/biblioteca'
+    '/_authenticated/biblioteca': {
+      id: '/_authenticated/biblioteca'
       path: '/biblioteca'
       fullPath: '/biblioteca'
-      preLoaderRoute: typeof BibliotecaRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedBibliotecaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/diario': {
-      id: '/diario'
+    '/_authenticated/diario': {
+      id: '/_authenticated/diario'
       path: '/diario'
       fullPath: '/diario'
-      preLoaderRoute: typeof DiarioRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedDiarioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/evolucao': {
-      id: '/evolucao'
+    '/_authenticated/evolucao': {
+      id: '/_authenticated/evolucao'
       path: '/evolucao'
       fullPath: '/evolucao'
-      preLoaderRoute: typeof EvolucaoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedEvolucaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/plano': {
-      id: '/plano'
+    '/_authenticated/plano': {
+      id: '/_authenticated/plano'
       path: '/plano'
       fullPath: '/plano'
-      preLoaderRoute: typeof PlanoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedPlanoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/profissional': {
-      id: '/profissional'
+    '/_authenticated/profissional': {
+      id: '/_authenticated/profissional'
       path: '/profissional'
       fullPath: '/profissional'
-      preLoaderRoute: typeof ProfissionalRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProfissionalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/relaxamento': {
-      id: '/relaxamento'
+    '/_authenticated/relaxamento': {
+      id: '/_authenticated/relaxamento'
       path: '/relaxamento'
       fullPath: '/relaxamento'
-      preLoaderRoute: typeof RelaxamentoRouteImport
+      preLoaderRoute: typeof AuthenticatedRelaxamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/seed-user': {
+      id: '/api/public/seed-user'
+      path: '/api/public/seed-user'
+      fullPath: '/api/public/seed-user'
+      preLoaderRoute: typeof ApiPublicSeedUserRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAlimentacaoRoute: typeof AuthenticatedAlimentacaoRoute
+  AuthenticatedBibliotecaRoute: typeof AuthenticatedBibliotecaRoute
+  AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
+  AuthenticatedEvolucaoRoute: typeof AuthenticatedEvolucaoRoute
+  AuthenticatedPlanoRoute: typeof AuthenticatedPlanoRoute
+  AuthenticatedProfissionalRoute: typeof AuthenticatedProfissionalRoute
+  AuthenticatedRelaxamentoRoute: typeof AuthenticatedRelaxamentoRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAlimentacaoRoute: AuthenticatedAlimentacaoRoute,
+  AuthenticatedBibliotecaRoute: AuthenticatedBibliotecaRoute,
+  AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
+  AuthenticatedEvolucaoRoute: AuthenticatedEvolucaoRoute,
+  AuthenticatedPlanoRoute: AuthenticatedPlanoRoute,
+  AuthenticatedProfissionalRoute: AuthenticatedProfissionalRoute,
+  AuthenticatedRelaxamentoRoute: AuthenticatedRelaxamentoRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AlimentacaoRoute: AlimentacaoRoute,
-  BibliotecaRoute: BibliotecaRoute,
-  DiarioRoute: DiarioRoute,
-  EvolucaoRoute: EvolucaoRoute,
-  PlanoRoute: PlanoRoute,
-  ProfissionalRoute: ProfissionalRoute,
-  RelaxamentoRoute: RelaxamentoRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ApiPublicSeedUserRoute: ApiPublicSeedUserRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

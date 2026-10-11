@@ -5,7 +5,7 @@ import { SectionHeader } from "@/components/vl/primitives";
 import { professional, messages } from "@/data/mock";
 import nadya from "@/assets/dra-nadya.jpg";
 
-export const Route = createFileRoute("/profissional")({
+export const Route = createFileRoute("/_authenticated/profissional")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
