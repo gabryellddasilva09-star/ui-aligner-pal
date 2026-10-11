@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 
 function localParts(now: Date, tz: string) {
   try {
@@ -13,9 +12,14 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const denied = await authenticateCronRequest(request);
-        if (denied) return denied;
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        // Token lives only in the database (service-role table); the scheduler reads it from there.
+        const token = /^Bearer (\S+)$/.exec(request.headers.get("authorization") ?? "")?.[1];
+        const { data: key } = await supabaseAdmin.from("app_keys").select("value").eq("name", "cron_token").maybeSingle();
+        const expected = typeof key?.value === "string" ? key.value : null;
+        if (!token || !expected || token.length !== expected.length) return new Response("Unauthorized", { status: 401 });
+        let diff = 0; for (let i = 0; i < token.length; i++) diff |= token.charCodeAt(i) ^ expected.charCodeAt(i);
+        if (diff !== 0) return new Response("Unauthorized", { status: 401 });
         const { sendPush } = await import("@/lib/push.server");
         const now = new Date();
         const { data: subs } = await supabaseAdmin.from("push_subscriptions").select("id, user_id, endpoint, time_zone");
