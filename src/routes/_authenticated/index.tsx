@@ -25,6 +25,11 @@ export const Route = createFileRoute("/_authenticated/")({
       { property: "og:title", content: "Início — VivaLeve" },
       { property: "og:description", content: "Seu acompanhamento da fibromialgia, sempre ao seu lado." },
     ],
+    links: [hero, qaMove, qaFood, qaRelax, qaCommunity, qaEvolution, qaLibrary].map((href) => ({
+      rel: "preload",
+      as: "image",
+      href,
+    })),
   }),
   component: Index,
 });
@@ -46,7 +51,7 @@ function Index() {
     <AppShell>
       {/* Greeting */}
       <header className="relative -mx-5 -mt-4 overflow-hidden px-5 pb-6 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-8 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
-        <img src={hero} alt="" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
+        <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
         <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2 lg:hidden">
@@ -92,7 +97,7 @@ function Index() {
               {quickActions.map((action, i) => {
                 const Icon = action.icon;
                 const inner = <>
-                  <img src={action.image} alt="" loading="lazy" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <img src={action.image} alt="" loading="eager" fetchPriority="high" decoding="async" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/45 to-background/5" />
                   <div className="relative flex h-full flex-col justify-end p-4">
                     <span className="grid size-9 place-items-center rounded-full bg-card/90 text-primary shadow-soft">
