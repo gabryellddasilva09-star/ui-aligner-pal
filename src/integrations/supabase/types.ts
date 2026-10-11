@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_keys: {
+        Row: {
+          name: string
+          value: Json
+        }
+        Insert: {
+          name: string
+          value: Json
+        }
+        Update: {
+          name?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      appointments: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          place: string | null
+          questions: string | null
+          remind: boolean
+          starts_at: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind?: string
+          place?: string | null
+          questions?: string | null
+          remind?: boolean
+          starts_at: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          place?: string | null
+          questions?: string | null
+          remind?: boolean
+          starts_at?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_records: {
         Row: {
           awakenings: number | null
@@ -77,6 +128,107 @@ export type Database = {
         }
         Relationships: []
       }
+      medication_logs: {
+        Row: {
+          created_at: string
+          id: string
+          medication_id: string
+          side_effect: string | null
+          slot: string
+          taken_on: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          medication_id: string
+          side_effect?: string | null
+          slot: string
+          taken_on?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          medication_id?: string
+          side_effect?: string | null
+          slot?: string
+          taken_on?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          active: boolean
+          created_at: string
+          dose: string | null
+          id: string
+          name: string
+          remind: boolean
+          times: string[]
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          name: string
+          remind?: boolean
+          times?: string[]
+          user_id?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          name?: string
+          remind?: boolean
+          times?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          pending_body: string | null
+          pending_title: string | null
+          time_zone: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          pending_body?: string | null
+          pending_title?: string | null
+          time_zone?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          pending_body?: string | null
+          pending_title?: string | null
+          time_zone?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       relaxation_sessions: {
         Row: {
           created_at: string
@@ -100,6 +252,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      reminders_sent: {
+        Row: {
+          created_at: string
+          key: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+        }
+        Relationships: []
+      }
+      side_effects: {
+        Row: {
+          created_at: string
+          id: string
+          medication_id: string | null
+          note: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          medication_id?: string | null
+          note: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          medication_id?: string | null
+          note?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "side_effects_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
