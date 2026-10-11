@@ -14,3 +14,5 @@
 - [x] Apoio psicológico (CVV, CAPS, SUS).
 - [x] Material para família e trabalho.
 - [x] Instalar como aplicativo no celular.
+## Etapa 4
+- [x] Programa guiado de 30 dias com lembrete diário e progresso.
