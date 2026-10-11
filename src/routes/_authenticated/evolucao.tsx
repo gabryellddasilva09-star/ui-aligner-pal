@@ -37,7 +37,7 @@ function Evolucao() {
   const from = new Date(); from.setDate(from.getDate() - (range - 1));
   const inRange = records.filter(r => r.date >= todayKey(from)).slice().reverse();
   return (
-    <AppShell showMobileBack>
+    <AppShell>
       <div className="pt-6 lg:pt-0">
         <SectionHeader title="Evolução" subtitle="Feita só com o que você registrou. Só você vê." />
         <Segmented<Range> value={range} onChange={setRange}

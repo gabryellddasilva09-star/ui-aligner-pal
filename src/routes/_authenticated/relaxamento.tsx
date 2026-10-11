@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Wind, Leaf, Brain, Moon, Flower2 } from "lucide-react";
@@ -7,7 +8,7 @@ import { RelaxationSession } from "@/components/vl/relaxation";
 import { InlineBreathing } from "@/components/vl/inline-breathing";
 import { LoopCarousel } from "@/components/vl/carousel";
 
-import { historySchema, relaxationActivities, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
+import { relaxationActivities, type RelaxationActivity, type RelaxationRecord } from "@/data/relaxation";
 
 export const Route = createFileRoute("/_authenticated/relaxamento")({
   head: () => ({ meta: [
@@ -27,30 +28,16 @@ function RelaxationPage() {
   const [records, setRecords] = useState<RelaxationRecord[]>([]);
   const recordsRef = useRef<RelaxationRecord[]>([]);
   recordsRef.current = records;
-  const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
   const [confirmation, setConfirmation] = useState("");
-  useEffect(() => {
-    try {
-      const history = localStorage.getItem("vl-relax-history");
-      if (history) { const parsed = historySchema.safeParse(JSON.parse(history)); if (parsed.success) setRecords(parsed.data); else setError("Não foi possível ler o histórico salvo neste dispositivo."); }
-    } catch { setError("O armazenamento deste dispositivo não está disponível. Suas pausas continuarão visíveis enquanto esta tela estiver aberta."); }
-    setReady(true);
-  }, []);
-  useEffect(() => {
-    if (!ready) return;
-    try { localStorage.setItem("vl-relax-history", JSON.stringify(records)); }
-    catch { setError("Não foi possível salvar o histórico neste dispositivo. O registro permanece nesta tela."); }
-  }, [records, ready]);
   function start(activity: RelaxationActivity) { setSession({ activity, duration: activity.seconds }); }
   function saveRecord(record: RelaxationRecord) {
     if (recordsRef.current.some(item => item.id === record.id)) return;
     const next = [record, ...recordsRef.current];
     recordsRef.current = next;
-    try { localStorage.setItem("vl-relax-history", JSON.stringify(next)); }
-    catch { setError("Não foi possível salvar o histórico neste dispositivo. O registro permanece nesta tela."); }
     setRecords(next);
-    setConfirmation("Seu tempo de relaxamento foi registrado.");
+    supabase.from("relaxation_sessions").insert({ name: record.name, seconds: record.seconds, created_at: record.date })
+      .then(({ error }) => { if (error) setError("Não conseguimos guardar esta pausa na sua conta. Confira sua internet."); else setConfirmation("Seu tempo de relaxamento foi registrado na sua conta."); });
   }
   return <AppShell>
     <div className="mx-auto max-w-3xl">
