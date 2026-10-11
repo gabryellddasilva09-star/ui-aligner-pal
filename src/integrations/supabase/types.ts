@@ -357,6 +357,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_moderator: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

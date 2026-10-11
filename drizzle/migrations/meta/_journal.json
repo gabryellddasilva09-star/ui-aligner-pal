@@ -29,6 +29,13 @@
       "when": 1791754084433,
       "tag": "0003_community_messages_moderated",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791754400084,
+      "tag": "0004_community_moderator",
+      "breakpoints": true
     }
   ]
 }
