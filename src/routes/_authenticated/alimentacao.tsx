@@ -181,7 +181,7 @@ function Alimentacao() {
             if (mine.length === 0) return null;
             return (
               <section className="card-soft p-5">
-                <h2 className="text-xl font-medium">Suas receitas de {weekdayNames[wd].toLowerCase()}</h2>
+                <h2 className="text-xl font-medium">Suas receitas de {weekdayNames[wd]?.toLowerCase()}</h2>
                 <ul className="mt-3 space-y-2">
                   {recipeCategoryOrder.flatMap((c) => mine.filter((r) => r.category === c).map((r) => (
                     <li key={r.id}>
