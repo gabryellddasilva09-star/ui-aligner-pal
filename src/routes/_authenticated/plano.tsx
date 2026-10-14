@@ -37,11 +37,12 @@ function Plano() {
   const todayIndex = new Date().getDay();
   const [dayIndex, setDayIndex] = useState(todayIndex);
 
+  const dayKey = (i: number) => planDays[i] ?? "Qua";
   const todayActivities = movementActivities.filter((a) =>
-    dayActivityIds[planDays[todayIndex]].includes(a.id),
+    dayActivityIds[dayKey(todayIndex)].includes(a.id),
   );
   const dayActivities = movementActivities.filter((a) =>
-    dayActivityIds[planDays[dayIndex]].includes(a.id),
+    dayActivityIds[dayKey(dayIndex)].includes(a.id),
   );
   const total = todayActivities.length;
   const doneCount = todayActivities.filter((a) => doneMap[a.id]).length;
@@ -140,7 +141,7 @@ function Plano() {
             </div>
             {dayIndex !== todayIndex && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Você está vendo os exercícios de {planDayNames[dayIndex].toLowerCase()}.
+                Você está vendo os exercícios de {(planDayNames[dayIndex] ?? "esse dia").toLowerCase()}.
               </p>
             )}
             {dayActivities.length === 0 ? (
