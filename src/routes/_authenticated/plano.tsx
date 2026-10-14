@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck,
@@ -152,6 +152,12 @@ function Plano() {
         </div>
 
         <div className="space-y-4">
+          <div className="flex justify-center">
+            <Link to="/exercicios" className="pressable rounded-full bg-primary-soft px-5 py-2 text-sm font-semibold text-primary">
+              Editar plano
+            </Link>
+          </div>
+
 
           <p className="rounded-2xl border bg-card px-4 py-3 text-xs leading-relaxed text-muted-foreground">
             As atividades são sugeridas a partir de um plano geral de autocuidado. Elas não substituem a orientação da
