@@ -18,7 +18,7 @@ import { CrisisMode } from "@/components/vl/crisis-mode";
 import { InstallAppButton } from "@/components/vl/install-app";
 import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
-import { ProgramButton } from "@/components/vl/program-button";
+import { useCurrentUser } from "@/lib/user";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -53,6 +53,7 @@ function Index() {
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [crisis, setCrisis] = useState(false);
   const { data: records = [] } = useRecords();
+  const me = useCurrentUser();
   const save = useSaveRecord();
   const record: DailyRecord | null = records.find(r => r.date === todayKey()) ?? null;
   const pattern = describePatterns(records);
@@ -106,7 +107,6 @@ function Index() {
           </section>
 
           <div className="grid gap-3">
-            <ProgramButton />
             <Button onClick={() => setCrisis(true)} variant="outline" className="h-16 justify-start gap-3 rounded-2xl border-pain/40 bg-card px-5 text-left text-lg font-medium text-pain shadow-soft">
               <LifeBuoy className="size-6" /> Estou em crise
               <span className="ml-auto text-sm font-normal text-muted-foreground">passo a passo calmo</span>

@@ -1,9 +1,10 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut, Pill, CalendarHeart } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
+import { useCurrentUser } from "@/lib/user";
 
 const nav = [
   { to: "/", label: "Início", icon: Home },
@@ -29,6 +30,7 @@ export function Logo({ className }: { className?: string }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const me = useCurrentUser();
   const showMobileBack = path !== "/" && path !== "/relaxamento";
   return (
     <div className="min-h-screen lg:flex">
@@ -42,7 +44,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <nav className="mt-10 space-y-1">
-          {nav.map(({ to, label, icon: Icon }) => {
+          {[...nav, ...(me.data?.isAdmin ? [{ to: "/admin", label: "Cadastrar usuários", icon: UserPlus }] as const : [])].map(({ to, label, icon: Icon }) => {
             const active = path === to;
             return (
               <Link key={to} to={to} className={cn(
