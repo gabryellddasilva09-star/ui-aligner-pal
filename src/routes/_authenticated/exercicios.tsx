@@ -97,19 +97,6 @@ function Exercicios() {
           <img src={open.img} alt={open.name} className="aspect-square w-full rounded-3xl object-cover" />
           <h2 className="mt-4 font-display text-2xl font-medium">{open.name}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{open.min} min • {open.cat} • Baixo impacto</p>
-          <fieldset className="mt-5 border-y py-4" disabled={save.isPending}>
-            <legend className="text-base font-semibold">Adicionar aos dias</legend>
-            <label className="mb-3 flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium">
-              <Checkbox checked={selectedDays.length === 7} onCheckedChange={checked => setSelectedDays(checked === true ? [0, 1, 2, 3, 4, 5, 6] : [])} className="size-5" />
-              Todos os dias
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {planDayNames.map((name, i) => <label key={name} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm", selectedDays.includes(i) ? "border-primary bg-primary-soft text-primary" : "bg-card text-foreground")}>
-                <Checkbox checked={selectedDays.includes(i)} onCheckedChange={checked => setSelectedDays(days => checked === true ? [...days, i] : days.filter(day => day !== i))} className="size-5" />
-                {name}
-              </label>)}
-            </div>
-          </fieldset>
           <ol className="mt-4 space-y-2">
             {open.steps.map((s, i) => (
               <li key={i} className="flex gap-3 text-sm leading-relaxed">
@@ -122,6 +109,15 @@ function Exercicios() {
             <ShieldCheck className="size-5 shrink-0 text-primary" />
             Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto.
           </div>
+          <fieldset className="mt-5 border-y py-4" disabled={save.isPending}>
+            <legend className="text-base font-semibold">Adicionar aos dias</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {planDayNames.map((name, i) => <label key={name} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 text-sm", selectedDays.includes(i) ? "border-primary bg-primary-soft text-primary" : "bg-card text-foreground")}>
+                <Checkbox checked={selectedDays.includes(i)} onCheckedChange={checked => setSelectedDays(days => checked === true ? [...days, i] : days.filter(day => day !== i))} className="size-5" />
+                {name}
+              </label>)}
+            </div>
+          </fieldset>
           {save.error && <p role="alert" className="mt-4 text-sm text-destructive">Não foi possível salvar. Tente novamente.</p>}
           <Button disabled={save.isPending} onClick={saveDays} className="pressable mt-5 h-12 w-full rounded-full text-sm font-semibold">{save.isPending ? "Salvando…" : "Salvar no meu plano"}</Button>
           <Button variant="ghost" disabled={save.isPending} onClick={() => setOpen(null)} className="mt-2 h-11 w-full rounded-full">Cancelar</Button>
