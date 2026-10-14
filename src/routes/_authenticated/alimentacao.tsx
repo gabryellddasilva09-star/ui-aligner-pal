@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check, ChevronLeft, ChevronRight, Clock, Droplets, Leaf, ShoppingBasket, Users, X, Ban, Sparkles, RefreshCw, BookOpen, Utensils, ChefHat, Search, Minus, Plus, ArrowRight,
+  Check, ChevronLeft, ChevronRight, Clock, Droplets, Leaf, ShoppingBasket, Users, X, Ban, Sparkles, RefreshCw, BookOpen, ChefHat, Search, Minus, Plus, ArrowRight,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
@@ -72,6 +72,7 @@ function Alimentacao() {
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-done", JSON.stringify(done)); }, [done, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-water", JSON.stringify(water)); }, [water, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-shop", JSON.stringify(bought)); }, [bought, hydrated]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [tab]);
 
   const { week, plan } = getDay(day);
   const todayIndex = new Date().getDay();
@@ -85,13 +86,6 @@ function Alimentacao() {
   const list = shopping[shopWeek];
   const boughtCount = list.filter((i) => bought[`${shopWeek}-${i.name}`]).length;
 
-  const tabs = [
-    { key: "cardapio", label: "Cardápio", icon: Utensils },
-    { key: "receitas", label: "Receitas", icon: ChefHat },
-    { key: "compras", label: "Compras", icon: ShoppingBasket },
-    { key: "guia", label: "Guia", icon: BookOpen },
-  ];
-
   return (
     <AppShell>
       <div className="nutrition-screen">
@@ -100,26 +94,14 @@ function Alimentacao() {
           <h1 className="sr-only text-3xl font-medium sm:text-4xl lg:not-sr-only">Minha alimentação</h1>
           <p className="mt-2 hidden text-base text-muted-foreground sm:text-lg lg:block">Organize suas refeições de um jeito mais leve.</p>
         </div>
-        <div className="mt-6 grid grid-cols-4 gap-1 rounded-2xl bg-secondary p-1.5 sm:gap-2" role="tablist" aria-label="Minha alimentação">
-          {tabs.map(({ key, label, icon: Icon }) => <Button key={key} id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} variant="ghost"
-            onClick={() => setTab(key as TabKey)} className={cn("h-auto min-h-16 min-w-0 flex-col gap-1 rounded-xl px-1 text-sm sm:flex-row sm:text-base", tab === key ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground" : "text-foreground")}>
-            <Icon className="size-5" />{label}
-          </Button>)}
-        </div>
-
       </header>
-      <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}>
+      <div>
 
       {/* ============ CARDÁPIO ============ */}
       {tab === "cardapio" && (
         <div className="mt-6 space-y-6">
           <section aria-label="Escolher dia do cardápio">
-            <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-              <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 1} aria-label="Dia anterior" onClick={() => setDay(day - 1)}><ChevronLeft /></Button>
-              <div className="text-center"><h2 className="text-2xl font-medium">Dia {day}</h2><p className="text-sm text-muted-foreground">de 21 dias · Semana {week.n}</p></div>
-              <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 21} aria-label="Próximo dia" onClick={() => setDay(day + 1)}><ChevronRight /></Button>
-            </div>
-            <div className="mt-4 grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
+            <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
               {planDays.map((d, i) => {
                 const planDay = (week.n - 1) * 7 + i + 1;
                 const selected = day === planDay;
@@ -139,6 +121,10 @@ function Alimentacao() {
                   </Button>
                 );
               })}
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 1} aria-label="Voltar para a semana anterior" onClick={() => setDay((week.n - 2) * 7 + ((day - 1) % 7) + 1)}><ChevronLeft className="size-4" />Semana anterior</Button>
+              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 3} aria-label="Avançar para a próxima semana" onClick={() => setDay(week.n * 7 + ((day - 1) % 7) + 1)}>Próxima semana<ChevronRight className="size-4" /></Button>
             </div>
             <NutritionDisclosure title={`Sobre a semana ${week.n}`}>
               <h3 className="mb-3 text-lg font-medium">{week.title}</h3>
@@ -191,13 +177,18 @@ function Alimentacao() {
             </div>
             <p className="mt-4 text-sm text-nutrition-blue">Referência do cardápio: 2,5 L por dia · copos de 250 ml.</p>
           </section>
-          <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
+          <div className="space-y-3">
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Ver receitas<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("guia")}><BookOpen />Ver guia da alimentação<ArrowRight /></Button>
+          </div>
         </div>
       )}
 
       {/* ============ RECEITAS ============ */}
       {tab === "receitas" && (
         <div className="mt-6 space-y-5">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">O que vamos preparar?</h2>
           <label className="flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4"><Search className="size-5 shrink-0 text-primary" /><input aria-label="Buscar receita" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar receita" className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none" /></label>
           <p className="text-base text-muted-foreground">Todas sem glúten, sem laticínios convencionais e sem açúcar refinado.</p>
@@ -232,6 +223,7 @@ function Alimentacao() {
       {/* ============ COMPRAS ============ */}
       {tab === "compras" && (
         <div className="mt-6 space-y-5">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">Sua lista está pronta</h2>
           <p className="text-base text-muted-foreground">Ingredientes do cardápio, organizados por semana.</p>
           <div className="grid grid-cols-3 gap-2" role="group" aria-label="Lista da semana">
@@ -280,6 +272,7 @@ function Alimentacao() {
       {/* ============ GUIA ============ */}
       {tab === "guia" && (
         <div className="mt-6 space-y-8">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">Seu guia de alimentação</h2>
           <p className="text-base text-muted-foreground">Orientações do material da Dra. Nadya Kazzaz.</p>
           <NutritionDisclosure title="Os 5 princípios">
