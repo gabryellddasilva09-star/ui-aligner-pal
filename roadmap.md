@@ -20,3 +20,5 @@
 - [x] Remover o card "Minha evolução".
 - [x] Remover a seção "Como você está hoje?".
 - [x] Mostrar os dias planejados nos exercícios e permitir selecionar vários dias, salvando na conta e atualizando o plano.
+- [x] Mostrar a data abaixo de cada dia, remover a data fixa e exibir somente exercícios programados.
+- [x] Começar o progresso em zero e salvar as conclusões por exercício e data na conta.

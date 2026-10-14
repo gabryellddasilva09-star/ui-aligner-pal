@@ -226,6 +226,27 @@ export type Database = {
         }
         Relationships: []
       }
+      movement_exercise_completions: {
+        Row: {
+          activity_date: string
+          completed_at: string
+          exercise_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_date: string
+          completed_at?: string
+          exercise_id: string
+          user_id: string
+        }
+        Update: {
+          activity_date?: string
+          completed_at?: string
+          exercise_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       movement_exercise_schedule: {
         Row: {
           exercise_id: string

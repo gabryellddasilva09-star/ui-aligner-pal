@@ -128,6 +128,7 @@ function RootComponent() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(event => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       queryClient.removeQueries({ queryKey: ["movement-schedule"] });
+      queryClient.removeQueries({ queryKey: ["movement-completions"] });
       if (event === "SIGNED_OUT") {
         queryClient.removeQueries({ queryKey: ["movement-schedule-user"] });
       } else {
