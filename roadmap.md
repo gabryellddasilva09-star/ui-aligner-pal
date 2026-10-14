@@ -19,4 +19,4 @@
 ## Ajustes na tela Meu plano de movimento
 - [x] Remover o card "Minha evolução".
 - [x] Remover a seção "Como você está hoje?".
-- [ ] Mostrar os dias planejados nos exercícios e permitir selecionar vários dias, salvando na conta e atualizando o plano.
+- [x] Mostrar os dias planejados nos exercícios e permitir selecionar vários dias, salvando na conta e atualizando o plano.
