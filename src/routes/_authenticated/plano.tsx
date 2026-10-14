@@ -9,6 +9,8 @@ import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement
 import { movementActivities, planDays, planDayNames, dayActivityIds } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/user";
+import { exercises } from "@/data/exercises";
+import { useMovementSchedule } from "@/lib/movement-schedule";
 
 export const Route = createFileRoute("/_authenticated/plano")({
   head: () => ({
@@ -30,6 +32,17 @@ const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui conc
 
 function Plano() {
   const me = useCurrentUser();
+  const schedule = useMovementSchedule();
+  const allActivities = [...movementActivities, ...exercises.map(exercise => ({
+    id: exercise.id, name: exercise.name, category: exercise.cat, duration: `${exercise.min} min`,
+    description: "Baixo impacto", objective: "Movimentar-se com suavidade, respeitando seus limites.",
+    steps: exercise.steps, safety: ["Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto."],
+    image: exercise.img,
+  }))];
+  const activitiesForDay = (index: number) => allActivities.filter(activity =>
+    dayActivityIds[planDays[index] ?? "Qua"].includes(activity.id) ||
+    schedule.data?.some(row => row.exercise_id === activity.id && row.weekdays.includes(index)),
+  );
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
   const [openId, setOpenId] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("details");
@@ -37,13 +50,8 @@ function Plano() {
   const todayIndex = new Date().getDay();
   const [dayIndex, setDayIndex] = useState(todayIndex);
 
-  const dayKey = (i: number) => planDays[i] ?? "Qua";
-  const todayActivities = movementActivities.filter((a) =>
-    dayActivityIds[dayKey(todayIndex)].includes(a.id),
-  );
-  const dayActivities = movementActivities.filter((a) =>
-    dayActivityIds[dayKey(dayIndex)].includes(a.id),
-  );
+  const todayActivities = activitiesForDay(todayIndex);
+  const dayActivities = activitiesForDay(dayIndex);
   const total = todayActivities.length;
   const doneCount = todayActivities.filter((a) => doneMap[a.id]).length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
@@ -51,7 +59,12 @@ function Plano() {
     const m = a.duration ? parseInt(a.duration, 10) : 10;
     return sum + (Number.isNaN(m) ? 10 : m);
   }, 0);
-  const open = movementActivities.find((a) => a.id === openId) ?? null;
+  const open = allActivities.find((a) => a.id === openId) ?? null;
+  function activityVisual(activity: (typeof allActivities)[number], large = false) {
+    return "image" in activity && typeof activity.image === "string"
+      ? <img src={activity.image} alt="" className={cn("shrink-0 rounded-2xl object-cover", large ? "size-20" : "size-16")} />
+      : <ActivityTile id={activity.id} large={large} />;
+  }
 
   function openActivity(id: string) {
     setOpenId(id);
@@ -158,7 +171,7 @@ function Plano() {
                       className="card-soft pressable flex w-full items-center gap-4 p-3.5 text-left sm:p-4"
                       aria-label={`${a.name} — abrir detalhes`}
                     >
-                      <ActivityTile id={a.id} />
+                      {activityVisual(a)}
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                           <p className="font-medium">{a.name}</p>
@@ -215,7 +228,7 @@ function Plano() {
                 <ChevronLeft className="size-4" aria-hidden /> Voltar
               </button>
               <div className="flex items-center gap-4">
-                <ActivityTile id={open.id} large />
+                {activityVisual(open, true)}
                 <div className="min-w-0">
                   <h2 className="font-display text-2xl font-medium">{open.name}</h2>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -272,7 +285,7 @@ function Plano() {
                 <ChevronLeft className="size-4" aria-hidden /> Voltar
               </button>
               <div className="flex items-center gap-4">
-                <ActivityTile id={open.id} large />
+                {activityVisual(open, true)}
                 <div>
                   <h2 className="font-display text-2xl font-medium">{open.name}</h2>
                   <p className="mt-1 text-sm text-muted-foreground">No seu tempo. Sem pressa.</p>

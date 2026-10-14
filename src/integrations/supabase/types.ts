@@ -226,6 +226,27 @@ export type Database = {
         }
         Relationships: []
       }
+      movement_exercise_schedule: {
+        Row: {
+          exercise_id: string
+          updated_at: string
+          user_id: string
+          weekdays: number[]
+        }
+        Insert: {
+          exercise_id: string
+          updated_at?: string
+          user_id?: string
+          weekdays?: number[]
+        }
+        Update: {
+          exercise_id?: string
+          updated_at?: string
+          user_id?: string
+          weekdays?: number[]
+        }
+        Relationships: []
+      }
       program_enrollments: {
         Row: {
           active: boolean
