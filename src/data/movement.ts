@@ -129,3 +129,28 @@ export const weekHistory: WeekDay[] = [
 ];
 
 export const weekSummaryBase = 5;
+
+/** Dias da semana do plano (Dom = 0 ... Sáb = 6, igual a new Date().getDay()). */
+export const planDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"] as const;
+export type PlanDay = (typeof planDays)[number];
+
+export const planDayNames = [
+  "Domingo",
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+  "Sábado",
+];
+
+/** IDs das atividades planejadas para cada dia da semana. */
+export const dayActivityIds: Record<PlanDay, string[]> = {
+  Dom: ["respiracao", "pausa"],
+  Seg: ["mobilidade", "respiracao"],
+  Ter: ["alongamento", "respiracao", "pausa"],
+  Qua: ["mobilidade", "respiracao", "alongamento", "pausa"],
+  Qui: ["mobilidade", "respiracao"],
+  Sex: ["alongamento", "respiracao", "pausa"],
+  Sáb: ["mobilidade", "respiracao"],
+};

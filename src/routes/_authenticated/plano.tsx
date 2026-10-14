@@ -6,7 +6,7 @@ import {
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader, PillSelect } from "@/components/vl/primitives";
 import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
-import { movementActivities } from "@/data/movement";
+import { movementActivities, planDays, planDayNames, dayActivityIds } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/user";
 
@@ -34,10 +34,23 @@ function Plano() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("details");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const todayIndex = new Date().getDay();
+  const [dayIndex, setDayIndex] = useState(todayIndex);
 
-  const total = movementActivities.length;
-  const doneCount = movementActivities.filter((a) => doneMap[a.id]).length;
+  const dayKey = (i: number) => planDays[i] ?? "Qua";
+  const todayActivities = movementActivities.filter((a) =>
+    dayActivityIds[dayKey(todayIndex)].includes(a.id),
+  );
+  const dayActivities = movementActivities.filter((a) =>
+    dayActivityIds[dayKey(dayIndex)].includes(a.id),
+  );
+  const total = todayActivities.length;
+  const doneCount = todayActivities.filter((a) => doneMap[a.id]).length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  const totalMinutes = todayActivities.reduce((sum, a) => {
+    const m = a.duration ? parseInt(a.duration, 10) : 10;
+    return sum + (Number.isNaN(m) ? 10 : m);
+  }, 0);
   const open = movementActivities.find((a) => a.id === openId) ?? null;
 
   function openActivity(id: string) {
@@ -98,7 +111,7 @@ function Plano() {
                 <ProgressBar value={total ? doneCount / total : 0} />
               </div>
               <p className="mt-3 flex items-center gap-1.5 text-xs text-accent-foreground">
-                <Clock className="size-3.5" aria-hidden /> Tempo estimado: ≈ 30 min no total
+                <Clock className="size-3.5" aria-hidden /> Tempo estimado: ≈ {totalMinutes} min no total
               </p>
             </div>
           </section>
@@ -107,14 +120,38 @@ function Plano() {
           {/* Atividades do dia */}
           <section aria-label="Suas atividades">
             <SectionHeader title="Suas atividades" subtitle="Uma etapa de cada vez." />
-            {total === 0 ? (
+            <div className="mt-3 grid grid-cols-7 gap-1.5" role="group" aria-label="Escolher o dia da semana">
+              {planDays.map((d, i) => (
+                <button
+                  key={d}
+                  onClick={() => setDayIndex(i)}
+                  aria-pressed={dayIndex === i}
+                  className={cn(
+                    "pressable rounded-full px-1 py-2 text-[11px] font-semibold transition sm:text-sm",
+                    dayIndex === i
+                      ? "bg-primary text-primary-foreground shadow-float"
+                      : i === todayIndex
+                        ? "bg-primary-soft text-primary"
+                        : "bg-secondary text-muted-foreground",
+                  )}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+            {dayIndex !== todayIndex && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Você está vendo os exercícios de {(planDayNames[dayIndex] ?? "esse dia").toLowerCase()}.
+              </p>
+            )}
+            {dayActivities.length === 0 ? (
               <div className="card-soft p-6 text-center">
                 <p className="font-medium">Seu plano está sendo preparado.</p>
                 <p className="mt-1 text-sm text-muted-foreground">Volte mais tarde para consultar as atividades disponíveis.</p>
               </div>
             ) : (
               <ul className="space-y-3">
-                {movementActivities.map((a, i) => (
+                {dayActivities.map((a, i) => (
                   <li key={a.id} className="animate-rise" style={{ animationDelay: `${i * 60}ms` }}>
                     <button
                       onClick={() => openActivity(a.id)}
