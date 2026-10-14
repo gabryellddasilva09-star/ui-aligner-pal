@@ -18,7 +18,7 @@ import { CrisisMode } from "@/components/vl/crisis-mode";
 import { InstallAppButton } from "@/components/vl/install-app";
 import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
-import { ProgramButton } from "@/components/vl/program-button";
+import { useCurrentUser } from "@/lib/user";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -53,6 +53,7 @@ function Index() {
   const [checkInOpen, setCheckInOpen] = useState(false);
   const [crisis, setCrisis] = useState(false);
   const { data: records = [] } = useRecords();
+  const me = useCurrentUser();
   const save = useSaveRecord();
   const record: DailyRecord | null = records.find(r => r.date === todayKey()) ?? null;
   const pattern = describePatterns(records);
@@ -73,7 +74,7 @@ function Index() {
               <Logo className="size-6" />
               <span className="text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
             </div>
-            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá, {patient.name}</h1>
+            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""}</h1>
             <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
               Seu acompanhamento está ativo. Você não está sozinha!{" "}
               <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
@@ -106,7 +107,6 @@ function Index() {
           </section>
 
           <div className="grid gap-3">
-            <ProgramButton />
             <Button onClick={() => setCrisis(true)} variant="outline" className="h-16 justify-start gap-3 rounded-2xl border-pain/40 bg-card px-5 text-left text-lg font-medium text-pain shadow-soft">
               <LifeBuoy className="size-6" /> Estou em crise
               <span className="ml-auto text-sm font-normal text-muted-foreground">passo a passo calmo</span>
