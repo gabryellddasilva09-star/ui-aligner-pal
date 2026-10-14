@@ -349,6 +349,27 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_schedule: {
+        Row: {
+          recipe_id: string
+          updated_at: string
+          user_id: string
+          weekdays: number[]
+        }
+        Insert: {
+          recipe_id: string
+          updated_at?: string
+          user_id?: string
+          weekdays?: number[]
+        }
+        Update: {
+          recipe_id?: string
+          updated_at?: string
+          user_id?: string
+          weekdays?: number[]
+        }
+        Relationships: []
+      }
       relaxation_sessions: {
         Row: {
           created_at: string

@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { FoodVisual, NutritionDisclosure } from "@/components/vl/nutrition-visuals";
 import {
   avoid, eatFreely, getDay, mealLabels, mealOrder, parseMeal, principles, recipes, shopping, substitutions,
-  tagInfo, type Tag,
+  tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
 } from "@/data/anti-inflammatory";
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
+import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
+
+const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 export const Route = createFileRoute("/_authenticated/alimentacao")({
   head: () => ({
@@ -59,6 +62,12 @@ function Alimentacao() {
   const [recipeFilter, setRecipeFilter] = useState<"todas" | Tag>("todas");
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<"todas" | RecipeCategory>("todas");
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const schedule = useRecipeSchedule();
+  const saveSchedule = useSaveRecipeSchedule();
+  const daysFor = (id: string) => schedule.data?.find((x) => x.recipe_id === id)?.weekdays ?? [];
+  const openRecipeDialog = (id: string) => { saveSchedule.reset(); setSelectedDays(daysFor(id)); setOpenRecipe(id); };
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -79,8 +88,8 @@ function Alimentacao() {
   const doneToday = mealOrder.filter((m) => done[`${day}-${m}`]).length;
   const cups = water[day] ?? 0;
   const visibleRecipes = useMemo(
-    () => recipes.filter((r) => (recipeFilter === "todas" || r.tags.includes(recipeFilter)) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
-    [recipeFilter, search],
+    () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && (recipeFilter === "todas" || r.tags.includes(recipeFilter)) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
+    [recipeFilter, categoryFilter, search],
   );
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
   const list = shopping[shopWeek];
@@ -166,6 +175,26 @@ function Alimentacao() {
               );
             })}
           </ul>
+          {(() => {
+            const wd = (day - 1) % 7;
+            const mine = recipes.filter((r) => daysFor(r.id).includes(wd));
+            if (mine.length === 0) return null;
+            return (
+              <section className="card-soft p-5">
+                <h2 className="text-xl font-medium">Suas receitas de {weekdayNames[wd]?.toLowerCase()}</h2>
+                <ul className="mt-3 space-y-2">
+                  {recipeCategoryOrder.flatMap((c) => mine.filter((r) => r.category === c).map((r) => (
+                    <li key={r.id}>
+                      <Button variant="ghost" onClick={() => openRecipeDialog(r.id)} className="h-auto min-h-14 w-full justify-start gap-3 whitespace-normal rounded-xl bg-secondary/60 px-3 py-2 text-left">
+                        <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-primary">{recipeCategoryLabels[c]}</span><span className="block text-base font-medium">{r.name}</span></span>
+                        <ArrowRight className="shrink-0 text-primary" />
+                      </Button>
+                    </li>
+                  )))}
+                </ul>
+              </section>
+            );
+          })()}
           {plan.tip && <p className="rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">Dica: {plan.tip}</p>}
 
           <section className="rounded-2xl bg-nutrition-blue-soft p-5 sm:p-6">
@@ -178,7 +207,7 @@ function Alimentacao() {
             <p className="mt-4 text-sm text-nutrition-blue">Referência do cardápio: 2,5 L por dia · copos de 250 ml.</p>
           </section>
           <div className="space-y-3">
-            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Ver receitas<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Editar cardápio<ArrowRight /></Button>
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("guia")}><BookOpen />Ver guia da alimentação<ArrowRight /></Button>
           </div>
@@ -201,15 +230,25 @@ function Alimentacao() {
               </Button>
             ))}
           </div>
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Categorias">
+            {(["todas", ...recipeCategoryOrder] as const).map((c) => (
+              <Button variant="ghost" key={c} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}
+                className={cn("min-h-11 rounded-full border px-4 text-sm font-medium", categoryFilter === c ? "border-primary bg-primary-soft text-primary" : "bg-card text-muted-foreground")}>
+                {c === "todas" ? "Todas as refeições" : recipeCategoryLabels[c]}
+              </Button>
+            ))}
+          </div>
           {recipeFilter !== "todas" && <p className="text-xs text-muted-foreground">{tagInfo[recipeFilter]}</p>}
           <ul className="grid gap-3 sm:grid-cols-2">
             {visibleRecipes.map((r) => (
               <li key={r.id}>
-                <Button variant="ghost" onClick={() => setOpenRecipe(r.id)} className="card-soft pressable h-full w-full flex-col items-stretch justify-start overflow-hidden whitespace-normal p-0 text-left hover:bg-card">
+                <Button variant="ghost" onClick={() => openRecipeDialog(r.id)} className="card-soft pressable h-full w-full flex-col items-stretch justify-start overflow-hidden whitespace-normal p-0 text-left hover:bg-card">
                   <FoodVisual text={r.name} large />
-                  <div className="p-5"><p className="text-xl font-medium">{r.name}</p>
+                  <div className="p-5"><p className="text-sm font-semibold text-primary">{recipeCategoryLabels[r.category]}</p><p className="text-xl font-medium">{r.name}</p>
                     <p className="mt-3 flex flex-wrap items-center gap-3 text-base text-muted-foreground"><span className="flex items-center gap-1"><Clock />{r.time}</span><span className="flex items-center gap-1"><Users />{r.serves}</span></p>
-                    <div className="mt-3 flex flex-wrap gap-2">{r.tags.map((t) => <TagChip key={t} tag={t} />)}</div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">{r.tags.map((t) => <TagChip key={t} tag={t} />)}
+                      {daysFor(r.id).length > 0 && <span className="ml-auto flex flex-wrap justify-end gap-1">{daysFor(r.id).map((d) => <span key={d} className="rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">{planDays[d]}</span>)}</span>}
+                    </div>
                     <span className="mt-4 flex items-center gap-2 text-base font-semibold text-primary">Ver receita<ArrowRight /></span>
                   </div>
                 </Button>
@@ -327,7 +366,25 @@ function Alimentacao() {
             {open.steps.map((s, i) => <li key={s} className="flex gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft text-base font-semibold text-primary">{i + 1}</span>{s}</li>)}
           </ol>
           {open.tip && <p className="mt-5 rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">Dica: {open.tip}</p>}
-          <Button variant="ghost" onClick={() => setOpenRecipe(null)} className="mt-6 min-h-14 w-full rounded-full bg-primary text-lg font-medium text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground">Voltar</Button>
+          <fieldset className="mt-6 rounded-2xl border p-4">
+            <legend className="px-1 text-xl font-medium">Adicionar aos dias</legend>
+            <p className="text-sm text-muted-foreground">Em quais dias você quer esta receita no {recipeCategoryLabels[open.category].toLowerCase()}?</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {weekdayNames.map((n, i) => {
+                const on = selectedDays.includes(i);
+                return (
+                  <label key={n} className={cn("flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border px-3 text-base", on ? "border-primary bg-primary-soft text-primary" : "bg-card")}>
+                    <input type="checkbox" className="size-5 accent-[var(--color-primary)]" checked={on}
+                      onChange={() => setSelectedDays((p) => on ? p.filter((x) => x !== i) : [...p, i])} />{n}
+                  </label>
+                );
+              })}
+            </div>
+            {saveSchedule.error && <p role="alert" className="mt-3 text-sm text-destructive">Não foi possível salvar. Tente de novo.</p>}
+          </fieldset>
+          <Button disabled={saveSchedule.isPending} onClick={() => saveSchedule.mutate({ recipeId: open.id, weekdays: selectedDays }, { onSuccess: () => setOpenRecipe(null) })}
+            className="mt-4 min-h-14 w-full rounded-full text-lg">{saveSchedule.isPending ? "Salvando…" : "Salvar no meu cardápio"}</Button>
+          <Button variant="ghost" onClick={() => setOpenRecipe(null)} className="mt-3 min-h-14 w-full rounded-full bg-secondary text-lg font-medium text-foreground hover:bg-secondary/80 hover:text-foreground">Cancelar</Button>
         </DialogShell>
       )}
       </div>
