@@ -6,7 +6,7 @@ import {
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader, PillSelect } from "@/components/vl/primitives";
 import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
-import { movementActivities } from "@/data/movement";
+import { movementActivities, planDays, planDayNames, dayActivityIds } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/user";
 
