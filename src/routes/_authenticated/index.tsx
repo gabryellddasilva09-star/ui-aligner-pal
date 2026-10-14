@@ -73,7 +73,7 @@ function Index() {
               <Logo className="size-6" />
               <span className="text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
             </div>
-            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá, {patient.name}</h1>
+            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""}</h1>
             <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
               Seu acompanhamento está ativo. Você não está sozinha!{" "}
               <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
