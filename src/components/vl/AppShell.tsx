@@ -86,18 +86,24 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 export function IconButtons() {
   const navigate = useNavigate();
+  const me = useCurrentUser();
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/login" });
   }
   return (
     <div className="flex shrink-0 items-center gap-2">
+      {me.data?.isAdmin && (
+        <Link to="/admin" aria-label="Cadastrar usuários" title="Cadastrar usuários" className="grid size-10 place-items-center rounded-full border bg-card text-primary transition hover:bg-secondary">
+          <UserPlus className="size-[18px]" />
+        </Link>
+      )}
       <button aria-label="Notificações" className="relative grid size-10 place-items-center rounded-full border bg-card transition hover:bg-secondary">
         <Bell className="size-[18px]" />
         <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-pain ring-2 ring-card" />
       </button>
       <Link to="/profissional" aria-label="Perfil" className="grid size-10 place-items-center rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
-        A
+        {(me.data?.firstName?.[0] ?? "").toUpperCase() || "•"}
       </Link>
       <button onClick={signOut} aria-label="Sair" title="Sair" className="grid size-10 place-items-center rounded-full border bg-card text-muted-foreground transition hover:bg-secondary">
         <LogOut className="size-[18px]" />
