@@ -59,3 +59,43 @@ export function useSaveMovementSchedule() {
     },
   });
 }
+
+export function useMovementCompletions(startDate: string, endDate: string) {
+  const user = useScheduleUser();
+  const query = useQuery({
+    queryKey: ["movement-completions", user.data, startDate, endDate],
+    enabled: !!user.data,
+    queryFn: async () => {
+      if (!user.data) throw new Error("Sem sessão");
+      const { data, error } = await supabase.from("movement_exercise_completions")
+        .select("exercise_id, activity_date").eq("user_id", user.data)
+        .gte("activity_date", startDate).lte("activity_date", endDate);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  return { ...query, isPending: user.isPending || query.isPending, error: user.error ?? query.error };
+}
+
+export function useCompleteMovementExercise() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { exerciseId: string; date: string }) => {
+      const parsed = z.object({
+        exerciseId: scheduleInputSchema.shape.exerciseId,
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      }).parse(input);
+      const { data, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!data.user) throw new Error("Entre na sua conta para salvar.");
+      const { error } = await supabase.from("movement_exercise_completions").insert({
+        user_id: data.user.id, exercise_id: parsed.exerciseId, activity_date: parsed.date,
+      });
+      if (error && error.code !== "23505") throw error;
+      return data.user.id;
+    },
+    onSuccess: async userId => {
+      await qc.invalidateQueries({ queryKey: ["movement-completions", userId] });
+    },
+  });
+}

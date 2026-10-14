@@ -4,13 +4,16 @@ import {
   CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
-import { SectionHeader, PillSelect } from "@/components/vl/primitives";
+import { SectionHeader } from "@/components/vl/primitives";
 import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
-import { movementActivities, planDays, planDayNames, dayActivityIds } from "@/data/movement";
+import { planDays, planDayNames } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/user";
 import { exercises } from "@/data/exercises";
-import { useMovementSchedule } from "@/lib/movement-schedule";
+import { useMovementSchedule, useMovementCompletions, useCompleteMovementExercise } from "@/lib/movement-schedule";
+import { movementWeek, movementProgress } from "@/lib/movement-progress";
+import { todayKey } from "@/lib/records";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/plano")({
   head: () => ({
@@ -33,18 +36,21 @@ const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui conc
 function Plano() {
   const me = useCurrentUser();
   const schedule = useMovementSchedule();
-  const allActivities = [...movementActivities, ...exercises.map(exercise => ({
+  const week = movementWeek();
+  const today = todayKey();
+  const completions = useMovementCompletions(week[0]?.key ?? today, week[6]?.key ?? today);
+  const saveCompletion = useCompleteMovementExercise();
+  const allActivities = exercises.map(exercise => ({
     id: exercise.id, name: exercise.name, category: exercise.cat, duration: `${exercise.min} min`,
     description: "Baixo impacto", objective: "Movimentar-se com suavidade, respeitando seus limites.",
     steps: exercise.steps, safety: ["Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto."],
     image: exercise.img,
-  }))];
+  }));
   const activitiesForDay = (index: number) => allActivities.filter(activity =>
-    dayActivityIds[planDays[index] ?? "Qua"].includes(activity.id) ||
     schedule.data?.some(row => row.exercise_id === activity.id && row.weekdays.includes(index)),
   );
-  const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openDate, setOpenDate] = useState(today);
   const [phase, setPhase] = useState<Phase>("details");
   const [feedback, setFeedback] = useState<string | null>(null);
   const todayIndex = new Date().getDay();
@@ -52,9 +58,12 @@ function Plano() {
 
   const todayActivities = activitiesForDay(todayIndex);
   const dayActivities = activitiesForDay(dayIndex);
-  const total = todayActivities.length;
-  const doneCount = todayActivities.filter((a) => doneMap[a.id]).length;
-  const pct = total ? Math.round((doneCount / total) * 100) : 0;
+  const selectedDate = week[dayIndex]?.key ?? today;
+  const isDone = (id: string, date: string) => completions.data?.some(row => row.exercise_id === id && row.activity_date === date) ?? false;
+  const progress = movementProgress(todayActivities.map(a => a.id), (completions.data ?? []).filter(row => row.activity_date === today).map(row => row.exercise_id));
+  const total = progress.total;
+  const doneCount = progress.done;
+  const pct = Math.round(progress.value * 100);
   const totalMinutes = todayActivities.reduce((sum, a) => {
     const m = a.duration ? parseInt(a.duration, 10) : 10;
     return sum + (Number.isNaN(m) ? 10 : m);
@@ -68,6 +77,8 @@ function Plano() {
 
   function openActivity(id: string) {
     setOpenId(id);
+    setOpenDate(selectedDate);
+    saveCompletion.reset();
     setPhase("details");
     setFeedback(null);
   }
@@ -76,9 +87,14 @@ function Plano() {
     setPhase("details");
     setFeedback(null);
   }
-  function complete() {
-    if (openId) setDoneMap((m) => ({ ...m, [openId]: true }));
-    setPhase("feedback");
+  async function complete() {
+    if (!openId || saveCompletion.isPending) return;
+    try {
+      await saveCompletion.mutateAsync({ exerciseId: openId, date: openDate });
+      setPhase("feedback");
+    } catch {
+      // Keep the activity open so the patient can retry without losing context.
+    }
   }
 
   return (
@@ -98,9 +114,6 @@ function Plano() {
             </p>
           </div>
         </div>
-        <div className="relative mt-4">
-          <PillSelect label="Hoje, 7 out" />
-        </div>
       </header>
 
       <div className="mt-6 grid grid-cols-1 gap-8 [&>*]:min-w-0 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -112,7 +125,7 @@ function Plano() {
               <p className="text-[11px] font-semibold tracking-[0.18em] text-accent-foreground">HOJE</p>
               <h2 className="mt-2 text-2xl font-normal">Seu plano de hoje</h2>
               <p className="mt-1 text-sm text-accent-foreground">
-                Preparamos uma sequência de atividades para acompanhar sua rotina.
+                {total ? "As atividades que você escolheu para hoje, no seu ritmo." : "Escolha seus exercícios em Editar plano para começar."}
               </p>
               <div className="mt-5 flex items-end justify-between gap-4">
                 <p className="text-sm font-medium">
@@ -135,12 +148,12 @@ function Plano() {
             <SectionHeader title="Suas atividades" subtitle="Uma etapa de cada vez." />
             <div className="mt-3 grid grid-cols-7 gap-1.5" role="group" aria-label="Escolher o dia da semana">
               {planDays.map((d, i) => (
-                <button
+                <Button variant="ghost"
                   key={d}
                   onClick={() => setDayIndex(i)}
                   aria-pressed={dayIndex === i}
                   className={cn(
-                    "pressable rounded-full px-1 py-2 text-[11px] font-semibold transition sm:text-sm",
+                    "pressable h-auto min-h-14 flex-col gap-0.5 rounded-2xl px-1 py-2 text-[11px] font-semibold transition sm:text-sm",
                     dayIndex === i
                       ? "bg-primary text-primary-foreground shadow-float"
                       : i === todayIndex
@@ -148,8 +161,9 @@ function Plano() {
                         : "bg-secondary text-muted-foreground",
                   )}
                 >
-                  {d}
-                </button>
+                  <span>{d}</span>
+                  <span className="text-[10px] font-normal sm:text-xs">{week[i]?.label}</span>
+                </Button>
               ))}
             </div>
             {dayIndex !== todayIndex && (
@@ -157,10 +171,17 @@ function Plano() {
                 Você está vendo os exercícios de {(planDayNames[dayIndex] ?? "esse dia").toLowerCase()}.
               </p>
             )}
-            {dayActivities.length === 0 ? (
+            {schedule.isPending || completions.isPending ? (
+              <p className="py-6 text-center text-sm text-muted-foreground" role="status">Carregando seu plano…</p>
+            ) : schedule.error || completions.error ? (
+              <div className="py-6 text-center" role="alert">
+                <p className="text-sm text-muted-foreground">Não foi possível carregar seu plano.</p>
+                <Button variant="ghost" onClick={() => { void schedule.refetch(); void completions.refetch(); }}>Tentar novamente</Button>
+              </div>
+            ) : dayActivities.length === 0 ? (
               <div className="card-soft p-6 text-center">
-                <p className="font-medium">Seu plano está sendo preparado.</p>
-                <p className="mt-1 text-sm text-muted-foreground">Volte mais tarde para consultar as atividades disponíveis.</p>
+                <p className="font-medium">Nenhum exercício programado para este dia.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Escolha os exercícios e os dias em Editar plano.</p>
               </div>
             ) : (
               <ul className="space-y-3">
@@ -187,11 +208,11 @@ function Plano() {
                       <span
                         className={cn(
                           "grid size-8 shrink-0 place-items-center rounded-full",
-                          doneMap[a.id] ? "bg-good-soft text-good" : "bg-secondary text-muted-foreground",
+                          isDone(a.id, selectedDate) ? "bg-good-soft text-good" : "bg-secondary text-muted-foreground",
                         )}
-                        aria-label={doneMap[a.id] ? "Concluída" : "Não iniciada"}
+                        aria-label={isDone(a.id, selectedDate) ? "Concluída" : "Não iniciada"}
                       >
-                        {doneMap[a.id] ? <CheckCircle2 className="size-4.5" /> : <ChevronDown className="size-4.5 -rotate-90" />}
+                        {isDone(a.id, selectedDate) ? <CheckCircle2 className="size-4.5" /> : <ChevronDown className="size-4.5 -rotate-90" />}
                       </span>
                     </button>
                   </li>
@@ -304,12 +325,14 @@ function Plano() {
               <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
                 Lembre-se: faça apenas o que for confortável. Você pode parar a qualquer momento.
               </p>
-              <button
+              <Button
                 onClick={complete}
-                className="pressable mt-6 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground"
+                disabled={saveCompletion.isPending || isDone(open.id, openDate)}
+                className="pressable mt-6 h-auto w-full rounded-full py-3.5 text-sm font-semibold"
               >
-                Concluir atividade
-              </button>
+                {saveCompletion.isPending ? "Salvando…" : isDone(open.id, openDate) ? "Atividade concluída" : "Concluir atividade"}
+              </Button>
+              {saveCompletion.isError && <p className="mt-3 text-sm text-destructive" role="alert">Não foi possível salvar. Tente novamente.</p>}
             </div>
           )}
 
