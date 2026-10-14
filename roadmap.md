@@ -16,3 +16,6 @@
 - [x] Instalar como aplicativo no celular.
 ## Etapa 4
 - [x] Programa guiado de 30 dias com lembrete diário e progresso.
+## Ajustes na tela Meu plano de movimento
+- [x] Remover o card "Minha evolução".
+- [x] Remover a seção "Como você está hoje?".

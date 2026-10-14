@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck, Sparkles,
+  CheckCircle2, ChevronDown, ChevronLeft, Clock, ShieldCheck,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader, PillSelect } from "@/components/vl/primitives";
-import { ActivityTile, ProgressBar, DailyStateSelector, WeekHistoryStrip, DialogShell } from "@/components/vl/movement";
-import { movementActivities, dailyStates, weekHistory, weekSummaryBase } from "@/data/movement";
+import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
+import { movementActivities } from "@/data/movement";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/plano")({
@@ -29,19 +29,14 @@ const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui conc
 
 function Plano() {
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
-  const [daily, setDaily] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("details");
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [todayDone, setTodayDone] = useState(false);
-  const [weekCount, setWeekCount] = useState(weekSummaryBase);
 
   const total = movementActivities.length;
   const doneCount = movementActivities.filter((a) => doneMap[a.id]).length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
   const open = movementActivities.find((a) => a.id === openId) ?? null;
-  const dailyMessage = dailyStates.find((d) => d.key === daily)?.message;
-  const week = weekHistory.map((d) => (d.isToday && todayDone ? { ...d, state: "done" as const } : d));
 
   function openActivity(id: string) {
     setOpenId(id);
@@ -54,13 +49,7 @@ function Plano() {
     setFeedback(null);
   }
   function complete() {
-    if (openId) {
-      setDoneMap((m) => ({ ...m, [openId]: true }));
-      if (!todayDone) {
-        setTodayDone(true);
-        setWeekCount((c) => c + 1);
-      }
-    }
+    if (openId) setDoneMap((m) => ({ ...m, [openId]: true }));
     setPhase("feedback");
   }
 
@@ -112,16 +101,6 @@ function Plano() {
             </div>
           </section>
 
-          {/* Como você está hoje? */}
-          <section aria-label="Como você está hoje?">
-            <SectionHeader title="Como você está hoje?" subtitle="Isso nos ajuda a apresentar opções mais adequadas à sua rotina." />
-            <DailyStateSelector value={daily} onChange={setDaily} />
-            {dailyMessage && (
-              <p className="animate-rise mt-3 rounded-2xl border bg-insight px-4 py-3 text-sm leading-relaxed text-accent-foreground">
-                {dailyMessage}
-              </p>
-            )}
-          </section>
 
           {/* Atividades do dia */}
           <section aria-label="Suas atividades">
@@ -171,23 +150,6 @@ function Plano() {
         </div>
 
         <div className="space-y-4">
-          {/* Minha evolução */}
-          <section className="card-soft p-5" aria-label="Minha evolução">
-            <div className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-primary"><Sparkles className="size-5" /></span>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-medium">Minha evolução</h3>
-                <p className="mt-1 text-sm text-muted-foreground">Veja sua regularidade ao longo do tempo.</p>
-              </div>
-            </div>
-            <div className="mt-5">
-              <WeekHistoryStrip days={week} />
-            </div>
-            <p className="mt-4 border-t pt-4 text-sm">
-              <span className="font-medium">{weekCount}</span>{" "}
-              <span className="text-muted-foreground">atividades registradas nesta semana</span>
-            </p>
-          </section>
 
           <p className="rounded-2xl border bg-card px-4 py-3 text-xs leading-relaxed text-muted-foreground">
             As atividades são sugeridas a partir de um plano geral de autocuidado. Elas não substituem a orientação da
