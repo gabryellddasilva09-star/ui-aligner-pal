@@ -408,6 +408,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: never; Returns: boolean }
       is_moderator: { Args: never; Returns: boolean }
     }
     Enums: {
