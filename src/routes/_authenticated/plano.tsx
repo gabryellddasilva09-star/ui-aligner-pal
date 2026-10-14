@@ -8,6 +8,7 @@ import { SectionHeader, PillSelect } from "@/components/vl/primitives";
 import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
 import { movementActivities } from "@/data/movement";
 import { cn } from "@/lib/utils";
+import { useCurrentUser } from "@/lib/user";
 
 export const Route = createFileRoute("/_authenticated/plano")({
   head: () => ({
@@ -66,7 +67,7 @@ function Plano() {
             <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Meu plano de movimento</h1>
             <p className="mt-2 text-[15px] text-muted-foreground">Movimente-se no seu ritmo.</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Olá, Ana <span aria-hidden>🌿</span> — Pequenos passos também são progresso.
+              Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""} <span aria-hidden>🌿</span> — Pequenos passos também são progresso.
             </p>
           </div>
         </div>
@@ -153,7 +154,7 @@ function Plano() {
 
           <p className="rounded-2xl border bg-card px-4 py-3 text-xs leading-relaxed text-muted-foreground">
             As atividades são sugeridas a partir de um plano geral de autocuidado. Elas não substituem a orientação da
-            sua profissional — combinado, Ana? <span aria-hidden>💚</span>
+            sua profissional — combinado{me.data?.firstName ? `, ${me.data.firstName}` : ""}? <span aria-hidden>💚</span>
           </p>
         </div>
       </div>
