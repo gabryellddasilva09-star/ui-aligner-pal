@@ -19,6 +19,7 @@ import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authentic
 import { Route as AuthenticatedConsultasRouteImport } from './routes/_authenticated/consultas'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticated/evolucao'
+import { Route as AuthenticatedExerciciosRouteImport } from './routes/_authenticated/exercicios'
 import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/plano'
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
 import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
@@ -77,6 +78,11 @@ const AuthenticatedEvolucaoRoute = AuthenticatedEvolucaoRouteImport.update({
   path: '/evolucao',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedExerciciosRoute = AuthenticatedExerciciosRouteImport.update({
+  id: '/exercicios',
+  path: '/exercicios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlanoRoute = AuthenticatedPlanoRouteImport.update({
   id: '/plano',
   path: '/plano',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/exercicios': typeof AuthenticatedExerciciosRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/programa': typeof AuthenticatedProgramaRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/exercicios': typeof AuthenticatedExerciciosRoute
   '/plano': typeof AuthenticatedPlanoRoute
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/programa': typeof AuthenticatedProgramaRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/_authenticated/consultas': typeof AuthenticatedConsultasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/evolucao': typeof AuthenticatedEvolucaoRoute
+  '/_authenticated/exercicios': typeof AuthenticatedExerciciosRoute
   '/_authenticated/plano': typeof AuthenticatedPlanoRoute
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
   '/_authenticated/programa': typeof AuthenticatedProgramaRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/consultas'
     | '/diario'
     | '/evolucao'
+    | '/exercicios'
     | '/plano'
     | '/profissional'
     | '/programa'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/consultas'
     | '/diario'
     | '/evolucao'
+    | '/exercicios'
     | '/plano'
     | '/profissional'
     | '/programa'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_authenticated/consultas'
     | '/_authenticated/diario'
     | '/_authenticated/evolucao'
+    | '/_authenticated/exercicios'
     | '/_authenticated/plano'
     | '/_authenticated/profissional'
     | '/_authenticated/programa'
@@ -308,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEvolucaoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/exercicios': {
+      id: '/_authenticated/exercicios'
+      path: '/exercicios'
+      fullPath: '/exercicios'
+      preLoaderRoute: typeof AuthenticatedExerciciosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/plano': {
       id: '/_authenticated/plano'
       path: '/plano'
@@ -368,6 +387,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedConsultasRoute: typeof AuthenticatedConsultasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedEvolucaoRoute: typeof AuthenticatedEvolucaoRoute
+  AuthenticatedExerciciosRoute: typeof AuthenticatedExerciciosRoute
   AuthenticatedPlanoRoute: typeof AuthenticatedPlanoRoute
   AuthenticatedProfissionalRoute: typeof AuthenticatedProfissionalRoute
   AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRoute
@@ -384,6 +404,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedConsultasRoute: AuthenticatedConsultasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedEvolucaoRoute: AuthenticatedEvolucaoRoute,
+  AuthenticatedExerciciosRoute: AuthenticatedExerciciosRoute,
   AuthenticatedPlanoRoute: AuthenticatedPlanoRoute,
   AuthenticatedProfissionalRoute: AuthenticatedProfissionalRoute,
   AuthenticatedProgramaRoute: AuthenticatedProgramaRoute,
