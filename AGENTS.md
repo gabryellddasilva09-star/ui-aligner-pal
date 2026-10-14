@@ -20,3 +20,4 @@
 - Keep the messaging service worker separate from any app-shell caching so installability never introduces offline caching.
 - Keep guided-program content in a browser-safe data module separate from progress, which is stored per user with owner-only RLS; daily program reminders reuse the shared push scheduler.
 - Keep the exercise catalog in a shared browser-safe data module and weekday assignments in owner-only account storage accessed through shared hooks, so the catalog and movement plan always use the same saved schedule.
+- Derive movement activities only from saved weekday assignments and persist completions per user, exercise and local calendar date, so progress starts at zero and never carries over to another day.
