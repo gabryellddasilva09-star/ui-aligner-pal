@@ -64,6 +64,13 @@
       "when": 1792020184338,
       "tag": "0008_movement_exercise_completions",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792021731589,
+      "tag": "0009_recipe_schedule",
+      "breakpoints": true
     }
   ]
 }
