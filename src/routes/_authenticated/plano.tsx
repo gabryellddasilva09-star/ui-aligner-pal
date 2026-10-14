@@ -29,6 +29,7 @@ type Phase = "details" | "doing" | "feedback" | "thanks";
 const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui concluir", "Prefiro não responder"];
 
 function Plano() {
+  const me = useCurrentUser();
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
   const [openId, setOpenId] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("details");
