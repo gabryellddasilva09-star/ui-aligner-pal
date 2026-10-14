@@ -187,6 +187,7 @@ function Alimentacao() {
       {/* ============ RECEITAS ============ */}
       {tab === "receitas" && (
         <div className="mt-6 space-y-5">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">O que vamos preparar?</h2>
           <label className="flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4"><Search className="size-5 shrink-0 text-primary" /><input aria-label="Buscar receita" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar receita" className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none" /></label>
           <p className="text-base text-muted-foreground">Todas sem glúten, sem laticínios convencionais e sem açúcar refinado.</p>
@@ -221,6 +222,7 @@ function Alimentacao() {
       {/* ============ COMPRAS ============ */}
       {tab === "compras" && (
         <div className="mt-6 space-y-5">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">Sua lista está pronta</h2>
           <p className="text-base text-muted-foreground">Ingredientes do cardápio, organizados por semana.</p>
           <div className="grid grid-cols-3 gap-2" role="group" aria-label="Lista da semana">
@@ -269,6 +271,7 @@ function Alimentacao() {
       {/* ============ GUIA ============ */}
       {tab === "guia" && (
         <div className="mt-6 space-y-8">
+          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">Seu guia de alimentação</h2>
           <p className="text-base text-muted-foreground">Orientações do material da Dra. Nadya Kazzaz.</p>
           <NutritionDisclosure title="Os 5 princípios">
