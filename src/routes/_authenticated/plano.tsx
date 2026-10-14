@@ -5,8 +5,8 @@ import {
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader, PillSelect } from "@/components/vl/primitives";
-import { ActivityTile, ProgressBar, DailyStateSelector, DialogShell } from "@/components/vl/movement";
-import { movementActivities, dailyStates } from "@/data/movement";
+import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement";
+import { movementActivities } from "@/data/movement";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/plano")({
@@ -29,7 +29,6 @@ const feedbackOptions = ["Foi confortável", "Foi difícil", "Não consegui conc
 
 function Plano() {
   const [doneMap, setDoneMap] = useState<Record<string, boolean>>({ mobilidade: true, respiracao: true });
-  const [daily, setDaily] = useState<string | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("details");
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -38,7 +37,6 @@ function Plano() {
   const doneCount = movementActivities.filter((a) => doneMap[a.id]).length;
   const pct = total ? Math.round((doneCount / total) * 100) : 0;
   const open = movementActivities.find((a) => a.id === openId) ?? null;
-  const dailyMessage = dailyStates.find((d) => d.key === daily)?.message;
 
   function openActivity(id: string) {
     setOpenId(id);
@@ -103,16 +101,6 @@ function Plano() {
             </div>
           </section>
 
-          {/* Como você está hoje? */}
-          <section aria-label="Como você está hoje?">
-            <SectionHeader title="Como você está hoje?" subtitle="Isso nos ajuda a apresentar opções mais adequadas à sua rotina." />
-            <DailyStateSelector value={daily} onChange={setDaily} />
-            {dailyMessage && (
-              <p className="animate-rise mt-3 rounded-2xl border bg-insight px-4 py-3 text-sm leading-relaxed text-accent-foreground">
-                {dailyMessage}
-              </p>
-            )}
-          </section>
 
           {/* Atividades do dia */}
           <section aria-label="Suas atividades">
