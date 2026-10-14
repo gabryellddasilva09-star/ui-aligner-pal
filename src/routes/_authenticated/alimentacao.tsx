@@ -72,6 +72,7 @@ function Alimentacao() {
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-done", JSON.stringify(done)); }, [done, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-water", JSON.stringify(water)); }, [water, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-shop", JSON.stringify(bought)); }, [bought, hydrated]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [tab]);
 
   const { week, plan } = getDay(day);
   const todayIndex = new Date().getDay();
