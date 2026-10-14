@@ -85,13 +85,6 @@ function Alimentacao() {
   const list = shopping[shopWeek];
   const boughtCount = list.filter((i) => bought[`${shopWeek}-${i.name}`]).length;
 
-  const tabs = [
-    { key: "cardapio", label: "Cardápio", icon: Utensils },
-    { key: "receitas", label: "Receitas", icon: ChefHat },
-    { key: "compras", label: "Compras", icon: ShoppingBasket },
-    { key: "guia", label: "Guia", icon: BookOpen },
-  ];
-
   return (
     <AppShell>
       <div className="nutrition-screen">
@@ -100,26 +93,14 @@ function Alimentacao() {
           <h1 className="sr-only text-3xl font-medium sm:text-4xl lg:not-sr-only">Minha alimentação</h1>
           <p className="mt-2 hidden text-base text-muted-foreground sm:text-lg lg:block">Organize suas refeições de um jeito mais leve.</p>
         </div>
-        <div className="mt-6 grid grid-cols-4 gap-1 rounded-2xl bg-secondary p-1.5 sm:gap-2" role="tablist" aria-label="Minha alimentação">
-          {tabs.map(({ key, label, icon: Icon }) => <Button key={key} id={`tab-${key}`} role="tab" aria-selected={tab === key} aria-controls={`panel-${key}`} variant="ghost"
-            onClick={() => setTab(key as TabKey)} className={cn("h-auto min-h-16 min-w-0 flex-col gap-1 rounded-xl px-1 text-sm sm:flex-row sm:text-base", tab === key ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary hover:text-primary-foreground" : "text-foreground")}>
-            <Icon className="size-5" />{label}
-          </Button>)}
-        </div>
-
       </header>
-      <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}>
+      <div>
 
       {/* ============ CARDÁPIO ============ */}
       {tab === "cardapio" && (
         <div className="mt-6 space-y-6">
           <section aria-label="Escolher dia do cardápio">
-            <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-              <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 1} aria-label="Dia anterior" onClick={() => setDay(day - 1)}><ChevronLeft /></Button>
-              <div className="text-center"><h2 className="text-2xl font-medium">Dia {day}</h2><p className="text-sm text-muted-foreground">de 21 dias · Semana {week.n}</p></div>
-              <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 21} aria-label="Próximo dia" onClick={() => setDay(day + 1)}><ChevronRight /></Button>
-            </div>
-            <div className="mt-4 grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
+            <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
               {planDays.map((d, i) => {
                 const planDay = (week.n - 1) * 7 + i + 1;
                 const selected = day === planDay;
@@ -139,6 +120,10 @@ function Alimentacao() {
                   </Button>
                 );
               })}
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 1} aria-label="Voltar para a semana anterior" onClick={() => setDay((week.n - 2) * 7 + ((day - 1) % 7) + 1)}><ChevronLeft className="size-4" />Semana anterior</Button>
+              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 3} aria-label="Avançar para a próxima semana" onClick={() => setDay(week.n * 7 + ((day - 1) % 7) + 1)}>Próxima semana<ChevronRight className="size-4" /></Button>
             </div>
             <NutritionDisclosure title={`Sobre a semana ${week.n}`}>
               <h3 className="mb-3 text-lg font-medium">{week.title}</h3>
@@ -191,7 +176,11 @@ function Alimentacao() {
             </div>
             <p className="mt-4 text-sm text-nutrition-blue">Referência do cardápio: 2,5 L por dia · copos de 250 ml.</p>
           </section>
-          <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
+          <div className="space-y-3">
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Ver receitas<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("guia")}><BookOpen />Ver guia da alimentação<ArrowRight /></Button>
+          </div>
         </div>
       )}
 
