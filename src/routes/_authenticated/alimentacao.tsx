@@ -7,11 +7,11 @@ import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
 import { FoodVisual, NutritionDisclosure } from "@/components/vl/nutrition-visuals";
-import tableImage from "@/assets/nutrition-table.jpg";
 import {
   avoid, eatFreely, getDay, mealLabels, mealOrder, parseMeal, principles, recipes, shopping, substitutions,
-  tagInfo, weeks, type Tag,
+  tagInfo, type Tag,
 } from "@/data/anti-inflammatory";
+import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/alimentacao")({
@@ -74,6 +74,7 @@ function Alimentacao() {
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-shop", JSON.stringify(bought)); }, [bought, hydrated]);
 
   const { week, plan } = getDay(day);
+  const todayIndex = new Date().getDay();
   const doneToday = mealOrder.filter((m) => done[`${day}-${m}`]).length;
   const cups = water[day] ?? 0;
   const visibleRecipes = useMemo(
@@ -105,15 +106,6 @@ function Alimentacao() {
             <Icon className="size-5" />{label}
           </Button>)}
         </div>
-        <div className="relative mt-6 h-40 overflow-hidden rounded-3xl sm:h-48">
-          <img src={tableImage} alt="Prato colorido com frango, folhas e legumes" width={1536} height={768} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-transparent" />
-          <div className="absolute inset-y-0 left-0 flex max-w-[65%] flex-col justify-center p-5 sm:p-7">
-            <p className="flex items-center gap-2 text-sm font-semibold text-good"><Leaf className="size-4" />Seu plano de 21 dias</p>
-            <h2 className="mt-2 text-2xl font-medium sm:text-3xl">Cuidado em cada refeição.</h2>
-            <p className="mt-2 text-sm text-muted-foreground">No seu ritmo, sem cobranças.</p>
-          </div>
-        </div>
 
       </header>
       <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`}>
@@ -122,18 +114,31 @@ function Alimentacao() {
       {tab === "cardapio" && (
         <div className="mt-6 space-y-6">
           <section aria-label="Escolher dia do cardápio">
-            <div className="grid grid-cols-3 gap-2" role="group" aria-label="Escolher semana">
-              {weeks.map((w) => <Button key={w.n} onClick={() => { const first = w.days[0]; if (first) setDay(first.day); }} aria-pressed={week.n === w.n}
-                variant={week.n === w.n ? "default" : "outline"} className="min-h-12 px-1 text-base rounded-xl">Semana {w.n}</Button>)}
-            </div>
             <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
               <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 1} aria-label="Dia anterior" onClick={() => setDay(day - 1)}><ChevronLeft /></Button>
               <div className="text-center"><h2 className="text-2xl font-medium">Dia {day}</h2><p className="text-sm text-muted-foreground">de 21 dias · Semana {week.n}</p></div>
               <Button variant="outline" size="icon" className="size-12 rounded-full" disabled={day === 21} aria-label="Próximo dia" onClick={() => setDay(day + 1)}><ChevronRight /></Button>
             </div>
-            <div className="mt-4 grid grid-cols-7 gap-1.5" aria-label="Dias da semana">
-              {week.days.map((x) => <Button key={x.day} onClick={() => setDay(x.day)} aria-pressed={x.day === day} aria-label={`Dia ${x.day}`}
-                variant={x.day === day ? "default" : "ghost"} className="h-12 min-w-0 rounded-xl px-0 text-lg">{x.day}</Button>)}
+            <div className="mt-4 grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
+              {planDays.map((d, i) => {
+                const planDay = (week.n - 1) * 7 + i + 1;
+                const selected = day === planDay;
+                return (
+                  <Button key={d} onClick={() => setDay(planDay)} aria-pressed={selected}
+                    aria-label={`Dia ${planDay} · ${d}`} variant="ghost"
+                    className={cn(
+                      "pressable h-auto min-h-14 flex-col gap-0.5 rounded-2xl px-1 py-2 text-[11px] font-semibold transition sm:text-sm",
+                      selected
+                        ? "bg-primary text-primary-foreground shadow-float"
+                        : i === todayIndex
+                          ? "bg-primary-soft text-primary"
+                          : "bg-secondary text-muted-foreground",
+                    )}>
+                    <span>{d}</span>
+                    <span className="text-[10px] font-normal sm:text-xs">Dia {planDay}</span>
+                  </Button>
+                );
+              })}
             </div>
             <NutritionDisclosure title={`Sobre a semana ${week.n}`}>
               <h3 className="mb-3 text-lg font-medium">{week.title}</h3>
