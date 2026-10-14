@@ -103,5 +103,5 @@ export const diary: DiaryEntry[] = [
 ];
 
 export const messages = [
-  { from: "Dr(a). Nadya", text: "Ana, vi que o sono piorou essa semana. Vamos conversar sobre isso na próxima consulta.", when: "2 dias atrás" },
+  { from: "Dr(a). Nadya", text: "Vi que o sono piorou essa semana. Vamos conversar sobre isso na próxima consulta.", when: "2 dias atrás" },
 ];
