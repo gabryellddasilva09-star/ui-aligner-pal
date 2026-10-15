@@ -10,7 +10,7 @@ describe("supplied PDF exercise catalog", () => {
   });
   it("keeps matching illustrations, instructions and safety notes for every exercise", () => {
     for (const exercise of exercises) {
-      expect(exercise.img).toMatch(/^https:\/\//);
+      expect(exercise.img).toMatch(/^(https:\/\/|\/__l5e\/assets-v1\/)/);
       expect(exercise.steps.length).toBeGreaterThanOrEqual(4);
       expect(exercise.attention).toBeTruthy();
       expect(exercise.breathing).toBeTruthy();

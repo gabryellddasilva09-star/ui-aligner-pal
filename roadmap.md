@@ -1,7 +1,7 @@
 # Cuidado contínuo da paciente
 ## Exercícios do guia enviado
-- [ ] Importar os 26 exercícios com imagens, passo a passo, respiração e cuidados do PDF.
-- [ ] Organizar categorias e conferir seleção de dias e integração com o plano.
+- [x] Importar os 26 exercícios com imagens, passo a passo, respiração e cuidados do PDF.
+- [x] Organizar categorias e conferir seleção de dias e integração com o plano.
 ## Etapa 1
 - [x] Guardar registro diário, mapa da dor e pausas na conta da paciente.
 - [x] Evolução, Diário e "O que percebemos" com dados reais.
