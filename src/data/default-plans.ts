@@ -14,7 +14,7 @@ const pick = <T,>(list: T[], i: number) => list[i % list.length];
 export function defaultRecipeSchedule() {
   const cats = ["cafe", "almoco", "lanche", "janta", "ceia"] as const;
   const byDay = Array.from({ length: 7 }, (_, d) =>
-    cats.map(c => recipes.filter(r => r.category === c)).filter(l => l.length).map(l => pick(l, d).id));
+    cats.map(c => recipes.filter(r => r.category === c)).filter(l => l.length).map(l => pick(l, d)!.id));
   return toRows(byDay);
 }
 
