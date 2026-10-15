@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Home, CalendarDays, LineChart, UserRound, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
 import { NotificationsBell } from "@/components/vl/notifications-bell";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
@@ -102,6 +103,12 @@ function ArrowBackButton({ onClick, label }: BackAction) {
 export function IconButtons() {
   const navigate = useNavigate();
   const me = useCurrentUser();
+  const avatar = useQuery({ queryKey: ["my-avatar"], staleTime: Infinity, queryFn: async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return null;
+    const { data } = await supabase.from("community_profiles").select("avatar_url").eq("user_id", session.user.id).maybeSingle();
+    return data?.avatar_url ?? null;
+  } });
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/login" });
@@ -114,8 +121,8 @@ export function IconButtons() {
         </Link>
       )}
       <NotificationsBell />
-      <Link to="/profissional" aria-label="Perfil" className="grid size-10 place-items-center rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
-        {(me.data?.firstName?.[0] ?? "").toUpperCase() || "•"}
+      <Link to="/perfil" aria-label="Meu perfil" title="Meu perfil" className="grid size-10 place-items-center overflow-hidden rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
+        {avatar.data ? <img src={avatar.data} alt="" className="size-full object-cover" /> : (me.data?.firstName?.[0] ?? "").toUpperCase() || "•"}
       </Link>
       <button onClick={signOut} aria-label="Sair" title="Sair" className="grid size-10 place-items-center rounded-full border bg-card text-muted-foreground transition hover:bg-secondary">
         <LogOut className="size-[18px]" />

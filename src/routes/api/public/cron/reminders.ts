@@ -25,11 +25,12 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
         const { data: subs } = await supabaseAdmin.from("push_subscriptions").select("id, user_id, endpoint, time_zone");
         if (!subs?.length) return Response.json({ sent: 0 });
         const users = [...new Set(subs.map(s => s.user_id))];
-        const [{ data: meds }, { data: appts }, { data: progs }] = await Promise.all([
+        const [{ data: meds }, { data: appts }, { data: progs }, { data: trains }] = await Promise.all([
           supabaseAdmin.from("medications").select("id, user_id, name, dose, times").in("user_id", users).eq("active", true).eq("remind", true),
           supabaseAdmin.from("appointments").select("id, user_id, kind, title, starts_at").in("user_id", users).eq("remind", true)
             .gte("starts_at", now.toISOString()).lte("starts_at", new Date(now.getTime() + 25 * 3600e3).toISOString()),
           supabaseAdmin.from("program_enrollments").select("user_id, remind_time, started_on").in("user_id", users).eq("active", true).eq("remind", true),
+          supabaseAdmin.from("training_reminders").select("user_id, remind_time").in("user_id", users).eq("remind", true),
         ]);
         const jobs: { user: string; key: string; title: string; body: string }[] = [];
         for (const user of users) {
@@ -45,6 +46,11 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
             const diff = minutes - (h * 60 + mi);
             const day = Math.min(30, Math.floor((Date.parse(date) - Date.parse(p.started_on)) / 86400e3) + 1);
             if (diff >= 0 && diff < 5 && day >= 1) jobs.push({ user, key: `prog:${user}:${date}`, title: `Programa guiado · Dia ${day}`, body: "Sua atividade de hoje está esperando por você. Vá no seu ritmo 💜" });
+          }
+          for (const t of trains ?? []) if (t.user_id === user) {
+            const [h = 0, mi = 0] = t.remind_time.split(":").map(Number);
+            const diff = minutes - (h * 60 + mi);
+            if (diff >= 0 && diff < 5) jobs.push({ user, key: `train:${user}:${date}`, title: "Hora de se movimentar", body: "Seus exercícios de hoje estão esperando. Vá no seu ritmo 💜" });
           }
           for (const a of appts ?? []) if (a.user_id === user) {
             const mins = (new Date(a.starts_at).getTime() - now.getTime()) / 60000;
