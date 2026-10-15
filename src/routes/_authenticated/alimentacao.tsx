@@ -60,7 +60,6 @@ function Alimentacao() {
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
-  const [shopWeek, setShopWeek] = useState<1 | 2 | 3>(1);
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"todas" | RecipeCategory>("todas");
@@ -95,8 +94,11 @@ function Alimentacao() {
     [categoryFilter, search],
   );
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
-  const list = shopping[shopWeek];
-  const boughtCount = list.filter((i) => bought[`${shopWeek}-${i.name}`]).length;
+  const list = useMemo(() => {
+    const chosen = recipes.filter((r) => daysFor(r.id).length > 0);
+    return [...new Set(chosen.flatMap((r) => r.ingredients))];
+  }, [schedule.data]);
+  const boughtCount = list.filter((name) => bought[name]).length;
 
   return (
     <AppShell backAction={tab === "cardapio" ? undefined : { onClick: () => setTab("cardapio"), label: "Voltar ao cardápio" }}>
