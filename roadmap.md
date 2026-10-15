@@ -1,4 +1,6 @@
 # Cuidado contínuo da paciente
+## Receitas com troca de ingredientes
+- [x] Destacar ingredientes que têm substituição na tabela e abrir as trocas em modal.
 ## Exercícios do guia enviado
 - [x] Importar os 26 exercícios com imagens, passo a passo, respiração e cuidados do PDF.
 - [x] Organizar categorias e conferir seleção de dias e integração com o plano.
