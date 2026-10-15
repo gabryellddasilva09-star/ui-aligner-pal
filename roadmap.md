@@ -25,5 +25,5 @@
 ## Ajustes na tela Minha alimentação
 - [x] Remover o menu Cardápio/Receitas/Compras/Guia e o título "Dia 1 · de 21 dias · Semana 1".
 ## Biblioteca de conhecimento
-- [ ] Reorganizar assuntos em filtros e cartões conforme a referência.
-- [ ] Abrir cada assunto em uma tela com textos e imagens e verificar a navegação.
+ - [x] Reorganizar assuntos em filtros e cartões conforme a referência.
+ - [x] Abrir cada assunto em uma tela com textos e imagens e verificar a navegação.
