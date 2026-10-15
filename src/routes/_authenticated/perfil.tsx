@@ -68,15 +68,19 @@ function Perfil() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["my-profile"] }); qc.invalidateQueries({ queryKey: ["my-avatar"] }); },
   });
 
-  const [pw, setPw] = useState(""); const [pw2, setPw2] = useState(""); const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [pwOld, setPwOld] = useState(""); const [pw, setPw] = useState(""); const [pw2, setPw2] = useState(""); const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const changePw = useMutation({
     mutationFn: async () => {
+      if (!pwOld) throw new Error("Digite sua senha atual.");
       if (pw.length < 8) throw new Error("A senha precisa ter pelo menos 8 caracteres.");
       if (pw !== pw2) throw new Error("As duas senhas não são iguais.");
+      if (pw === pwOld) throw new Error("A nova senha precisa ser diferente da atual.");
+      const { error: checkError } = await supabase.auth.signInWithPassword({ email: d!.email, password: pwOld });
+      if (checkError) throw new Error("A senha atual está incorreta.");
       const { error } = await supabase.auth.updateUser({ password: pw });
       if (error) throw new Error("Não foi possível trocar a senha. Tente outra senha.");
     },
-    onSuccess: () => { setPw(""); setPw2(""); setPwMsg({ ok: true, text: "Senha alterada com sucesso." }); },
+    onSuccess: () => { setPwOld(""); setPw(""); setPw2(""); setPwMsg({ ok: true, text: "Senha alterada com sucesso." }); },
     onError: (e: Error) => setPwMsg({ ok: false, text: e.message }),
   });
 
@@ -117,9 +121,10 @@ function Perfil() {
         <section className="card-soft rounded-3xl p-6">
           <h2 className="flex items-center gap-2 text-lg font-medium"><KeyRound className="size-5 text-primary" /> Alterar senha</h2>
           <form className="mt-4 space-y-3" onSubmit={e => { e.preventDefault(); setPwMsg(null); changePw.mutate(); }}>
+            <Input type="password" autoComplete="current-password" placeholder="Senha atual" value={pwOld} onChange={e => setPwOld(e.target.value)} className="h-12 rounded-xl" />
             <Input type="password" autoComplete="new-password" placeholder="Nova senha" value={pw} onChange={e => setPw(e.target.value)} className="h-12 rounded-xl" />
             <Input type="password" autoComplete="new-password" placeholder="Repita a nova senha" value={pw2} onChange={e => setPw2(e.target.value)} className="h-12 rounded-xl" />
-            <Button type="submit" disabled={changePw.isPending || !pw} className="h-12 w-full rounded-xl text-base">{changePw.isPending ? "Salvando…" : "Salvar nova senha"}</Button>
+            <Button type="submit" disabled={changePw.isPending || !pwOld || !pw} className="h-12 w-full rounded-xl text-base">{changePw.isPending ? "Salvando…" : "Salvar nova senha"}</Button>
             {pwMsg && <p role="status" className={pwMsg.ok ? "text-sm text-good" : "text-sm text-destructive"}>{pwMsg.text}</p>}
           </form>
         </section>
