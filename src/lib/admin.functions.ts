@@ -32,7 +32,7 @@ export const setInitialPassword = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: u } = await supabaseAdmin.auth.admin.getUserById(context.userId);
-    if (!u.user?.app_metadata?.needs_password) throw new Error("Sua senha já foi definida. Use Meu perfil para trocá-la.");
+    if (!u.user?.app_metadata?.["needs_password"]) throw new Error("Sua senha já foi definida. Use Meu perfil para trocá-la.");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, {
       password: data.password,
       app_metadata: { needs_password: false },
