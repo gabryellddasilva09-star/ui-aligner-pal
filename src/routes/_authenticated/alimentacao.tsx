@@ -8,7 +8,7 @@ import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
 import { FoodVisual } from "@/components/vl/nutrition-visuals";
 import {
-  recipes, shopping, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
+  recipes, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
 } from "@/data/anti-inflammatory";
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
