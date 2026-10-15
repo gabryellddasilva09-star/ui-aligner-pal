@@ -55,6 +55,8 @@ function TagChip({ tag }: { tag: Tag }) {
 function Alimentacao() {
   const [tab, setTab] = useState<TabKey>("cardapio");
   const [day, setDay] = useState(() => new Date().getDay());
+  const [weekDates, setWeekDates] = useState<{ key: string; label: string }[]>([]);
+  useEffect(() => { setWeekDates(movementWeek()); }, []);
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
