@@ -99,8 +99,8 @@ function Comunidade() {
       liked: d.likes.some(l => l.message_id === m.id && l.user_id === d.user.id),
       replies: d.replies.filter(r => r.message_id === m.id),
     }));
-    if (filter === "meus") list = list.filter(p => p.user_id === d.user.id || p.replies.some(r => r.user_id === d.user.id));
-    if (filter === "populares") list = [...list].sort((a, b) => (b.likeCount + b.replies.length) - (a.likeCount + a.replies.length));
+    if (filter === "meus") list = list.filter(p => p.user_id === d.user.id);
+    if (filter === "populares") list = [...list].filter(p => p.likeCount > 0).sort((a, b) => b.likeCount - a.likeCount);
     const term = q.trim().toLowerCase();
     if (term) list = list.filter(p => p.body.toLowerCase().includes(term) || p.author_name.toLowerCase().includes(term));
     return list;
@@ -175,7 +175,7 @@ function Comunidade() {
         {feed.isError && <p className="text-destructive">Não foi possível carregar a comunidade agora. Tente de novo mais tarde.</p>}
         {feed.data && posts.length === 0 && (
           <div className="card-soft p-6 text-center text-muted-foreground">
-            {filter === "meus" ? "Você ainda não publicou nem respondeu nenhum assunto." : q ? "Nada encontrado nessa busca." : "A comunidade está começando. Sua experiência pode ser a primeira a acolher alguém."}
+            {filter === "meus" ? "Você ainda não publicou nenhum assunto." : filter === "populares" ? "Nenhum assunto recebeu curtidas ainda." : q ? "Nada encontrado nessa busca." : "A comunidade está começando. Sua experiência pode ser a primeira a acolher alguém."}
           </div>
         )}
         {posts.map(p => (
