@@ -87,8 +87,16 @@ function LibraryPage() {
         <span className="sr-only">Buscar uma dúvida</span>
         <Search className="pointer-events-none absolute left-5 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Qual é a sua dúvida? Ex.: sono, remédio, frio"
-          className="h-14 w-full rounded-full border bg-card pl-14 pr-5 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+          className="h-14 w-full rounded-full border bg-card pl-14 pr-14 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+        {query && <button type="button" onClick={() => setQuery("")} aria-label="Limpar busca"
+          className="absolute right-4 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+          <span aria-hidden className="text-xl leading-none">×</span>
+        </button>}
       </label>
+      {query.trim() && <p aria-live="polite" className="mt-3 text-base text-muted-foreground">
+        {filtered.length === 0 ? "Nenhum assunto com essa palavra." :
+          `${filtered.length} ${filtered.length === 1 ? "assunto" : "assuntos"} sobre “${query.trim()}”`}
+      </p>}
 
       <section className="mt-6 [&_h2]:tracking-normal">
         <h2 className="text-xl font-semibold">Escolha um assunto</h2>
