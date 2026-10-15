@@ -1,0 +1,4 @@
+ALTER TABLE public.movement_exercise_schedule DROP CONSTRAINT movement_exercise_schedule_exercise_id_check;
+ALTER TABLE public.movement_exercise_schedule ADD CONSTRAINT movement_exercise_schedule_exercise_id_check CHECK (exercise_id IN ('pescoco','ombros','bracos','quadril','pernas','cadeira','aq1','aq2','aq3','aq4','f1-1','f1-2','f1-3','f1-4','f1-5','f2-1','f2-2','f2-3','f2-4','f2-5','f2-6','f3-1','f3-2','f3-3','f3-4','f3-5','cr1','cr2','cr3','cr4','dq1','dq2'));
+ALTER TABLE public.movement_exercise_completions DROP CONSTRAINT movement_exercise_completions_exercise_id_check;
+ALTER TABLE public.movement_exercise_completions ADD CONSTRAINT movement_exercise_completions_exercise_id_check CHECK (exercise_id IN ('pescoco','ombros','bracos','quadril','pernas','cadeira','aq1','aq2','aq3','aq4','f1-1','f1-2','f1-3','f1-4','f1-5','f2-1','f2-2','f2-3','f2-4','f2-5','f2-6','f3-1','f3-2','f3-3','f3-4','f3-5','cr1','cr2','cr3','cr4','dq1','dq2'));
