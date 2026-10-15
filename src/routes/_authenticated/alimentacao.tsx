@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check, ChevronLeft, ChevronRight, Clock, Droplets, Leaf, ShoppingBasket, Users, X, Ban, Sparkles, RefreshCw, BookOpen, ChefHat, Search, Minus, Plus, ArrowRight,
+  Check, ChevronLeft, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
-import { FoodVisual, NutritionDisclosure } from "@/components/vl/nutrition-visuals";
+import { FoodVisual } from "@/components/vl/nutrition-visuals";
 import {
-  avoid, eatFreely, getDay, mealLabels, mealOrder, parseMeal, principles, recipes, shopping, substitutions,
-  tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
+  recipes, shopping, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
 } from "@/data/anti-inflammatory";
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
@@ -54,7 +53,7 @@ function TagChip({ tag }: { tag: Tag }) {
 
 function Alimentacao() {
   const [tab, setTab] = useState<TabKey>("cardapio");
-  const [day, setDay] = useState(1);
+  const [day, setDay] = useState(() => new Date().getDay());
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
@@ -71,21 +70,23 @@ function Alimentacao() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setDay(load("vl-ai-day", 1));
+    setDay(load("vl-ai-weekday", new Date().getDay()));
     setDone(load("vl-ai-done", {}));
     setWater(load("vl-ai-water", {}));
     setBought(load("vl-ai-shop", {}));
     setHydrated(true);
   }, []);
-  useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-day", JSON.stringify(day)); }, [day, hydrated]);
+  useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-weekday", JSON.stringify(day)); }, [day, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-done", JSON.stringify(done)); }, [done, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-water", JSON.stringify(water)); }, [water, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-shop", JSON.stringify(bought)); }, [bought, hydrated]);
   useEffect(() => { window.scrollTo({ top: 0 }); }, [tab]);
 
-  const { week, plan } = getDay(day);
-  const todayIndex = new Date().getDay();
-  const doneToday = mealOrder.filter((m) => done[`${day}-${m}`]).length;
+  const mealsOfDay = useMemo(
+    () => recipeCategoryOrder.flatMap((c) => recipes.filter((r) => r.category === c && daysFor(r.id).includes(day))),
+    [schedule.data, day],
+  );
+  const doneToday = mealsOfDay.filter((r) => done[`${day}-${r.id}`]).length;
   const cups = water[day] ?? 0;
   const visibleRecipes = useMemo(
     () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && (recipeFilter === "todas" || r.tags.includes(recipeFilter)) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
