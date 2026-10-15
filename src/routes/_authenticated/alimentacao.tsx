@@ -13,6 +13,7 @@ import {
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
+import { substitutionsFor } from "@/lib/ingredient-substitutions";
 
 const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 import { movementWeek } from "@/lib/movement-progress";
@@ -94,6 +95,7 @@ function Alimentacao() {
     [categoryFilter, search],
   );
   const [showSubs, setShowSubs] = useState(false);
+  const [swapFor, setSwapFor] = useState<string | null>(null);
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
   const list = useMemo(() => {
     const chosen = recipes.filter((r) => daysFor(r.id).length > 0);
@@ -302,7 +304,7 @@ function Alimentacao() {
         </DialogShell>
       )}
       {open && (
-        <DialogShell title={open.name} onClose={() => setOpenRecipe(null)}>
+        <DialogShell title={open.name} onClose={() => (swapFor ? setSwapFor(null) : setOpenRecipe(null))}>
           <div className="mb-5 overflow-hidden rounded-2xl"><RecipeImage id={open.id} name={open.name} large /></div>
           <div className="flex flex-wrap gap-1.5">{open.tags.map((t) => <TagChip key={t} tag={t} />)}</div>
           <h2 className="mt-2 text-2xl font-medium">{open.name}</h2>
@@ -311,7 +313,28 @@ function Alimentacao() {
             <span className="flex items-center gap-1"><Users className="size-3.5" />{open.serves}</span>
           </p>
           <h3 className="mt-6 text-xl font-medium">Ingredientes</h3>
-          <ul className="mt-2 space-y-3 text-lg leading-relaxed">{open.ingredients.map((x) => <li key={x} className="flex gap-2"><Leaf className="mt-1 size-3.5 shrink-0 text-primary" />{x}</li>)}</ul>
+          {open.ingredients.some((x) => substitutionsFor(x).length > 0) && (
+            <p className="mt-1 flex items-start gap-2 text-sm text-muted-foreground">
+              <span aria-hidden className="mt-1.5 inline-block size-3 shrink-0 rounded-full bg-primary-soft ring-1 ring-primary/40" />
+              Os ingredientes destacados têm uma troca sugerida — toque em “Trocar” para ver as opções.
+            </p>
+          )}
+          <ul className="mt-2 space-y-2 text-lg leading-relaxed">
+            {open.ingredients.map((x) => {
+              const subs = substitutionsFor(x);
+              return subs.length === 0 ? (
+                <li key={x} className="flex gap-2 px-1 py-1.5"><Leaf className="mt-1 size-3.5 shrink-0 text-primary" />{x}</li>
+              ) : (
+                <li key={x} className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-2xl border border-primary/40 bg-primary-soft px-3 py-2">
+                  <span className="flex min-w-0 gap-2"><Leaf className="mt-1 size-3.5 shrink-0 text-primary" />{x}</span>
+                  <Button variant="ghost" onClick={() => setSwapFor(x)}
+                    className="min-h-10 shrink-0 gap-1.5 rounded-full bg-card px-3 text-sm font-semibold text-primary">
+                    <ArrowLeftRight className="size-4" />Trocar
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
           <h3 className="mt-6 text-xl font-medium">Modo de preparo</h3>
           <ol className="mt-2 space-y-4 text-lg leading-relaxed">
             {open.steps.map((s, i) => <li key={s} className="flex gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary-soft text-base font-semibold text-primary">{i + 1}</span>{s}</li>)}
@@ -336,6 +359,27 @@ function Alimentacao() {
           <Button disabled={saveSchedule.isPending} onClick={() => saveSchedule.mutate({ recipeId: open.id, weekdays: selectedDays }, { onSuccess: () => setOpenRecipe(null) })}
             className="mt-4 min-h-14 w-full rounded-full text-lg">{saveSchedule.isPending ? "Salvando…" : "Salvar no meu cardápio"}</Button>
           <Button variant="ghost" onClick={() => setOpenRecipe(null)} className="mt-3 min-h-14 w-full rounded-full bg-secondary text-lg font-medium text-foreground hover:bg-secondary/80 hover:text-foreground">Cancelar</Button>
+        </DialogShell>
+      )}
+      {swapFor && (
+        <DialogShell title={`Trocar ${swapFor}`} onClose={() => setSwapFor(null)}>
+          <p className="text-sm font-semibold text-primary">Este ingrediente pode ser trocado</p>
+          <h2 className="mt-1 text-2xl font-medium">{swapFor}</h2>
+          <ul className="mt-5 space-y-3">
+            {substitutionsFor(swapFor).map((s) => (
+              <li key={`${s.from}-${s.to}`} className="rounded-2xl border bg-card p-4">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+                  <p className="text-base font-medium">{s.from}</p>
+                  <ArrowLeftRight aria-label="pode ser trocado por" className="size-5 text-primary" />
+                  <p className="text-base font-semibold text-primary">{s.to}</p>
+                </div>
+                <p className="mt-2 flex gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 size-4 shrink-0 text-good" />{s.note}</p>
+              </li>
+            ))}
+          </ul>
+          <Button variant="ghost" onClick={() => { setSwapFor(null); setOpenRecipe(null); setShowSubs(true); }}
+            className="mt-5 min-h-14 w-full rounded-full bg-secondary text-base font-medium text-foreground hover:bg-secondary/80 hover:text-foreground">Ver todas as substituições</Button>
+          <Button onClick={() => setSwapFor(null)} className="mt-3 min-h-14 w-full rounded-full text-lg">Fechar</Button>
         </DialogShell>
       )}
       </div>

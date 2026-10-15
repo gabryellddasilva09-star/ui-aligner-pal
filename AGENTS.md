@@ -24,3 +24,4 @@
 - Derive movement activities only from saved weekday assignments and persist completions per user, exercise and local calendar date, so progress starts at zero and never carries over to another day.
 - Keep library content in the shared browser-safe knowledge data module and render topic articles through the parameterized knowledge route, so filtering and reading reuse the same educational text.
 - Render account and notification controls only through AppShell's viewport-specific top bars, never inside page headers, to prevent duplicate controls.
+- Link recipe ingredients to the cardápio's substitution table through a dedicated matcher module, so supplied PDF text stays verbatim and swap hints are always derived from that table rather than hand-marked.
