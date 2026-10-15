@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { defaultRecipeSchedule } from "@/data/default-plans";
 
 export const recipeScheduleSchema = z.object({
   recipeId: z.string().min(1).max(60),
@@ -13,7 +14,14 @@ export function useRecipeSchedule() {
     queryFn: async () => {
       const { data, error } = await supabase.from("recipe_schedule").select("recipe_id, weekdays");
       if (error) throw error;
-      return data ?? [];
+      if (data && data.length) return data;
+      // First visit: no saved rows ever (removals keep rows with empty days), so apply the default week.
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return [];
+      const rows = defaultRecipeSchedule().map(r => ({ user_id: auth.user!.id, recipe_id: r.id, weekdays: r.weekdays }));
+      const { error: seedError } = await supabase.from("recipe_schedule").upsert(rows, { onConflict: "user_id,recipe_id", ignoreDuplicates: true });
+      if (seedError) throw seedError;
+      return rows.map(r => ({ recipe_id: r.recipe_id, weekdays: r.weekdays }));
     },
   });
 }
