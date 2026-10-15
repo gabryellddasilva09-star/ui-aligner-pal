@@ -25,19 +25,17 @@ function Admin() {
   const admin = useQuery({ queryKey: ["is-admin"], queryFn: async () => { const { data } = await supabase.rpc("is_admin"); return !!data; } });
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (name.trim().length < 2) return setMsg({ ok: false, text: "Informe o nome." });
-    if (password.length < 8) return setMsg({ ok: false, text: "A senha precisa ter pelo menos 8 caracteres." });
     setBusy(true); setMsg(null);
     try {
-      await createPatientUser({ data: { name, email, password } });
-      setMsg({ ok: true, text: `Conta de ${name} criada! Ela já pode entrar com esse e-mail e senha.` });
-      setName(""); setEmail(""); setPassword("");
+      await createPatientUser({ data: { name, email, redirectTo: `${window.location.origin}/definir-senha` } });
+      setMsg({ ok: true, text: `Conta de ${name} criada! Enviamos um e-mail com o link para ela escolher a senha e entrar.` });
+      setName(""); setEmail("");
     } catch (err) {
       setMsg({ ok: false, text: err instanceof Error ? err.message : "Não foi possível cadastrar." });
     } finally { setBusy(false); }
@@ -57,9 +55,8 @@ function Admin() {
         <form onSubmit={submit} className="card-soft mt-8 max-w-lg space-y-4 p-5">
           <label className="block space-y-1"><span className="text-base font-medium">Nome</span><input className={field} value={name} onChange={e => setName(e.target.value)} maxLength={80} required /></label>
           <label className="block space-y-1"><span className="text-base font-medium">E-mail</span><input type="email" className={field} value={email} onChange={e => setEmail(e.target.value)} required /></label>
-          <label className="block space-y-1"><span className="text-base font-medium">Senha</span><input type="text" className={field} value={password} onChange={e => setPassword(e.target.value)} minLength={8} required /></label>
           {msg && <p className={msg.ok ? "text-primary" : "text-destructive"}>{msg.text}</p>}
-          <Button type="submit" size="lg" className="w-full rounded-full text-base" disabled={busy}>{busy ? "Cadastrando..." : "Cadastrar usuário"}</Button>
+          <Button type="submit" size="lg" className="w-full rounded-full text-base" disabled={busy}>{busy ? "Enviando convite..." : "Cadastrar e enviar convite"}</Button>
           <p className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4" />Os registros de cada paciente continuam privados.</p>
         </form>
       )}
