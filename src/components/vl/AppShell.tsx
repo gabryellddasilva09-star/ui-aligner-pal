@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { NotificationsBell } from "@/components/vl/notifications-bell";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -112,10 +113,7 @@ export function IconButtons() {
           <UserPlus className="size-[18px]" />
         </Link>
       )}
-      <button aria-label="Notificações" className="relative grid size-10 place-items-center rounded-full border bg-card transition hover:bg-secondary">
-        <Bell className="size-[18px]" />
-        <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-pain ring-2 ring-card" />
-      </button>
+      <NotificationsBell />
       <Link to="/profissional" aria-label="Perfil" className="grid size-10 place-items-center rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
         {(me.data?.firstName?.[0] ?? "").toUpperCase() || "•"}
       </Link>
