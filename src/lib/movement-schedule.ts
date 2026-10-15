@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { allExercises } from "@/data/exercises";
 
 export const scheduleInputSchema = z.object({
-  exerciseId: z.enum(["pescoco", "ombros", "bracos", "quadril", "pernas", "cadeira"]),
+  exerciseId: z.string().refine(id => allExercises.some(exercise => exercise.id === id), "Exercício desconhecido"),
   weekdays: z.array(z.number().int().min(0).max(6)).max(7).transform(days => [...new Set(days)].sort()),
 });
 

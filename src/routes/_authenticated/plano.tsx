@@ -9,7 +9,7 @@ import { ActivityTile, ProgressBar, DialogShell } from "@/components/vl/movement
 import { planDays, planDayNames } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useCurrentUser } from "@/lib/user";
-import { exercises } from "@/data/exercises";
+import { allExercises } from "@/data/exercises";
 import { useMovementSchedule, useMovementCompletions, useCompleteMovementExercise } from "@/lib/movement-schedule";
 import { movementWeek, movementProgress } from "@/lib/movement-progress";
 import { todayKey } from "@/lib/records";
@@ -40,10 +40,10 @@ function Plano() {
   const today = todayKey();
   const completions = useMovementCompletions(week[0]?.key ?? today, week[6]?.key ?? today);
   const saveCompletion = useCompleteMovementExercise();
-  const allActivities = exercises.map(exercise => ({
-    id: exercise.id, name: exercise.name, category: exercise.cat, duration: `${exercise.min} min`,
-    description: "Baixo impacto", objective: "Movimentar-se com suavidade, respeitando seus limites.",
-    steps: exercise.steps, safety: ["Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto."],
+  const allActivities = allExercises.map(exercise => ({
+    id: exercise.id, name: exercise.name, category: exercise.cat, duration: exercise.duration ?? `${exercise.min} min`, minutes: exercise.min,
+    description: exercise.position ?? "Baixo impacto", objective: exercise.benefit ?? "Movimentar-se com suavidade, respeitando seus limites.", breathing: exercise.breathing,
+    steps: exercise.steps, safety: [...(exercise.attention ? [exercise.attention] : []), "Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto."],
     image: exercise.img,
   }));
   const activitiesForDay = (index: number) => allActivities.filter(activity =>
@@ -65,13 +65,12 @@ function Plano() {
   const doneCount = progress.done;
   const pct = Math.round(progress.value * 100);
   const totalMinutes = todayActivities.reduce((sum, a) => {
-    const m = a.duration ? parseInt(a.duration, 10) : 10;
-    return sum + (Number.isNaN(m) ? 10 : m);
+    return sum + a.minutes;
   }, 0);
   const open = allActivities.find((a) => a.id === openId) ?? null;
   function activityVisual(activity: (typeof allActivities)[number], large = false) {
     return "image" in activity && typeof activity.image === "string"
-      ? <img src={activity.image} alt="" className={cn("shrink-0 rounded-2xl object-cover", large ? "size-20" : "size-16")} />
+      ? <img src={activity.image} alt="" className={cn("shrink-0 rounded-lg object-contain", large ? "h-20 w-32" : "h-16 w-24")} />
       : <ActivityTile id={activity.id} large={large} />;
   }
 
@@ -277,6 +276,7 @@ function Plano() {
                   </li>
                 ))}
               </ol>
+              {open.breathing && <p className="mt-4 text-sm leading-relaxed text-muted-foreground"><span className="font-semibold text-foreground">Respiração: </span>{open.breathing}</p>}
               <div className="mt-5 flex gap-3 rounded-2xl bg-secondary p-4">
                 <ShieldCheck className="size-5 shrink-0 text-primary" aria-hidden />
                 <div>

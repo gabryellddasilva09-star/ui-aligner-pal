@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { DialogShell } from "@/components/vl/movement";
 import { cn } from "@/lib/utils";
-import { exercises, type Exercise } from "@/data/exercises";
+import { exercises, exerciseCategories, type Exercise } from "@/data/exercises";
 import { planDays, planDayNames } from "@/data/movement";
 import { useMovementSchedule, useSaveMovementSchedule } from "@/lib/movement-schedule";
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,7 @@ export const Route = createFileRoute("/_authenticated/exercicios")({
 
 const filters = [
   { key: "all", label: "Todos" },
-  { key: "beginner", label: "Para iniciantes" },
-  { key: "guided", label: "Com orientação" },
+  ...exerciseCategories.map(category => ({ key: category, label: category })),
 ] as const;
 
 function Exercicios() {
@@ -49,7 +48,7 @@ function Exercicios() {
       setOpen(null);
     } catch { /* The dialog displays the error and keeps the selected days. */ }
   }
-  const list = exercises.filter((e) => filter === "all" || (filter === "beginner" ? e.beginner : e.guided));
+  const list = exercises.filter((e) => filter === "all" || e.cat === filter);
 
   return (
     <AppShell>
@@ -60,7 +59,7 @@ function Exercicios() {
         <h1 className="text-3xl font-medium">Exercícios</h1>
       </header>
 
-      <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-5 flex flex-wrap gap-2 pb-1" role="group" aria-label="Categoria de exercícios">
         {filters.map((f) => (
           <Button variant="ghost" key={f.key} onClick={() => setFilter(f.key)} aria-pressed={filter === f.key}
             className={cn("shrink-0 rounded-full px-4 py-2.5 text-sm font-medium transition",
@@ -71,18 +70,20 @@ function Exercicios() {
       </div>
 
       {schedule.error && <p role="alert" className="mt-4 text-sm text-destructive">Não foi possível carregar seu plano. <Button variant="link" onClick={() => schedule.refetch()}>Tentar novamente</Button></p>}
-      <ul className="mt-5 space-y-3">
+      <p className="mt-4 text-sm text-muted-foreground">{list.length} exercícios</p>
+      <ul className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {list.map((e) => (
           <li key={e.id}>
-            <Button variant="ghost" disabled={schedule.isPending || !!schedule.error} onClick={() => openExercise(e)} className="card-soft pressable flex h-auto w-full flex-wrap justify-start gap-x-3 gap-y-2 whitespace-normal p-3 text-left">
-              <img src={e.img} alt="" width={816} height={816} loading="lazy" className="size-20 shrink-0 rounded-2xl object-cover sm:size-24" />
+            <Button variant="ghost" onClick={() => openExercise(e)} aria-label={`Ver ${e.name}`} className="card-soft pressable flex h-full w-full flex-wrap content-start justify-start gap-x-3 gap-y-3 overflow-hidden whitespace-normal p-3 text-left">
+              <img src={e.img} alt={`Demonstração: ${e.name}`} width={1022} height={428} loading="lazy" className="aspect-[511/214] w-full rounded-lg object-contain" />
               <div className="min-w-0 flex-1">
+                <p className="mb-1 text-xs font-medium text-primary">{e.code} · {e.phase}</p>
                 <p className="font-semibold leading-snug">{e.name}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{e.min} min • {e.cat}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{e.duration} • {e.cat}</p>
               </div>
               <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
               <div className="flex w-full items-center justify-between gap-2 border-t pt-2">
-                <span className="shrink-0 rounded-full bg-primary-soft px-2 py-1 text-[11px] font-medium text-primary">Baixo impacto</span>
+                <span className="min-w-0 text-[11px] text-muted-foreground">{e.position}</span>
                 <span className="flex min-w-0 flex-wrap justify-end gap-1 text-[10px] text-primary" aria-label={`Dias planejados: ${daysFor(e.id).map(d => planDayNames[d]).join(", ") || "nenhum"}`}>
                   {schedule.isPending ? <span className="text-muted-foreground">Carregando dias…</span> : daysFor(e.id).length ? daysFor(e.id).map(d => <span key={d} className="rounded bg-primary-soft px-1 py-1 font-semibold">{planDays[d]}</span>) : <span className="text-muted-foreground">Sem dias</span>}
                 </span>
@@ -94,9 +95,10 @@ function Exercicios() {
 
       {open && (
         <DialogShell title={open.name} onClose={() => setOpen(null)}>
-          <img src={open.img} alt={open.name} className="aspect-square w-full rounded-3xl object-cover" />
+          <img src={open.img} alt={`Demonstração: ${open.name}`} className="aspect-[511/214] w-full rounded-lg object-contain" />
           <h2 className="mt-4 font-display text-2xl font-medium">{open.name}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{open.min} min • {open.cat} • Baixo impacto</p>
+          <p className="mt-1 text-sm text-muted-foreground">{open.duration} • {open.phase} • {open.position}</p>
+          <h3 className="mt-5 font-semibold">Passo a passo</h3>
           <ol className="mt-4 space-y-2">
             {open.steps.map((s, i) => (
               <li key={i} className="flex gap-3 text-sm leading-relaxed">
@@ -105,10 +107,14 @@ function Exercicios() {
               </li>
             ))}
           </ol>
-          <div className="mt-4 flex gap-3 rounded-2xl bg-secondary p-4 text-xs leading-relaxed text-muted-foreground">
+          <h3 className="mt-5 font-semibold">Respiração</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{open.breathing}</p>
+          <div className="mt-4 flex gap-3 rounded-lg bg-secondary p-4 text-sm leading-relaxed text-muted-foreground">
             <ShieldCheck className="size-5 shrink-0 text-primary" />
-            Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto.
+            <div><h3 className="font-semibold text-foreground">Atenção</h3><p className="mt-1">{open.attention}</p><p className="mt-2">Faça só o que for confortável. Pare se sentir dor, tontura ou desconforto. Estas orientações gerais não substituem uma avaliação individual.</p></div>
           </div>
+          <h3 className="mt-5 font-semibold">Benefício descrito no guia</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{open.benefit}</p>
           <fieldset className="mt-5 border-y py-4" disabled={save.isPending}>
             <legend className="text-base font-semibold">Adicionar aos dias</legend>
             <div className="grid grid-cols-2 gap-2">
@@ -119,7 +125,8 @@ function Exercicios() {
             </div>
           </fieldset>
           {save.error && <p role="alert" className="mt-4 text-sm text-destructive">Não foi possível salvar. Tente novamente.</p>}
-          <Button disabled={save.isPending} onClick={saveDays} className="pressable mt-5 h-12 w-full rounded-full text-sm font-semibold">{save.isPending ? "Salvando…" : "Salvar no meu plano"}</Button>
+          {schedule.error && <p role="alert" className="mt-4 text-sm text-destructive">Não foi possível carregar seus dias. Tente novamente antes de salvar.</p>}
+          <Button disabled={save.isPending || schedule.isPending || !!schedule.error} onClick={saveDays} className="pressable mt-5 h-12 w-full rounded-full text-sm font-semibold">{save.isPending ? "Salvando…" : "Salvar no meu plano"}</Button>
           <Button variant="ghost" disabled={save.isPending} onClick={() => setOpen(null)} className="mt-2 h-11 w-full rounded-full">Cancelar</Button>
         </DialogShell>
       )}
