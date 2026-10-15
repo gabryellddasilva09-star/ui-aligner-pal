@@ -13,6 +13,7 @@ import {
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
+import { substitutionsFor } from "@/lib/ingredient-substitutions";
 
 const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 import { movementWeek } from "@/lib/movement-progress";
@@ -94,6 +95,7 @@ function Alimentacao() {
     [categoryFilter, search],
   );
   const [showSubs, setShowSubs] = useState(false);
+  const [swapFor, setSwapFor] = useState<string | null>(null);
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
   const list = useMemo(() => {
     const chosen = recipes.filter((r) => daysFor(r.id).length > 0);
@@ -302,7 +304,7 @@ function Alimentacao() {
         </DialogShell>
       )}
       {open && (
-        <DialogShell title={open.name} onClose={() => setOpenRecipe(null)}>
+        <DialogShell title={open.name} onClose={() => (swapFor ? setSwapFor(null) : setOpenRecipe(null))}>
           <div className="mb-5 overflow-hidden rounded-2xl"><RecipeImage id={open.id} name={open.name} large /></div>
           <div className="flex flex-wrap gap-1.5">{open.tags.map((t) => <TagChip key={t} tag={t} />)}</div>
           <h2 className="mt-2 text-2xl font-medium">{open.name}</h2>
