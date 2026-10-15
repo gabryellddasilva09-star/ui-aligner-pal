@@ -78,6 +78,13 @@
       "when": 1792023733469,
       "tag": "0010_community_social",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792024744065,
+      "tag": "0011_community_admin_delete",
+      "breakpoints": true
     }
   ]
 }
