@@ -87,7 +87,7 @@ export async function buildReportPdf(opts: {
       `Cansaco: ${r.fatigue} · Disposicao: ${r.disposition}`,
     ];
     const hrs = sleepHours(r);
-    if (hrs !== null) lines.push(`Dormiu ${hrs}h (${r.bedTime} → ${r.wakeTime})${r.awakenings != null ? ` · acordou ${r.awakenings}x` : ""}`);
+    if (hrs !== null) lines.push(`Dormiu ${hrs}h (${r.bedTime} as ${r.wakeTime})${r.awakenings != null ? ` · acordou ${r.awakenings}x` : ""}`);
     if (r.bodyPain && Object.keys(r.bodyPain).length) {
       const parts = painRegions.filter(p => r.bodyPain![p] != null).map(p => `${p} ${r.bodyPain![p]}/10`);
       if (parts.length) lines.push(`Dor no corpo: ${parts.join(", ")}`);
