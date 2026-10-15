@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
 
 const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+import { movementWeek } from "@/lib/movement-progress";
 
 export const Route = createFileRoute("/_authenticated/alimentacao")({
   head: () => ({
@@ -69,7 +70,7 @@ function Alimentacao() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setDay(load("vl-ai-weekday", new Date().getDay()));
+    setDay(new Date().getDay());
     setDone(load("vl-ai-done", {}));
     setWater(load("vl-ai-water", {}));
     setBought(load("vl-ai-shop", {}));
@@ -127,6 +128,7 @@ function Alimentacao() {
                         : "bg-secondary text-muted-foreground",
                     )}>
                     <span>{d}</span>
+                    <span className="text-[10px] font-medium opacity-80 sm:text-xs">{weekDates[i]?.label}</span>
                   </Button>
                 );
               })}
