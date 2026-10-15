@@ -101,7 +101,7 @@ function Evolucao() {
         to: parse(to),
         records: inRange,
         summary: summary.map(s => ({ label: s.label, cur: s.cur, change: s.change })),
-        patientName: name,
+        ...(name ? { patientName: name } : {}),
       });
       downloadBlob(bytes, `relatorio-vivaleve-${from}_a_${to}.pdf`);
     } finally {
