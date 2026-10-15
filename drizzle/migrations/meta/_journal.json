@@ -71,6 +71,13 @@
       "when": 1792021731589,
       "tag": "0009_recipe_schedule",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792023733469,
+      "tag": "0010_community_social",
+      "breakpoints": true
     }
   ]
 }
