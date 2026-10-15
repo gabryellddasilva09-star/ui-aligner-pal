@@ -70,9 +70,12 @@ function Index() {
         <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
         <div className="relative">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 lg:hidden">
-              <Logo className="size-6" />
-              <span className="text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+            <div className="flex items-center justify-between gap-2 lg:hidden">
+              <div className="flex min-w-0 items-center gap-2">
+                <Logo className="size-6 shrink-0" />
+                <span className="truncate text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+              </div>
+              <IconButtons />
             </div>
             <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""}</h1>
             <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
