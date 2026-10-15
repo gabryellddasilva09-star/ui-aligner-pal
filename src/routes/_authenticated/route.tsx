@@ -17,7 +17,7 @@ function AuthenticatedLayout() {
   useEffect(() => {
     const warm = () => {
       for (const route of Object.values(router.routesById)) {
-        void router.loadRouteChunk(route as never).catch(() => {});
+        void router.loadRouteChunk(route as never)?.catch(() => {});
       }
     };
     const w = window as Window & { requestIdleCallback?: (cb: () => void) => number };
