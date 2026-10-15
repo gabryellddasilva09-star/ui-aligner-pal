@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { allExercises } from "@/data/exercises";
+import { defaultExerciseSchedule } from "@/data/default-plans";
 
 export const scheduleInputSchema = z.object({
   exerciseId: z.string().refine(id => allExercises.some(exercise => exercise.id === id), "Exercício desconhecido"),
@@ -32,7 +33,12 @@ export function useMovementSchedule() {
       const { data, error } = await supabase.from("movement_exercise_schedule")
         .select("exercise_id, weekdays").eq("user_id", user.data);
       if (error) throw error;
-      return data ?? [];
+      if (data && data.length) return data;
+      // First visit: removals keep rows with empty days, so an empty table means a new user.
+      const rows = defaultExerciseSchedule().map(r => ({ user_id: user.data!, exercise_id: r.id, weekdays: r.weekdays }));
+      const { error: seedError } = await supabase.from("movement_exercise_schedule").upsert(rows, { onConflict: "user_id,exercise_id", ignoreDuplicates: true });
+      if (seedError) throw seedError;
+      return rows.map(r => ({ exercise_id: r.exercise_id, weekdays: r.weekdays }));
     },
   });
   return { ...query, isPending: user.isPending || query.isPending, error: user.error ?? query.error };
