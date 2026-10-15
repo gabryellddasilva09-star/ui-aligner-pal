@@ -31,6 +31,21 @@ const tones: Record<KnowledgeTone, string> = {
 
 function normalize(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
 
+// Palavras extras que ajudam a encontrar cada assunto, mesmo sem a palavra exata.
+const topicKeywords: Record<string, string> = {
+  "o-que-e": "fibromialgia doença condição crônica o que é significado",
+  causas: "causa origem hereditariedade genética desencadeia",
+  sintomas: "dor cansaço sono fadiga névoa mental fibro fog frio calor formigamento intestino enxaqueca",
+  diagnostico: "diagnóstico exame médico teste tender points exames",
+  tratamento: "tratamento remédio medicamento remédios terapia medicação tto",
+  movimento: "exercício exercícios atividade física alongamento caminhada movimento musculação",
+  alimentacao: "alimentação comida dieta anti-inflamatória comida nutrição glúten açúcar",
+  sono: "sono dormir insônia descanso cansaço fadiga sono reparador noite",
+  emocoes: "ansiedade depressão estresse emoção humor tristeza psicológico apoio humor",
+  "dia-a-dia": "trabalho casa rotina dia a dia energia economia tarefas",
+  alerta: "médico urgência emergência sinal alerta gravidade piora",
+};
+
 function LibraryPage() {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<string>("all");
@@ -38,7 +53,10 @@ function LibraryPage() {
     const q = normalize(query.trim());
     return knowledgeTopics
       .filter(t => active === "all" || knowledgeCategory(t.id) === active)
-      .filter(t => !q || normalize(t.title + " " + t.summary + " " + t.questions.map(x => x.q + " " + x.a).join(" ")).includes(q));
+      .filter(t => !q || normalize(
+        t.title + " " + t.summary + " " + (topicKeywords[t.id] ?? "") + " " +
+        t.questions.map(x => x.q + " " + x.a).join(" ")
+      ).includes(q));
   }, [query, active]);
 
   return <AppShell>
