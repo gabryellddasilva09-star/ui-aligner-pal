@@ -198,14 +198,13 @@ function Comunidade() {
                 onClick={() => toggleLike.mutate({ id: p.id, liked: p.liked })} className="flex items-center gap-2 text-base font-medium">
                 <Heart className={cn("size-6 text-destructive transition", p.liked && "fill-destructive scale-110")} />{p.likeCount}
               </button>
-              <button type="button" onClick={() => setOpenReplies(openReplies === p.id ? null : p.id)} aria-label="Ver respostas" className="flex items-center gap-2 text-base font-medium">
+              <button type="button" onClick={() => setOpenReplies(p.id)} aria-label="Ver respostas" className="flex items-center gap-2 text-base font-medium">
                 <MessageCircle className="size-6" />{p.replies.length}
               </button>
               <button type="button" onClick={() => setOpenReplies(p.id)} className="ml-auto flex items-center gap-2 text-base font-semibold text-primary">
                 <Reply className="size-5" />Responder
               </button>
             </div>
-            {openReplies === p.id && <Replies postId={p.id} replies={p.replies} avatars={feed.data!.avatars} onDone={refresh} />}
           </article>
         ))}
       </section>
