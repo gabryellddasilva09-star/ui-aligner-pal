@@ -520,6 +520,27 @@ export type Database = {
           },
         ]
       }
+      training_reminders: {
+        Row: {
+          remind: boolean
+          remind_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          remind?: boolean
+          remind_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          remind?: boolean
+          remind_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
