@@ -20,8 +20,8 @@ export const patient = {
 };
 
 export const professional = {
-  name: "Dr(a). Nadya",
-  role: "Reumatologista",
+  name: "Dra. Nadya Kazzaz",
+  role: "Cardiologista",
   lastSeen: "Revisou seus registros há 2 dias",
 };
 
