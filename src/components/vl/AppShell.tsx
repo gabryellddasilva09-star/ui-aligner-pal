@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { NotificationsBell } from "@/components/vl/notifications-bell";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -71,16 +72,14 @@ export function AppShell({ children, backAction }: { children: ReactNode; backAc
           <IconButtons />
         </div>
         <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 sm:px-8 lg:px-10 lg:pb-16">
-          {(showMobileBack || backAction) && (
-            <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
-              {backAction ? <ArrowBackButton {...backAction} /> : (
-                <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
-                  <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
-                </Link>
-              )}
-              <IconButtons />
-            </div>
-          )}
+          <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
+            {backAction ? <ArrowBackButton {...backAction} /> : showMobileBack ? (
+              <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
+                <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
+              </Link>
+            ) : <span />}
+            <IconButtons />
+          </div>
           {children}
         </main>
       </div>
@@ -112,10 +111,7 @@ export function IconButtons() {
           <UserPlus className="size-[18px]" />
         </Link>
       )}
-      <button aria-label="Notificações" className="relative grid size-10 place-items-center rounded-full border bg-card transition hover:bg-secondary">
-        <Bell className="size-[18px]" />
-        <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-pain ring-2 ring-card" />
-      </button>
+      <NotificationsBell />
       <Link to="/profissional" aria-label="Perfil" className="grid size-10 place-items-center rounded-full bg-primary-soft font-display text-sm font-semibold text-primary">
         {(me.data?.firstName?.[0] ?? "").toUpperCase() || "•"}
       </Link>
