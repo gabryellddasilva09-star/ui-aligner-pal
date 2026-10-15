@@ -215,11 +215,35 @@ function Comunidade() {
       </a>
 
       <Composer open={composer} onOpenChange={setComposer} onDone={() => { setFilter("todas"); refresh(); }} />
+      {feed.data && openReplies && (() => {
+        const post = posts.find(p => p.id === openReplies) ?? feed.data.msgs.find(m => m.id === openReplies);
+        if (!post) return null;
+        const replies = feed.data.replies.filter(r => r.message_id === post.id);
+        return (
+          <RepliesDialog
+            open
+            onOpenChange={o => { if (!o) setOpenReplies(null); }}
+            postId={post.id}
+            authorName={"author_name" in post ? post.author_name : "Paciente"}
+            replies={replies}
+            avatars={feed.data.avatars}
+            onDone={refresh}
+          />
+        );
+      })()}
     </AppShell>
   );
 }
 
-function Replies({ postId, replies, avatars, onDone }: { postId: string; replies: { id: string; author_name: string; body: string; created_at: string; user_id: string }[]; avatars: Map<string, string | null>; onDone: () => void }) {
+function RepliesDialog({ open, onOpenChange, postId, authorName, replies, avatars, onDone }: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  postId: string;
+  authorName: string;
+  replies: { id: string; author_name: string; body: string; created_at: string; user_id: string }[];
+  avatars: Map<string, string | null>;
+  onDone: () => void;
+}) {
   const [text, setText] = useState("");
   const [err, setErr] = useState("");
   const send = useMutation({
@@ -232,23 +256,34 @@ function Replies({ postId, replies, avatars, onDone }: { postId: string; replies
     onError: () => setErr("Não foi possível enviar. Tente de novo."),
   });
   return (
-    <div className="mt-4 space-y-3 border-t border-border pt-4">
-      {replies.map(r => (
-        <div key={r.id} className="flex gap-3">
-          <Avatar name={r.author_name} url={avatars.get(r.user_id)} size="sm" />
-          <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-4 py-2.5">
-            <p className="text-sm font-semibold">{r.author_name} <span className="font-normal text-muted-foreground">· {timeAgo(r.created_at)}</span></p>
-            <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">{r.body}</p>
-          </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="flex max-h-[85dvh] max-w-lg flex-col rounded-3xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Respostas</DialogTitle>
+          <DialogDescription>Conversa iniciada por {authorName}.</DialogDescription>
+        </DialogHeader>
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto py-1">
+          {replies.length === 0 && (
+            <p className="rounded-2xl bg-muted/60 p-4 text-center text-[15px] text-muted-foreground">Ainda não há respostas. Seja a primeira a acolher.</p>
+          )}
+          {replies.map(r => (
+            <div key={r.id} className="flex gap-3">
+              <Avatar name={r.author_name} url={avatars.get(r.user_id)} size="sm" />
+              <div className="min-w-0 flex-1 rounded-2xl bg-muted/60 px-4 py-2.5">
+                <p className="text-sm font-semibold">{r.author_name} <span className="font-normal text-muted-foreground">· {timeAgo(r.created_at)}</span></p>
+                <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">{r.body}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
-      <form className="flex items-end gap-2" onSubmit={e => { e.preventDefault(); const v = textSchema.safeParse(text); if (!v.success) { setErr(v.error.issues[0]?.message ?? ""); return; } setErr(""); send.mutate(v.data); }}>
-        <textarea value={text} onChange={e => setText(e.target.value)} rows={1} maxLength={1000} placeholder="Escreva uma resposta carinhosa..." aria-label="Sua resposta"
-          className="min-h-12 flex-1 resize-none rounded-2xl border border-border bg-background px-4 py-3 text-base outline-none focus:border-primary" />
-        <Button type="submit" size="icon" className="size-12 shrink-0 rounded-full" disabled={send.isPending} aria-label="Enviar resposta"><Send className="size-5" /></Button>
-      </form>
-      {err && <p className="text-sm text-destructive">{err}</p>}
-    </div>
+        <form className="flex items-end gap-2 pt-2" onSubmit={e => { e.preventDefault(); const v = textSchema.safeParse(text); if (!v.success) { setErr(v.error.issues[0]?.message ?? ""); return; } setErr(""); send.mutate(v.data); }}>
+          <textarea value={text} onChange={e => setText(e.target.value)} rows={2} maxLength={1000} placeholder="Escreva uma resposta carinhosa..." aria-label="Sua resposta"
+            className="min-h-12 flex-1 resize-none rounded-2xl border border-border bg-background px-4 py-3 text-base outline-none focus:border-primary" />
+          <Button type="submit" size="icon" className="size-12 shrink-0 rounded-full" disabled={send.isPending} aria-label="Enviar resposta"><Send className="size-5" /></Button>
+        </form>
+        {err && <p className="text-sm text-destructive">{err}</p>}
+      </DialogContent>
+    </Dialog>
   );
 }
 
