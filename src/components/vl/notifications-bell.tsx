@@ -49,7 +49,7 @@ function useNotices(): Notice[] {
 
     for (const m of meds.data ?? []) {
       for (const t of m.times) {
-        const [h, min] = t.split(":").map(Number);
+        const [h = 0, min = 0] = t.split(":").map(Number);
         const passed = h * 60 + min <= nowMinutes;
         const taken = (logs.data ?? []).some(l => l.medication_id === m.id && l.slot === t);
         if (passed && !taken) out.push({ id: `med-${m.id}-${t}`, icon: "pill", title: `Hora do remédio: ${m.name}`, body: `${t}${m.dose ? ` · ${m.dose}` : ""} — marque quando tomar.`, to: "/remedios" });
