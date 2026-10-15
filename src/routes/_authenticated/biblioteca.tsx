@@ -31,6 +31,21 @@ const tones: Record<KnowledgeTone, string> = {
 
 function normalize(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
 
+// Palavras extras que ajudam a encontrar cada assunto, mesmo sem a palavra exata.
+const topicKeywords: Record<string, string> = {
+  "o-que-e": "fibromialgia doença condição crônica o que é significado",
+  causas: "causa origem hereditariedade genética desencadeia",
+  sintomas: "dor cansaço sono fadiga névoa mental fibro fog frio calor formigamento intestino enxaqueca",
+  diagnostico: "diagnóstico exame médico teste tender points exames",
+  tratamento: "tratamento remédio medicamento remédios terapia medicação tto",
+  movimento: "exercício exercícios atividade física alongamento caminhada movimento musculação",
+  alimentacao: "alimentação comida dieta anti-inflamatória comida nutrição glúten açúcar",
+  sono: "sono dormir insônia descanso cansaço fadiga sono reparador noite",
+  emocoes: "ansiedade depressão estresse emoção humor tristeza psicológico apoio humor",
+  "dia-a-dia": "trabalho casa rotina dia a dia energia economia tarefas",
+  alerta: "médico urgência emergência sinal alerta gravidade piora",
+};
+
 function LibraryPage() {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<string>("all");
@@ -38,7 +53,10 @@ function LibraryPage() {
     const q = normalize(query.trim());
     return knowledgeTopics
       .filter(t => active === "all" || knowledgeCategory(t.id) === active)
-      .filter(t => !q || normalize(t.title + " " + t.summary + " " + t.questions.map(x => x.q + " " + x.a).join(" ")).includes(q));
+      .filter(t => !q || normalize(
+        t.title + " " + t.summary + " " + (topicKeywords[t.id] ?? "") + " " +
+        t.questions.map(x => x.q + " " + x.a).join(" ")
+      ).includes(q));
   }, [query, active]);
 
   return <AppShell>
@@ -69,8 +87,16 @@ function LibraryPage() {
         <span className="sr-only">Buscar uma dúvida</span>
         <Search className="pointer-events-none absolute left-5 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Qual é a sua dúvida? Ex.: sono, remédio, frio"
-          className="h-14 w-full rounded-full border bg-card pl-14 pr-5 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+          className="h-14 w-full rounded-full border bg-card pl-14 pr-14 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+        {query && <button type="button" onClick={() => setQuery("")} aria-label="Limpar busca"
+          className="absolute right-4 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+          <span aria-hidden className="text-xl leading-none">×</span>
+        </button>}
       </label>
+      {query.trim() && <p aria-live="polite" className="mt-3 text-base text-muted-foreground">
+        {filtered.length === 0 ? "Nenhum assunto com essa palavra." :
+          `${filtered.length} ${filtered.length === 1 ? "assunto" : "assuntos"} sobre “${query.trim()}”`}
+      </p>}
 
       <section className="mt-6 [&_h2]:tracking-normal">
         <h2 className="text-xl font-semibold">Escolha um assunto</h2>
