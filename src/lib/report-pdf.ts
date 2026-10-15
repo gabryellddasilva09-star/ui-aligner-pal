@@ -38,10 +38,10 @@ export async function buildReportPdf(opts: {
     page.drawText(t, { x, y, size, font: f, color });
   };
   const heading = (t: string) => {
-    ensure(34);
-    y -= 22;
+    ensure(40);
+    y -= 24;
     text(t, M, 14, bold, PURPLE);
-    y -= 8;
+    y -= 18;
   };
 
   // Header
