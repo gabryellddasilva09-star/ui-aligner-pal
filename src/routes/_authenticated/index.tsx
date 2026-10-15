@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, CheckCircle2, type LucideIcon } from "lucide-react";
-import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
+import { AppShell, Logo } from "@/components/vl/AppShell";
 import { SectionHeader } from "@/components/vl/primitives";
 import { patient } from "@/data/mock";
 import { useRecords, useSaveRecord, todayKey, describePatterns, fmt } from "@/lib/records";
@@ -68,7 +68,7 @@ function Index() {
       {/* Greeting */}
       <header className="relative -mx-5 -mt-4 overflow-hidden px-5 pb-6 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-8 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
         <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
-        <div className="relative grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
+        <div className="relative">
           <div className="min-w-0">
             <div className="flex items-center gap-2 lg:hidden">
               <Logo className="size-6" />
@@ -80,7 +80,6 @@ function Index() {
               <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
             </p>
           </div>
-          <div className="lg:hidden"><IconButtons /></div>
         </div>
       </header>
 
