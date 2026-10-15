@@ -25,6 +25,7 @@ import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authent
 import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
 import { Route as AuthenticatedRemediosRouteImport } from './routes/_authenticated/remedios'
+import { Route as AuthenticatedConhecimentoAssuntoRouteImport } from './routes/_authenticated/conhecimento.$assunto'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as ApiPublicPushNextRouteImport } from './routes/api/public/push/next'
 
@@ -110,6 +111,12 @@ const AuthenticatedRemediosRoute = AuthenticatedRemediosRouteImport.update({
   path: '/remedios',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedConhecimentoAssuntoRoute =
+  AuthenticatedConhecimentoAssuntoRouteImport.update({
+    id: '/conhecimento/$assunto',
+    path: '/conhecimento/$assunto',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
   id: '/api/public/cron/reminders',
   path: '/api/public/cron/reminders',
@@ -137,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/programa': typeof AuthenticatedProgramaRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/remedios': typeof AuthenticatedRemediosRoute
+  '/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
@@ -156,6 +164,7 @@ export interface FileRoutesByTo {
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/remedios': typeof AuthenticatedRemediosRoute
   '/': typeof AuthenticatedIndexRoute
+  '/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
@@ -177,6 +186,7 @@ export interface FileRoutesById {
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
   '/_authenticated/remedios': typeof AuthenticatedRemediosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/programa'
     | '/relaxamento'
     | '/remedios'
+    | '/conhecimento/$assunto'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
   fileRoutesByTo: FileRoutesByTo
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/relaxamento'
     | '/remedios'
     | '/'
+    | '/conhecimento/$assunto'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
   id:
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
     | '/_authenticated/relaxamento'
     | '/_authenticated/remedios'
     | '/_authenticated/'
+    | '/_authenticated/conhecimento/$assunto'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
   fileRoutesById: FileRoutesById
@@ -362,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRemediosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/conhecimento/$assunto': {
+      id: '/_authenticated/conhecimento/$assunto'
+      path: '/conhecimento/$assunto'
+      fullPath: '/conhecimento/$assunto'
+      preLoaderRoute: typeof AuthenticatedConhecimentoAssuntoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/cron/reminders': {
       id: '/api/public/cron/reminders'
       path: '/api/public/cron/reminders'
@@ -394,6 +414,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedRelaxamentoRoute: typeof AuthenticatedRelaxamentoRoute
   AuthenticatedRemediosRoute: typeof AuthenticatedRemediosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedConhecimentoAssuntoRoute: typeof AuthenticatedConhecimentoAssuntoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -411,6 +432,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedRelaxamentoRoute: AuthenticatedRelaxamentoRoute,
   AuthenticatedRemediosRoute: AuthenticatedRemediosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedConhecimentoAssuntoRoute: AuthenticatedConhecimentoAssuntoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

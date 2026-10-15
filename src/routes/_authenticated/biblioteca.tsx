@@ -1,16 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
-  Activity, AlertTriangle, ArrowRight, BookOpen, Brain, ChevronDown, Heart, Home, Info, Moon, PersonStanding,
-  Pill, Search, Smartphone, Stethoscope, Utensils, type LucideIcon,
+  ArrowRight, BookOpen, ChevronRight, Search, Smartphone,
 } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
-import { appHelps, knowledgeTopics, quickFacts, type KnowledgeTone, type KnowledgeTopic } from "@/data/knowledge";
+import { appHelps, knowledgeTopics, quickFacts, type KnowledgeTone } from "@/data/knowledge";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/lib-hero.jpg";
-import bodyImg from "@/assets/lib-body.jpg";
-import careImg from "@/assets/lib-care.jpg";
-import doctorImg from "@/assets/lib-doctor.jpg";
+import { Button } from "@/components/ui/button";
+import { knowledgeCategory, knowledgeFilters, knowledgeIcons as icons } from "@/components/vl/knowledge-visuals";
 
 export const Route = createFileRoute("/_authenticated/biblioteca")({
   head: () => ({ meta: [
@@ -23,10 +21,6 @@ export const Route = createFileRoute("/_authenticated/biblioteca")({
   component: LibraryPage,
 });
 
-const icons: Record<KnowledgeTopic["icon"], LucideIcon> = {
-  info: Info, brain: Brain, activity: Activity, stethoscope: Stethoscope, pill: Pill, move: PersonStanding,
-  food: Utensils, moon: Moon, heart: Heart, home: Home, alert: AlertTriangle, app: Smartphone,
-};
 const tones: Record<KnowledgeTone, string> = {
   primary: "bg-primary-soft text-primary",
   good: "bg-good-soft text-good",
@@ -34,7 +28,6 @@ const tones: Record<KnowledgeTone, string> = {
   alert: "bg-alert-soft text-alert",
   blue: "bg-nutrition-blue-soft text-nutrition-blue",
 };
-const images = { body: bodyImg, care: careImg, doctor: doctorImg };
 
 function normalize(s: string) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
 
@@ -44,11 +37,9 @@ function LibraryPage() {
   const filtered = useMemo(() => {
     const q = normalize(query.trim());
     return knowledgeTopics
-      .filter(t => active === "all" || t.id === active)
-      .map(t => ({ ...t, questions: q ? t.questions.filter(x => normalize(x.q + " " + x.a).includes(q)) : t.questions }))
-      .filter(t => t.questions.length > 0);
+      .filter(t => active === "all" || knowledgeCategory(t.id) === active)
+      .filter(t => !q || normalize(t.title + " " + t.summary + " " + t.questions.map(x => x.q + " " + x.a).join(" ")).includes(q));
   }, [query, active]);
-  const total = filtered.reduce((n, t) => n + t.questions.length, 0);
 
   return <AppShell>
     <div className="mx-auto max-w-4xl">
@@ -81,27 +72,32 @@ function LibraryPage() {
           className="h-14 w-full rounded-full border bg-card pl-14 pr-5 text-base shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary" />
       </label>
 
-      <section className="mt-6">
+      <section className="mt-6 [&_h2]:tracking-normal">
         <h2 className="text-xl font-semibold">Escolha um assunto</h2>
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          <TopicChip label="Todos os assuntos" icon={BookOpen} tone="primary" selected={active === "all"} onClick={() => setActive("all")} />
-          {knowledgeTopics.map(t => <TopicChip key={t.id} label={t.title} icon={icons[t.icon]} tone={t.tone} selected={active === t.id}
-            onClick={() => setActive(active === t.id ? "all" : t.id)} />)}
+        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filtrar assuntos">
+          {knowledgeFilters.map(filter => <Button key={filter.id} variant={active === filter.id ? "default" : "outline"}
+            aria-pressed={active === filter.id} onClick={() => setActive(filter.id)}
+            className="h-11 rounded-full px-4 text-base sm:px-6">{filter.label}</Button>)}
+        </div>
+        <div className="mt-5 space-y-3">
+          {filtered.map(topic => { const Icon = icons[topic.icon]; return <Button key={topic.id} asChild variant="ghost"
+            className="h-auto w-full justify-start whitespace-normal rounded-3xl border bg-card p-4 text-left shadow-sm hover:bg-secondary sm:p-5 [&_svg]:size-6">
+            <Link to="/conhecimento/$assunto" params={{ assunto: topic.id }} className="gap-4 sm:gap-5">
+              <span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary sm:size-20 [&_svg]:size-8 sm:[&_svg]:size-10"><Icon aria-hidden /></span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-lg font-semibold leading-snug sm:text-xl">{topic.title}</span>
+                <span className="mt-1 block text-base font-normal leading-snug text-muted-foreground sm:text-lg">{topic.summary}</span>
+              </span>
+              <ChevronRight className="shrink-0 text-primary" aria-hidden />
+            </Link>
+          </Button>; })}
+          {filtered.length === 0 && <div className="py-8 text-center">
+            <p className="text-lg font-medium">Não encontramos esse assunto.</p>
+            <p className="mt-2 text-muted-foreground">Tente outra palavra ou escolha outro filtro.</p>
+            <Button onClick={() => { setQuery(""); setActive("all"); }} className="mt-5 h-12 rounded-full px-6 text-base">Ver todos os assuntos</Button>
+          </div>}
         </div>
       </section>
-
-      <p className="mt-6 text-base text-muted-foreground" aria-live="polite">
-        {total === 0 ? "" : `${total} ${total === 1 ? "resposta encontrada" : "respostas encontradas"}`}
-      </p>
-
-      <div className="mt-3 space-y-5">
-        {filtered.length === 0 && <div className="card-soft p-8 text-center">
-          <p className="text-lg font-medium">Não encontramos essa dúvida ainda.</p>
-          <p className="mt-2 text-muted-foreground">Tente outra palavra ou leve essa pergunta para sua próxima consulta.</p>
-          <button onClick={() => { setQuery(""); setActive("all"); }} className="mt-5 h-12 rounded-full bg-primary px-6 font-medium text-primary-foreground">Ver todos os assuntos</button>
-        </div>}
-        {filtered.map(t => <TopicSection key={t.id} topic={t} openFirst={!!query || active !== "all"} />)}
-      </div>
 
       <section className="mt-10 rounded-[2rem] bg-gradient-to-br from-primary-soft to-card p-6 sm:p-8">
         <div className="flex items-center gap-3"><span className="grid size-12 place-items-center rounded-full bg-primary text-primary-foreground"><Smartphone className="size-6" /></span>
@@ -123,32 +119,3 @@ function LibraryPage() {
   </AppShell>;
 }
 
-function TopicChip({ label, icon: Icon, tone, selected, onClick }: { label: string; icon: LucideIcon; tone: KnowledgeTone; selected: boolean; onClick: () => void }) {
-  return <button type="button" onClick={onClick} aria-pressed={selected}
-    className={cn("pressable flex min-h-16 items-center gap-3 rounded-3xl border bg-card p-3 text-left text-base font-medium transition",
-      selected && "border-primary ring-2 ring-primary/30")}>
-    <span className={cn("grid size-10 shrink-0 place-items-center rounded-2xl", tones[tone])}><Icon className="size-5" /></span>
-    <span className="min-w-0 leading-snug">{label}</span>
-  </button>;
-}
-
-function TopicSection({ topic, openFirst }: { topic: KnowledgeTopic; openFirst: boolean }) {
-  const Icon = icons[topic.icon];
-  return <section className="card-soft overflow-hidden">
-    {topic.image && <img src={images[topic.image]} alt="" loading="lazy" width={816} height={816} className="h-40 w-full object-cover sm:h-52" />}
-    <div className="p-5 sm:p-6">
-      <div className="flex items-center gap-3">
-        <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", tones[topic.tone])}><Icon className="size-6" /></span>
-        <div><h3 className="text-xl font-semibold">{topic.title}</h3><p className="text-muted-foreground">{topic.summary}</p></div>
-      </div>
-      <div className="mt-3 divide-y">
-        {topic.questions.map((x, i) => <details key={x.q} open={openFirst && i === 0} className="group">
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 text-lg font-medium [&::-webkit-details-marker]:hidden">
-            {x.q}<ChevronDown className="size-5 shrink-0 text-primary transition-transform group-open:rotate-180" />
-          </summary>
-          <p className="pb-4 text-base leading-relaxed text-foreground/80">{x.a}</p>
-        </details>)}
-      </div>
-    </div>
-  </section>;
-}
