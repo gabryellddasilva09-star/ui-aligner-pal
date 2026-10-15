@@ -72,6 +72,7 @@ function Comunidade() {
     queryKey: ["community"],
     queryFn: async () => {
       const user = await me();
+      const isAdmin = !!(await supabase.rpc("is_admin")).data;
       const [msgs, likes, replies, profiles] = await Promise.all([
         supabase.from("community_messages").select("id, author_name, body, created_at, user_id").order("created_at", { ascending: false }).limit(100),
         supabase.from("community_likes").select("message_id, user_id"),
@@ -80,7 +81,7 @@ function Comunidade() {
       ]);
       for (const r of [msgs, likes, replies, profiles]) if (r.error) throw r.error;
       const avatars = new Map((profiles.data ?? []).map(p => [p.user_id, p.avatar_url]));
-      return { user, avatars, msgs: msgs.data ?? [], likes: likes.data ?? [], replies: replies.data ?? [] };
+      return { user, isAdmin, avatars, msgs: msgs.data ?? [], likes: likes.data ?? [], replies: replies.data ?? [] };
     },
   });
   const refresh = () => qc.invalidateQueries({ queryKey: ["community"] });
@@ -186,8 +187,8 @@ function Comunidade() {
                 <p className="truncate text-lg font-semibold">{p.author_name}</p>
                 <p className="text-sm text-muted-foreground"><time dateTime={p.created_at} title={new Date(p.created_at).toLocaleString("pt-BR")}>{timeAgo(p.created_at)}</time></p>
               </div>
-              {p.user_id === feed.data?.user.id && (
-                <button type="button" aria-label="Apagar minha publicação" onClick={() => { if (confirm("Apagar esta publicação?")) remove.mutate(p.id); }} className="grid size-10 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+              {(p.user_id === feed.data?.user.id || feed.data?.isAdmin) && (
+                <button type="button" aria-label="Apagar publicação" onClick={() => { if (confirm("Apagar esta publicação?")) remove.mutate(p.id); }} className="grid size-10 place-items-center rounded-full text-muted-foreground hover:bg-muted">
                   <Trash2 className="size-4" />
                 </button>
               )}
@@ -227,6 +228,8 @@ function Comunidade() {
             authorName={"author_name" in post ? post.author_name : "Paciente"}
             replies={replies}
             avatars={feed.data.avatars}
+            userId={feed.data.user.id}
+            isAdmin={feed.data.isAdmin}
             onDone={refresh}
           />
         );
@@ -235,15 +238,22 @@ function Comunidade() {
   );
 }
 
-function RepliesDialog({ open, onOpenChange, postId, authorName, replies, avatars, onDone }: {
+function RepliesDialog({ open, onOpenChange, postId, authorName, replies, avatars, userId, isAdmin, onDone }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   postId: string;
   authorName: string;
   replies: { id: string; author_name: string; body: string; created_at: string; user_id: string }[];
   avatars: Map<string, string | null>;
+  userId: string;
+  isAdmin: boolean;
   onDone: () => void;
 }) {
+  const del = useMutation({
+    mutationFn: async (id: string) => { const { error } = await supabase.from("community_replies").delete().eq("id", id); if (error) throw error; },
+    onSuccess: onDone,
+    onError: () => setErr("Não foi possível apagar. Tente de novo."),
+  });
   const [text, setText] = useState("");
   const [err, setErr] = useState("");
   const send = useMutation({
@@ -273,6 +283,11 @@ function RepliesDialog({ open, onOpenChange, postId, authorName, replies, avatar
                 <p className="text-sm font-semibold">{r.author_name} <span className="font-normal text-muted-foreground">· {timeAgo(r.created_at)}</span></p>
                 <p className="whitespace-pre-line break-words text-[15px] leading-relaxed">{r.body}</p>
               </div>
+              {(r.user_id === userId || isAdmin) && (
+                <button type="button" aria-label="Apagar resposta" onClick={() => { if (confirm("Apagar esta resposta?")) del.mutate(r.id); }} className="grid size-10 shrink-0 place-items-center self-center rounded-full text-muted-foreground hover:bg-muted">
+                  <Trash2 className="size-4" />
+                </button>
+              )}
             </div>
           ))}
         </div>
