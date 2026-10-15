@@ -1,75 +1,197 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { Zap, Moon, BatteryMedium, Smile, Brain, MessageCircleMore } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Zap, BedDouble, BatteryMedium, Smile, TrendingUp, BarChart3, Download, ArrowDown, ArrowUp, MessageCircleMore } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
-import { LineChart, Segmented, SectionHeader } from "@/components/vl/primitives";
-import { useRecords, sleepHours, scoreMaps, fmt, todayKey, type StoredRecord } from "@/lib/records";
+import { useRecords, scoreMaps, fmt, todayKey, type StoredRecord } from "@/lib/records";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/evolucao")({
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { title: "Evolução — VivaLeve" },
-      { name: "description", content: "Acompanhe como você está a partir dos seus próprios registros." },
-      { property: "og:title", content: "Evolução — VivaLeve" },
-      { property: "og:description", content: "Acompanhe como você está a partir dos seus próprios registros." },
+      { title: "Evolução e relatórios — VivaLeve" },
+      { name: "description", content: "Veja como estão seus sintomas, descubra padrões e baixe seu relatório." },
+      { property: "og:title", content: "Evolução e relatórios — VivaLeve" },
+      { property: "og:description", content: "Veja como estão seus sintomas, descubra padrões e baixe seu relatório." },
     ],
   }),
   component: Evolucao,
 });
 
-type Range = 7 | 30 | 90;
-const fogScore: Record<string, number> = { Nenhuma: 0, Leve: 3, Moderada: 6, Intensa: 9 };
+type RangeKind = "30" | "90" | "custom";
+const DAY = 86400000;
+const parse = (k: string) => { const [y, m, d] = k.split("-").map(Number); return new Date(y!, m! - 1, d!); };
+const ddmm = (d: Date) => `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
 
-const metrics: { key: string; label: string; unit: string; icon: typeof Zap; color: string; get: (r: StoredRecord) => number | null }[] = [
-  { key: "pain", label: "Dor", unit: "/10", icon: Zap, color: "var(--pain)", get: r => r.pain },
-  { key: "sleep", label: "Horas de sono", unit: "h", icon: Moon, color: "var(--sleep)", get: r => sleepHours(r) },
-  { key: "sleepq", label: "Qualidade do sono", unit: "/10", icon: Moon, color: "var(--sleep)", get: r => scoreMaps.sleepQuality[r.sleep] ?? null },
-  { key: "energy", label: "Disposição", unit: "/10", icon: BatteryMedium, color: "var(--energy)", get: r => scoreMaps.disposition[r.disposition] ?? null },
-  { key: "mood", label: "Humor", unit: "/10", icon: Smile, color: "var(--mood)", get: r => scoreMaps.mood[r.mood] ?? null },
-  { key: "fog", label: "Névoa mental", unit: "/10", icon: Brain, color: "var(--primary)", get: r => (r.brainFog ? fogScore[r.brainFog] ?? null : null) },
+const energyOf = (r: StoredRecord) => {
+  const parts = [scoreMaps.disposition[r.disposition], r.fatigue in scoreMaps.fatigue ? 10 - scoreMaps.fatigue[r.fatigue]! : undefined].filter((v): v is number => v !== undefined);
+  return avg(parts);
+};
+const sleepOf = (r: StoredRecord) => scoreMaps.sleepQuality[r.sleep] ?? null;
+const wellOf = (r: StoredRecord) => {
+  const parts = [scoreMaps.mood[r.mood], 10 - r.pain, energyOf(r) ?? undefined].filter((v): v is number => v !== undefined);
+  return avg(parts);
+};
+
+const metrics = [
+  { key: "pain", label: "Dor média", icon: Zap, get: (r: StoredRecord) => r.pain as number | null, lowerIsBetter: true },
+  { key: "sleep", label: "Qualidade do sono", icon: BedDouble, get: sleepOf, lowerIsBetter: false },
+  { key: "energy", label: "Nível de energia", icon: BatteryMedium, get: energyOf, lowerIsBetter: false },
+  { key: "well", label: "Bem-estar geral", icon: Smile, get: wellOf, lowerIsBetter: false },
 ];
 
+const series = [
+  { key: "pain", label: "Dor", color: "var(--primary)", get: (r: StoredRecord) => r.pain as number | null },
+  { key: "sleep", label: "Sono", color: "var(--mood)", get: sleepOf },
+  { key: "well", label: "Bem-estar", color: "var(--energy)", get: wellOf },
+];
+
+const mean = (rs: StoredRecord[], get: (r: StoredRecord) => number | null) => avg(rs.map(get).filter((v): v is number => v !== null));
+
 function Evolucao() {
-  const [range, setRange] = useState<Range>(30);
+  const today = todayKey();
+  const [kind, setKind] = useState<RangeKind>("30");
+  const [cFrom, setCFrom] = useState(todayKey(new Date(Date.now() - 29 * DAY)));
+  const [cTo, setCTo] = useState(today);
   const { data: records = [], isLoading, isError } = useRecords();
-  const from = new Date(); from.setDate(from.getDate() - (range - 1));
-  const inRange = records.filter(r => r.date >= todayKey(from)).slice().reverse();
+
+  const { from, to } = useMemo(() => {
+    if (kind === "custom") return cFrom <= cTo ? { from: cFrom, to: cTo } : { from: cTo, to: cFrom };
+    const days = kind === "30" ? 30 : 90;
+    return { from: todayKey(new Date(Date.now() - (days - 1) * DAY)), to: today };
+  }, [kind, cFrom, cTo, today]);
+
+  const span = Math.round((parse(to).getTime() - parse(from).getTime()) / DAY) + 1;
+  const inRange = records.filter(r => r.date >= from && r.date <= to);
+  const prevFrom = todayKey(new Date(parse(from).getTime() - span * DAY));
+  const prev = records.filter(r => r.date >= prevFrom && r.date < from);
+
+  const buckets = useMemo(() => {
+    const n = Math.min(4, span);
+    const size = span / n;
+    return Array.from({ length: n }, (_, i) => {
+      const start = new Date(parse(from).getTime() + Math.floor(i * size) * DAY);
+      const end = new Date(parse(from).getTime() + (Math.floor((i + 1) * size) - 1) * DAY);
+      const rs = inRange.filter(r => r.date >= todayKey(start) && r.date <= todayKey(end));
+      return { label: ddmm(start), values: series.map(s => mean(rs, s.get)) };
+    });
+  }, [inRange, from, span]);
+
+  const summary = metrics.map(m => {
+    const cur = mean(inRange, m.get), before = mean(prev, m.get);
+    const change = cur !== null && before !== null && before > 0 ? ((cur - before) / before) * 100 : null;
+    return { ...m, cur, change };
+  });
+
+  const downloadReport = () => {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    const rows = inRange.slice().sort((a, b) => a.date.localeCompare(b.date)).map(r =>
+      `<tr><td>${ddmm(parse(r.date))}</td><td>${r.pain}</td><td>${r.sleep}</td><td>${r.mood}</td><td>${r.fatigue}</td><td>${r.disposition}</td></tr>`).join("");
+    const cards = summary.map(s => `<div class="c"><b>${s.label}</b><span>${s.cur === null ? "—" : fmt(s.cur) + " / 10"}</span>${s.change === null ? "" : `<small>${s.change >= 0 ? "↑" : "↓"} ${Math.abs(Math.round(s.change))}% vs. período anterior</small>`}</div>`).join("");
+    w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório VivaLeve ${ddmm(parse(from))}–${ddmm(parse(to))}</title>
+<style>body{font-family:system-ui,sans-serif;color:#2a2340;padding:24px;max-width:800px;margin:auto}h1{color:#5b3fc4;margin:0}p{color:#666}.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.c{border:1px solid #e5def8;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}.c span{font-size:22px;font-weight:600}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:6px;text-align:left}</style></head><body>
+<h1>Relatório de evolução — VivaLeve</h1><p>Período: ${parse(from).toLocaleDateString("pt-BR")} a ${parse(to).toLocaleDateString("pt-BR")} · ${inRange.length} registro(s)</p>
+<div class="g">${cards}</div><h2>Registros diários</h2><table><thead><tr><th>Data</th><th>Dor</th><th>Sono</th><th>Humor</th><th>Cansaço</th><th>Disposição</th></tr></thead><tbody>${rows || "<tr><td colspan=6>Sem registros</td></tr>"}</tbody></table>
+<p style="margin-top:24px;font-size:12px">Informações registradas pela própria paciente. Não substitui avaliação profissional.</p>
+<script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`);
+    w.document.close();
+  };
+
   return (
     <AppShell>
-      <div className="pt-6 lg:pt-0">
-        <SectionHeader title="Evolução" subtitle="Feita só com o que você registrou. Só você vê." />
-        <Segmented<Range> value={range} onChange={setRange}
-          options={[{ value: 7, label: "7 dias" }, { value: 30, label: "30 dias" }, { value: 90, label: "90 dias" }]} />
-        {isLoading ? <p className="mt-8 text-muted-foreground">Carregando seus registros…</p>
-          : isError ? <p role="alert" className="mt-8 text-destructive">Não conseguimos carregar agora. Tente de novo em instantes.</p>
-          : inRange.length === 0 ? <div className="card-soft mt-6 p-8 text-center">
+      <div className="space-y-4 pt-6 lg:pt-0">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-soft via-card to-primary-soft p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-card text-primary"><BarChart3 className="size-8" /></span>
+            <div>
+              <h1 className="font-display text-xl font-semibold">Acompanhe sua jornada!</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Veja como estão seus sintomas, descubra padrões e celebre suas conquistas.</p>
+            </div>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-3 gap-2">
+          {([["30", "Últimos 30 dias"], ["90", "Últimos 3 meses"], ["custom", "Personalizado"]] as const).map(([k, l]) => (
+            <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k}
+              className={cn("min-h-12 rounded-full border px-2 text-sm font-medium transition", kind === k ? "border-primary bg-primary text-primary-foreground shadow" : "border-border bg-card")}>{l}</button>
+          ))}
+        </div>
+        {kind === "custom" && (
+          <div className="card-soft grid grid-cols-2 gap-3 p-4">
+            <label className="text-sm">De<input type="date" max={today} value={cFrom} onChange={e => setCFrom(e.target.value)} className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-2" /></label>
+            <label className="text-sm">Até<input type="date" max={today} value={cTo} onChange={e => setCTo(e.target.value)} className="mt-1 h-12 w-full rounded-xl border border-border bg-background px-2" /></label>
+          </div>
+        )}
+
+        {isLoading ? <p className="text-muted-foreground">Carregando seus registros…</p>
+          : isError ? <p role="alert" className="text-destructive">Não conseguimos carregar agora. Tente de novo em instantes.</p>
+          : inRange.length === 0 ? (
+            <div className="card-soft p-8 text-center">
               <p className="text-lg font-medium">Ainda não há registros neste período.</p>
-              <p className="mt-2 text-muted-foreground">Conte como você está na tela inicial e sua evolução aparece aqui.</p>
+              <p className="mt-2 text-muted-foreground">Faça seu registro na tela inicial e sua evolução aparece aqui.</p>
               <Link to="/" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-6 font-medium text-primary-foreground"><MessageCircleMore className="size-5" />Fazer meu registro</Link>
             </div>
-          : <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {metrics.map((m, i) => {
-              const vals = inRange.map(m.get).filter((v): v is number => v !== null);
-              const Icon = m.icon;
-              const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
-              return <div key={`${m.key}-${range}`} className="card-soft animate-rise p-5" style={{ animationDelay: `${i * 60}ms` }}>
-                <div className="flex items-center gap-2.5">
-                  <span className="grid size-9 place-items-center rounded-full bg-secondary" style={{ color: m.color }}><Icon className="size-4" /></span>
-                  <span className="font-medium">{m.label}</span>
-                </div>
-                {avg === null ? <p className="mt-4 text-sm text-muted-foreground">Sem informação neste período.</p> : <>
-                  <div className="mt-4 flex items-baseline gap-2">
-                    <span className="font-display text-3xl font-medium">{fmt(avg)}</span>
-                    <span className="text-sm text-muted-foreground">{m.unit} · média de {vals.length} {vals.length === 1 ? "dia" : "dias"}</span>
-                  </div>
-                  {vals.length >= 2 && <div className="mt-3"><LineChart data={vals} color={m.color} height={80} dots={vals.length <= 10} /></div>}
-                </>}
-              </div>;
-            })}
-          </div>}
+          ) : <>
+            <section className="card-soft p-4">
+              <h2 className="flex items-center gap-2 text-lg font-semibold"><TrendingUp className="size-6 text-primary" />Resumo da sua evolução</h2>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                {summary.map(s => {
+                  const Icon = s.icon;
+                  const better = s.change !== null && (s.lowerIsBetter ? s.change < 0 : s.change > 0);
+                  return (
+                    <div key={s.key} className="rounded-2xl bg-secondary/60 p-3">
+                      <Icon className="size-6 text-primary" />
+                      <p className="mt-2 text-sm text-muted-foreground">{s.label}</p>
+                      <p className="text-xl font-semibold">{s.cur === null ? "—" : `${fmt(s.cur)} / 10`}</p>
+                      {s.change !== null && Math.round(s.change) !== 0 ? (
+                        <p className={cn("mt-1 flex items-center gap-1 text-sm font-medium", better ? "text-good" : "text-muted-foreground")}>
+                          {s.change < 0 ? <ArrowDown className="size-4" /> : <ArrowUp className="size-4" />}{Math.abs(Math.round(s.change))}%
+                        </p>
+                      ) : <p className="mt-1 text-xs text-muted-foreground">{s.change === null ? "Sem período anterior" : "Estável"}</p>}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">Comparado aos {span} dias anteriores · {inRange.length} {inRange.length === 1 ? "registro" : "registros"}</p>
+            </section>
+
+            <section className="card-soft p-4">
+              <h2 className="flex items-center gap-2 text-lg font-semibold"><BarChart3 className="size-6 text-primary" />Sua evolução ao longo do tempo</h2>
+              <div className="mt-3 flex justify-center gap-4 text-sm">
+                {series.map(s => <span key={s.key} className="flex items-center gap-1.5"><span className="size-3 rounded-full" style={{ background: s.color }} />{s.label}</span>)}
+              </div>
+              <Chart buckets={buckets} />
+            </section>
+          </>}
+
+        <button onClick={downloadReport} disabled={inRange.length === 0}
+          className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-primary-soft font-medium text-primary transition active:scale-[0.98] disabled:opacity-50">
+          <Download className="size-5" />Baixar relatório (PDF)
+        </button>
+        <p className="text-center text-xs text-muted-foreground">Feito só com o que você registrou. Só você vê.</p>
       </div>
     </AppShell>
+  );
+}
+
+function Chart({ buckets }: { buckets: { label: string; values: (number | null)[] }[] }) {
+  const W = 320, H = 200, L = 24, R = 12, T = 10, B = 26;
+  const x = (i: number) => L + (buckets.length === 1 ? (W - L - R) / 2 : (i * (W - L - R)) / (buckets.length - 1));
+  const y = (v: number) => T + (1 - v / 10) * (H - T - B);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 w-full" role="img" aria-label="Gráfico de dor, sono e bem-estar ao longo do período">
+      {[0, 2, 4, 6, 8, 10].map(v => <g key={v}><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--border)" /><text x={L - 6} y={y(v) + 4} textAnchor="end" fontSize="10" fill="var(--muted-foreground)">{v}</text></g>)}
+      {buckets.map((b, i) => <text key={i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="10" fill="var(--muted-foreground)">{b.label}</text>)}
+      {series.map((s, si) => {
+        const pts = buckets.map((b, i) => (b.values[si] == null ? null : [x(i), y(b.values[si]!)] as const)).filter((p): p is readonly [number, number] => p !== null);
+        return <g key={s.key}>
+          {pts.length > 1 && <polyline points={pts.map(p => p.join(",")).join(" ")} fill="none" stroke={s.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />}
+          {pts.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="4.5" fill="var(--card)" stroke={s.color} strokeWidth="2.5" />)}
+        </g>;
+      })}
+    </svg>
   );
 }
