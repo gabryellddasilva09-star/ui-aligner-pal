@@ -72,14 +72,16 @@ export function AppShell({ children, backAction }: { children: ReactNode; backAc
           <IconButtons />
         </div>
         <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 sm:px-8 lg:px-10 lg:pb-16">
-          <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
-            {backAction ? <ArrowBackButton {...backAction} /> : showMobileBack ? (
-              <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
-                <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
-              </Link>
-            ) : <span />}
-            <IconButtons />
-          </div>
+          {path !== "/" && (
+            <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
+              {backAction ? <ArrowBackButton {...backAction} /> : showMobileBack ? (
+                <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
+                  <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
+                </Link>
+              ) : <span />}
+              <IconButtons />
+            </div>
+          )}
           {children}
         </main>
       </div>
