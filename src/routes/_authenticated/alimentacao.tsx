@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check, ChevronLeft, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
+  Check, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";

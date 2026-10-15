@@ -30,7 +30,7 @@ export function Logo({ className }: { className?: string }) {
 
 export type BackAction = { onClick: () => void; label: string };
 
-export function AppShell({ children, backAction }: { children: ReactNode; backAction?: BackAction }) {
+export function AppShell({ children, backAction }: { children: ReactNode; backAction?: BackAction | undefined }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const me = useCurrentUser();
   const showMobileBack = path !== "/" && path !== "/relaxamento";
