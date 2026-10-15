@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { Home, CalendarDays, LineChart, UserRound, Bell, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,9 @@ export function Logo({ className }: { className?: string }) {
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export type BackAction = { onClick: () => void; label: string };
+
+export function AppShell({ children, backAction }: { children: ReactNode; backAction?: BackAction }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const me = useCurrentUser();
   const showMobileBack = path !== "/" && path !== "/relaxamento";
@@ -65,14 +67,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="min-w-0 flex-1">
         {/* Desktop top bar */}
         <div className="hidden items-center justify-end gap-3 px-10 pt-6 lg:flex">
+          {backAction && <ArrowBackButton {...backAction} />}
           <IconButtons />
         </div>
         <main className="mx-auto w-full max-w-5xl px-5 pb-10 pt-4 sm:px-8 lg:px-10 lg:pb-16">
-          {showMobileBack && (
+          {(showMobileBack || backAction) && (
             <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:hidden">
-              <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
-                <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
-              </Link>
+              {backAction ? <ArrowBackButton {...backAction} /> : (
+                <Link to="/" className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-muted-foreground transition hover:bg-secondary">
+                  <ArrowLeft className="size-4" aria-hidden /> Voltar ao início
+                </Link>
+              )}
               <IconButtons />
             </div>
           )}
@@ -81,6 +86,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
     </div>
+  );
+}
+
+function ArrowBackButton({ onClick, label }: BackAction) {
+  return (
+    <button onClick={onClick} aria-label={label} title={label}
+      className="mr-auto grid size-11 place-items-center rounded-full border bg-card text-muted-foreground transition hover:bg-secondary">
+      <ChevronLeft className="size-5" aria-hidden />
+    </button>
   );
 }
 
