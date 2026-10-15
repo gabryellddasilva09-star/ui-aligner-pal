@@ -95,7 +95,7 @@ function Index() {
                 <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
                 <Button onClick={() => setCheckInOpen(true)} variant="secondary" className="group mt-6 flex h-14 w-full items-center justify-start gap-3 rounded-2xl bg-card px-5 text-left text-base text-primary shadow-soft transition hover:bg-card/90 sm:max-w-sm">
                   <MessageCircleMore className="size-5" />
-                  <span className="flex-1">{record ? "Ver meu registro" : "Conte para mim"}</span>
+                  <span className="flex-1">{record ? "Ver meu registro" : "Registrar"}</span>
                   <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
                 </Button>
                 {record && <p role="status" className="mt-3 text-sm text-primary-foreground">Registro de hoje salvo na sua conta.</p>}
