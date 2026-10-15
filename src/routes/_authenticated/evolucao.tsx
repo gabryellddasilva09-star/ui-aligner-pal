@@ -85,19 +85,28 @@ function Evolucao() {
     return { ...m, cur, change };
   });
 
-  const downloadReport = () => {
-    const w = window.open("", "_blank");
-    if (!w) return;
-    const rows = inRange.slice().sort((a, b) => a.date.localeCompare(b.date)).map(r =>
-      `<tr><td>${ddmm(parse(r.date))}</td><td>${r.pain}</td><td>${r.sleep}</td><td>${r.mood}</td><td>${r.fatigue}</td><td>${r.disposition}</td></tr>`).join("");
-    const cards = summary.map(s => `<div class="c"><b>${s.label}</b><span>${s.cur === null ? "—" : fmt(s.cur) + " / 10"}</span>${s.change === null ? "" : `<small>${s.change >= 0 ? "↑" : "↓"} ${Math.abs(Math.round(s.change))}% vs. período anterior</small>`}</div>`).join("");
-    w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório VivaLeve ${ddmm(parse(from))}–${ddmm(parse(to))}</title>
-<style>body{font-family:system-ui,sans-serif;color:#2a2340;padding:24px;max-width:800px;margin:auto}h1{color:#5b3fc4;margin:0}p{color:#666}.g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.c{border:1px solid #e5def8;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:4px}.c span{font-size:22px;font-weight:600}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid #eee;padding:6px;text-align:left}</style></head><body>
-<h1>Relatório de evolução — VivaLeve</h1><p>Período: ${parse(from).toLocaleDateString("pt-BR")} a ${parse(to).toLocaleDateString("pt-BR")} · ${inRange.length} registro(s)</p>
-<div class="g">${cards}</div><h2>Registros diários</h2><table><thead><tr><th>Data</th><th>Dor</th><th>Sono</th><th>Humor</th><th>Cansaço</th><th>Disposição</th></tr></thead><tbody>${rows || "<tr><td colspan=6>Sem registros</td></tr>"}</tbody></table>
-<p style="margin-top:24px;font-size:12px">Informações registradas pela própria paciente. Não substitui avaliação profissional.</p>
-<script>window.onload=()=>setTimeout(()=>window.print(),300)</script></body></html>`);
-    w.document.close();
+  const [generating, setGenerating] = useState(false);
+  const downloadReport = async () => {
+    if (generating) return;
+    setGenerating(true);
+    try {
+      const [{ buildReportPdf, downloadBlob }, { supabase }] = await Promise.all([
+        import("@/lib/report-pdf"),
+        import("@/integrations/supabase/client"),
+      ]);
+      const { data: u } = await supabase.auth.getUser();
+      const name = (u.user?.user_metadata?.["full_name"] as string | undefined) ?? u.user?.email?.split("@")[0];
+      const bytes = await buildReportPdf({
+        from: parse(from),
+        to: parse(to),
+        records: inRange,
+        summary: summary.map(s => ({ label: s.label, cur: s.cur, change: s.change })),
+        ...(name ? { patientName: name } : {}),
+      });
+      downloadBlob(bytes, `relatorio-vivaleve-${from}_a_${to}.pdf`);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -167,9 +176,9 @@ function Evolucao() {
             </section>
           </>}
 
-        <button onClick={downloadReport} disabled={inRange.length === 0}
+        <button onClick={downloadReport} disabled={inRange.length === 0 || generating}
           className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-primary-soft font-medium text-primary transition active:scale-[0.98] disabled:opacity-50">
-          <Download className="size-5" />Baixar relatório (PDF)
+          <Download className="size-5" />{generating ? "Gerando seu relatório…" : "Baixar relatório (PDF)"}
         </button>
         <p className="text-center text-xs text-muted-foreground">Feito só com o que você registrou. Só você vê.</p>
       </div>
