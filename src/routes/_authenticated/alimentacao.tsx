@@ -110,93 +110,66 @@ function Alimentacao() {
       {/* ============ CARDÁPIO ============ */}
       {tab === "cardapio" && (
         <div className="mt-6 space-y-6">
-          <section aria-label="Escolher dia do cardápio">
+          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-soft via-card to-good-soft p-6 sm:p-8">
+            <Sparkles className="size-8 text-primary" />
+            <h2 className="mt-3 text-2xl font-medium sm:text-3xl">Cuidado em cada refeição</h2>
+            <p className="mt-2 max-w-md text-base text-muted-foreground sm:text-lg">Alimentação anti-inflamatória para cuidar de você, um dia de cada vez.</p>
+          </section>
+          <section aria-label="Escolher dia da semana">
             <div className="grid grid-cols-7 gap-1.5" role="group" aria-label="Dias da semana">
               {planDays.map((d, i) => {
-                const planDay = (week.n - 1) * 7 + i + 1;
-                const selected = day === planDay;
+                const selected = day === i;
                 return (
-                  <Button key={d} onClick={() => setDay(planDay)} aria-pressed={selected}
-                    aria-label={`Dia ${planDay} · ${d}`} variant="ghost"
+                  <Button key={d} onClick={() => setDay(i)} aria-pressed={selected} aria-label={d} variant="ghost"
                     className={cn(
                       "pressable h-auto min-h-14 flex-col gap-0.5 rounded-2xl px-1 py-2 text-[11px] font-semibold transition sm:text-sm",
                       selected
                         ? "bg-primary text-primary-foreground shadow-float"
-                        : i === todayIndex
-                          ? "bg-primary-soft text-primary"
-                          : "bg-secondary text-muted-foreground",
+                        : "bg-secondary text-muted-foreground",
                     )}>
                     <span>{d}</span>
-                    <span className="text-[10px] font-normal sm:text-xs">Dia {planDay}</span>
                   </Button>
                 );
               })}
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2">
-              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 1} aria-label="Voltar para a semana anterior" onClick={() => setDay((week.n - 2) * 7 + ((day - 1) % 7) + 1)}><ChevronLeft className="size-4" />Semana anterior</Button>
-              <Button variant="ghost" className="min-h-11 rounded-full px-3 text-sm text-muted-foreground" disabled={week.n === 3} aria-label="Avançar para a próxima semana" onClick={() => setDay(week.n * 7 + ((day - 1) % 7) + 1)}>Próxima semana<ChevronRight className="size-4" /></Button>
-            </div>
-            <NutritionDisclosure title={`Sobre a semana ${week.n}`}>
-              <h3 className="mb-3 text-lg font-medium">{week.title}</h3>
-              <ul className="space-y-3 text-muted-foreground">{week.notes.map((n) => <li key={n} className="flex gap-2"><Leaf className="mt-1 size-5 shrink-0 text-good" />{n}</li>)}</ul>
-            </NutritionDisclosure>
           </section>
           <section className="flex items-center justify-between gap-3">
             <h2 className="text-2xl font-medium">Suas refeições</h2>
-            <span className="text-sm text-muted-foreground">{doneToday} de 5 registradas</span>
+            <span className="text-sm text-muted-foreground">{doneToday} de {mealsOfDay.length} registradas</span>
           </section>
+          {mealsOfDay.length === 0 && (
+            <p className="rounded-2xl bg-secondary px-4 py-4 text-base text-muted-foreground">
+              Nenhuma refeição para este dia ainda. Toque em “Editar cardápio” para escolher as receitas deste dia.
+            </p>
+          )}
           <ul className="space-y-3">
-            {mealOrder.map((m) => {
-              const { text, tags } = parseMeal(plan.meals[m]);
-              const key = `${day}-${m}`;
+            {mealsOfDay.map((r) => {
+              const key = `${day}-${r.id}`;
               const isDone = !!done[key];
               return (
-                <li key={m} className={cn("card-soft overflow-hidden transition", isDone && "border-good/40")}>
+                <li key={r.id} className={cn("card-soft overflow-hidden transition", isDone && "border-good/40")}>
                   <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 sm:p-5">
-                    <FoodVisual text={text} />
+                    <FoodVisual text={r.name} />
                     <div className="min-w-0">
-                      <h3 className="text-lg font-medium sm:text-xl">{mealLabels[m]}</h3>
-                      {m === "jantar" && <span className="mt-1 flex items-center gap-1 text-sm text-muted-foreground"><Clock className="size-4" />{plan.dinnerTime}</span>}
+                      <p className="text-sm font-semibold text-primary">{recipeCategoryLabels[r.category]}</p>
+                      <h3 className="text-lg font-medium sm:text-xl">{r.name}</h3>
                       <p className="mt-1 text-sm text-muted-foreground">{isDone ? "Refeição registrada" : "Seu cardápio do dia"}</p>
                     </div>
-                    <Button variant="ghost" role="checkbox" aria-checked={isDone} aria-label={`Marcar ${mealLabels[m]} como feita`}
+                    <Button variant="ghost" role="checkbox" aria-checked={isDone} aria-label={`Marcar ${r.name} como feita`}
                       onClick={() => setDone((p) => ({ ...p, [key]: !isDone }))}
                       className={cn("size-12 shrink-0 rounded-full border-2 p-0", isDone ? "border-good bg-good text-primary-foreground hover:bg-good hover:text-primary-foreground" : "border-border bg-secondary text-muted-foreground")}>
                       <Check className="size-5" />
                     </Button>
                   </div>
-                  <div className="border-t bg-secondary/40 px-4 py-4 sm:px-5">
-                    <p className="text-base leading-relaxed sm:text-lg">{text.split(" + ")[0]}</p>
-                    <NutritionDisclosure title="Ver refeição completa" className="border-0 pb-0">
-                      <p>{text}</p>
-                      <div className="mt-3 flex flex-wrap gap-2">{tags.map((t) => <TagChip key={t} tag={t} />)}</div>
-                    </NutritionDisclosure>
+                  <div className="border-t bg-secondary/40 px-4 py-3">
+                    <Button variant="ghost" onClick={() => openRecipeDialog(r.id)} className="min-h-11 w-full justify-start rounded-xl text-base font-semibold text-primary">
+                      Ver receita<ArrowRight className="size-4" />
+                    </Button>
                   </div>
                 </li>
               );
             })}
           </ul>
-          {(() => {
-            const wd = (day - 1) % 7;
-            const mine = recipes.filter((r) => daysFor(r.id).includes(wd));
-            if (mine.length === 0) return null;
-            return (
-              <section className="card-soft p-5">
-                <h2 className="text-xl font-medium">Suas receitas de {weekdayNames[wd]?.toLowerCase()}</h2>
-                <ul className="mt-3 space-y-2">
-                  {recipeCategoryOrder.flatMap((c) => mine.filter((r) => r.category === c).map((r) => (
-                    <li key={r.id}>
-                      <Button variant="ghost" onClick={() => openRecipeDialog(r.id)} className="h-auto min-h-14 w-full justify-start gap-3 whitespace-normal rounded-xl bg-secondary/60 px-3 py-2 text-left">
-                        <span className="min-w-0 flex-1"><span className="block text-xs font-semibold text-primary">{recipeCategoryLabels[c]}</span><span className="block text-base font-medium">{r.name}</span></span>
-                        <ArrowRight className="shrink-0 text-primary" />
-                      </Button>
-                    </li>
-                  )))}
-                </ul>
-              </section>
-            );
-          })()}
-          {plan.tip && <p className="rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">Dica: {plan.tip}</p>}
 
           <section className="rounded-2xl bg-nutrition-blue-soft p-5 sm:p-6">
             <div className="flex items-center gap-3"><Droplets className="size-7 shrink-0 text-nutrition-blue" /><div><h2 className="text-xl font-medium">Sua água de hoje</h2><p className="text-base text-nutrition-blue">{cups} copos · {(cups * 0.25).toLocaleString("pt-BR")} litros</p></div></div>
@@ -209,8 +182,7 @@ function Alimentacao() {
           </section>
           <div className="space-y-3">
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Editar cardápio<ArrowRight /></Button>
-            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => { setShopWeek(week.n as 1 | 2 | 3); setTab("compras"); }}><ShoppingBasket />Ver compras da semana {week.n}<ArrowRight /></Button>
-            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("guia")}><BookOpen />Ver guia da alimentação<ArrowRight /></Button>
+            <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("compras")}><ShoppingBasket />Ver compras da semana<ArrowRight /></Button>
           </div>
         </div>
       )}
@@ -309,46 +281,6 @@ function Alimentacao() {
         </div>
       )}
 
-      {/* ============ GUIA ============ */}
-      {tab === "guia" && (
-        <div className="mt-6 space-y-8">
-          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
-          <h2 className="text-2xl font-medium">Seu guia de alimentação</h2>
-          <p className="text-base text-muted-foreground">Orientações do material da Dra. Nadya Kazzaz.</p>
-          <NutritionDisclosure title="Os 5 princípios">
-            <ol className="mt-3 space-y-3">
-              {principles.map((p, i) => (
-                <li key={p.title} className="flex gap-4 border-b py-4">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">{i + 1}</span>
-                  <div><p className="font-medium">{p.title}</p><p className="mt-1 text-base leading-relaxed text-muted-foreground">{p.text}</p></div>
-                </li>
-              ))}
-            </ol>
-          </NutritionDisclosure>
-          <section>
-            <NutritionDisclosure title="O que consumir livremente" className="text-good">
-              <ul className="mt-3 space-y-2 text-base">{eatFreely.map((x) => <li key={x} className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-good" />{x}</li>)}</ul>
-            </NutritionDisclosure>
-            <NutritionDisclosure title="O que evitar durante os 21 dias">
-              <ul className="mt-3 space-y-2 text-base">{avoid.map((x) => <li key={x} className="flex gap-2"><X className="mt-0.5 size-4 shrink-0 text-alert" />{x}</li>)}</ul>
-            </NutritionDisclosure>
-          </section>
-          <NutritionDisclosure title="Trocas de ingredientes">
-            <p className="mt-1 text-sm text-muted-foreground">Não achou ou não gosta de um ingrediente? Troque sem perder o efeito anti-inflamatório.</p>
-            <ul className="mt-3 space-y-2">
-              {substitutions.map(([a, b, note]) => (
-                <li key={a} className="rounded-2xl border bg-card px-4 py-3">
-                  <p className="text-base"><span className="font-medium">{a}</span> <span className="text-muted-foreground">→</span> <span className="font-medium text-primary">{b}</span></p>
-                  <p className="mt-2 text-base text-muted-foreground">{note}</p>
-                </li>
-              ))}
-            </ul>
-          </NutritionDisclosure>
-          <p className="rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">
-            Conteúdo do Cardápio anti-inflamatório 21 dias — Dra. Nadya Kazzaz. Pequenas escolhas diárias constroem grandes resultados.
-          </p>
-        </div>
-      )}
 
       </div>
       {open && (
