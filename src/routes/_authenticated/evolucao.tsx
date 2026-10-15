@@ -95,7 +95,7 @@ function Evolucao() {
         import("@/integrations/supabase/client"),
       ]);
       const { data: u } = await supabase.auth.getUser();
-      const name = (u.user?.user_metadata?.full_name as string | undefined) ?? u.user?.email?.split("@")[0];
+      const name = (u.user?.user_metadata?.["full_name"] as string | undefined) ?? u.user?.email?.split("@")[0];
       const bytes = await buildReportPdf({
         from: parse(from),
         to: parse(to),
