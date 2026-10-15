@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
+  Check, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight, ArrowLeftRight,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
-import { FoodVisual } from "@/components/vl/nutrition-visuals";
+import { RecipeImage } from "@/components/vl/nutrition-visuals";
 import {
-  recipes, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
+  recipes, substitutions, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
 } from "@/data/anti-inflammatory";
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
@@ -93,6 +93,7 @@ function Alimentacao() {
     () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
     [categoryFilter, search],
   );
+  const [showSubs, setShowSubs] = useState(false);
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
   const list = useMemo(() => {
     const chosen = recipes.filter((r) => daysFor(r.id).length > 0);
@@ -154,7 +155,7 @@ function Alimentacao() {
               return (
                 <li key={r.id} className={cn("card-soft overflow-hidden transition", isDone && "border-good/40")}>
                   <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 sm:p-5">
-                    <FoodVisual text={r.name} />
+                    <RecipeImage id={r.id} name={r.name} />
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-primary">{recipeCategoryLabels[r.category]}</p>
                       <h3 className="text-lg font-medium sm:text-xl">{r.name}</h3>
@@ -195,7 +196,10 @@ function Alimentacao() {
       {/* ============ RECEITAS ============ */}
       {tab === "receitas" && (
         <div className="mt-6 space-y-5">
-          <h2 className="text-2xl font-medium">O que vamos preparar?</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-2xl font-medium">O que vamos preparar?</h2>
+            <Button variant="outline" onClick={() => setShowSubs(true)} className="min-h-12 rounded-full text-base"><ArrowLeftRight />Substituições</Button>
+          </div>
           <label className="flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4"><Search className="size-5 shrink-0 text-primary" /><input aria-label="Buscar receita" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar receita" className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none" /></label>
           <p className="text-base text-muted-foreground">Todas sem glúten, sem laticínios convencionais e sem açúcar refinado.</p>
           <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por refeição">
@@ -210,7 +214,7 @@ function Alimentacao() {
             {visibleRecipes.map((r) => (
               <li key={r.id}>
                 <Button variant="ghost" onClick={() => openRecipeDialog(r.id)} className="card-soft pressable h-full w-full flex-col items-stretch justify-start overflow-hidden whitespace-normal p-0 text-left hover:bg-card">
-                  <FoodVisual text={r.name} large />
+                  <RecipeImage id={r.id} name={r.name} large />
                   <div className="p-5"><p className="text-sm font-semibold text-primary">{recipeCategoryLabels[r.category]}</p><p className="text-xl font-medium">{r.name}</p>
                     <p className="mt-3 flex flex-wrap items-center gap-3 text-base text-muted-foreground"><span className="flex items-center gap-1"><Clock />{r.time}</span><span className="flex items-center gap-1"><Users />{r.serves}</span></p>
                     <div className="mt-3 flex flex-wrap items-center gap-2">{r.tags.map((t) => <TagChip key={t} tag={t} />)}
@@ -277,9 +281,29 @@ function Alimentacao() {
 
 
       </div>
+      {showSubs && (
+        <DialogShell title="Tabela de substituições" onClose={() => setShowSubs(false)}>
+          <h2 className="text-2xl font-medium">Tabela de substituições</h2>
+          <p className="mt-2 text-base text-muted-foreground">Não encontrou um ingrediente ou não gosta de algum alimento? Troque sem perder o efeito anti-inflamatório.</p>
+          <ul className="mt-5 space-y-3">
+            {substitutions.map(([from, to, note]) => (
+              <li key={from} className="rounded-2xl border bg-card p-4">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+                  <p className="text-base font-medium">{from}</p>
+                  <ArrowLeftRight aria-label="pode ser trocado por" className="size-5 text-primary" />
+                  <p className="text-base font-semibold text-primary">{to}</p>
+                </div>
+                <p className="mt-2 flex gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 size-4 shrink-0 text-good" />{note}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary">As substituições mantêm o poder anti-inflamatório das receitas sem abrir mão do sabor e dos nutrientes.</p>
+          <Button onClick={() => setShowSubs(false)} className="mt-5 min-h-14 w-full rounded-full text-lg">Fechar</Button>
+        </DialogShell>
+      )}
       {open && (
         <DialogShell title={open.name} onClose={() => setOpenRecipe(null)}>
-          <div className="mb-5 overflow-hidden rounded-2xl"><FoodVisual text={open.name} large /></div>
+          <div className="mb-5 overflow-hidden rounded-2xl"><RecipeImage id={open.id} name={open.name} large /></div>
           <div className="flex flex-wrap gap-1.5">{open.tags.map((t) => <TagChip key={t} tag={t} />)}</div>
           <h2 className="mt-2 text-2xl font-medium">{open.name}</h2>
           <p className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">

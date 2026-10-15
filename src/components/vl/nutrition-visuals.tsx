@@ -3,6 +3,7 @@ import eggs from "@/assets/nutrition-eggs.jpg";
 import soup from "@/assets/nutrition-soup.jpg";
 import smoothie from "@/assets/nutrition-smoothie.jpg";
 import { cn } from "@/lib/utils";
+import { recipeImages } from "@/components/vl/recipe-images";
 
 export function foodVisual(text: string): { image?: string; icon: LucideIcon; tone: string } {
   const value = text.toLocaleLowerCase("pt-BR");
@@ -28,6 +29,13 @@ export function FoodVisual({ text, large = false }: { text: string; large?: bool
       <Icon strokeWidth={1.4} className={large ? "size-16" : "size-9"} />
     </span>
   );
+}
+
+export function RecipeImage({ id, name, large = false }: { id: string; name: string; large?: boolean }) {
+  const src = recipeImages[id];
+  if (!src) return <FoodVisual text={name} large={large} />;
+  return <img src={src} alt={`Foto da receita ${name}`} loading="lazy"
+    className={cn("shrink-0 object-cover", large ? "aspect-[16/10] w-full" : "size-20 rounded-2xl sm:size-24")} />;
 }
 
 export function NutritionDisclosure({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
