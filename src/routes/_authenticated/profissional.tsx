@@ -11,9 +11,9 @@ export const Route = createFileRoute("/_authenticated/profissional")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { title: "Quem criou o VivaLeve" },
-      { name: "description", content: "O VivaLeve foi idealizado pela Dra. Nadya para apoiar o dia a dia de quem vive com fibromialgia." },
+      { name: "description", content: "O VivaLeve foi idealizado pela Dra. Nadya Kazzaz, cardiologista, para apoiar o dia a dia de quem vive com fibromialgia." },
       { property: "og:title", content: "Quem criou o VivaLeve" },
-      { property: "og:description", content: "O VivaLeve foi idealizado pela Dra. Nadya para apoiar o dia a dia de quem vive com fibromialgia." },
+      { property: "og:description", content: "O VivaLeve foi idealizado pela Dra. Nadya Kazzaz, cardiologista, para apoiar o dia a dia de quem vive com fibromialgia." },
     ],
   }),
   component: Profissional,
@@ -30,7 +30,10 @@ function Profissional() {
             <h2 className="mt-4 text-2xl font-medium">{professional.name}</h2>
             <p className="text-sm text-accent-foreground">{professional.role}</p>
             <p className="mx-auto mt-4 max-w-sm text-base leading-relaxed text-muted-foreground">
-              O VivaLeve nasceu de uma ideia da {professional.name}: oferecer um apoio simples e acolhedor para o dia a dia de quem vive com fibromialgia.
+              Meu nome é Nadya Kazzaz, sou cardiologista e recebi o diagnóstico aos 31 anos. Conheço a dor, o cansaço e a dificuldade de seguir o dia quando o corpo pede pausa.
+            </p>
+            <p className="mx-auto mt-3 max-w-sm text-base leading-relaxed text-muted-foreground">
+              Essa experiência transformou minha forma de cuidar de mim e das minhas pacientes. Hoje, uno conhecimento médico e vivência para ajudar você a ajustar sua rotina, respeitar seus limites e viver com mais leveza.
             </p>
           </section>
           <section className="card-soft space-y-5 p-6">
