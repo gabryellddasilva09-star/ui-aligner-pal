@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, CheckCircle2, type LucideIcon } from "lucide-react";
-import { AppShell, Logo } from "@/components/vl/AppShell";
+import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
 import { SectionHeader } from "@/components/vl/primitives";
 import { patient } from "@/data/mock";
 import { useRecords, useSaveRecord, todayKey, describePatterns, fmt } from "@/lib/records";
