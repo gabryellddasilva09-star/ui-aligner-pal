@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
-  Check, ChevronLeft, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
+  Check, Clock, Droplets, Leaf, ShoppingBasket, Users, Sparkles, RefreshCw, ChefHat, Search, Minus, Plus, ArrowRight,
 } from "lucide-react";
 import { AppShell, Logo } from "@/components/vl/AppShell";
 import { ProgressBar, DialogShell } from "@/components/vl/movement";
@@ -58,7 +58,6 @@ function Alimentacao() {
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
   const [shopWeek, setShopWeek] = useState<1 | 2 | 3>(1);
-  const [recipeFilter, setRecipeFilter] = useState<"todas" | Tag>("todas");
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"todas" | RecipeCategory>("todas");
@@ -89,15 +88,15 @@ function Alimentacao() {
   const doneToday = mealsOfDay.filter((r) => done[`${day}-${r.id}`]).length;
   const cups = water[day] ?? 0;
   const visibleRecipes = useMemo(
-    () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && (recipeFilter === "todas" || r.tags.includes(recipeFilter)) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
-    [recipeFilter, categoryFilter, search],
+    () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
+    [categoryFilter, search],
   );
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
   const list = shopping[shopWeek];
   const boughtCount = list.filter((i) => bought[`${shopWeek}-${i.name}`]).length;
 
   return (
-    <AppShell>
+    <AppShell backAction={tab === "cardapio" ? undefined : { onClick: () => setTab("cardapio"), label: "Voltar ao cardápio" }}>
       <div className="nutrition-screen">
       <header className="pt-4 sm:pt-6">
         <div className="min-w-0">
@@ -190,28 +189,17 @@ function Alimentacao() {
       {/* ============ RECEITAS ============ */}
       {tab === "receitas" && (
         <div className="mt-6 space-y-5">
-          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">O que vamos preparar?</h2>
           <label className="flex min-h-14 items-center gap-3 rounded-xl border bg-card px-4"><Search className="size-5 shrink-0 text-primary" /><input aria-label="Buscar receita" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar receita" className="min-w-0 flex-1 bg-transparent py-3 text-base outline-none" /></label>
           <p className="text-base text-muted-foreground">Todas sem glúten, sem laticínios convencionais e sem açúcar refinado.</p>
-          <div className="flex flex-wrap gap-2">
-            {(["todas", "FÁCIL", "CRISE", "PREPARO"] as const).map((f) => (
-              <Button variant="ghost" key={f} onClick={() => setRecipeFilter(f)} aria-pressed={recipeFilter === f}
-                className={cn("min-h-12 rounded-xl border px-4 text-base font-medium transition",
-                  recipeFilter === f ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
-                {f === "todas" ? "Todas" : f === "CRISE" ? "Dias de crise" : f === "FÁCIL" ? "Fáceis" : "Preparo antecipado"}
-              </Button>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Categorias">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por refeição">
             {(["todas", ...recipeCategoryOrder] as const).map((c) => (
               <Button variant="ghost" key={c} onClick={() => setCategoryFilter(c)} aria-pressed={categoryFilter === c}
-                className={cn("min-h-11 rounded-full border px-4 text-sm font-medium", categoryFilter === c ? "border-primary bg-primary-soft text-primary" : "bg-card text-muted-foreground")}>
+                className={cn("min-h-12 rounded-xl border px-4 text-base font-medium transition", categoryFilter === c ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground")}>
                 {c === "todas" ? "Todas as refeições" : recipeCategoryLabels[c]}
               </Button>
             ))}
           </div>
-          {recipeFilter !== "todas" && <p className="text-xs text-muted-foreground">{tagInfo[recipeFilter]}</p>}
           <ul className="grid gap-3 sm:grid-cols-2">
             {visibleRecipes.map((r) => (
               <li key={r.id}>
@@ -235,7 +223,6 @@ function Alimentacao() {
       {/* ============ COMPRAS ============ */}
       {tab === "compras" && (
         <div className="mt-6 space-y-5">
-          <Button variant="ghost" onClick={() => setTab("cardapio")} className="min-h-12 rounded-full px-4 text-base text-muted-foreground"><ChevronLeft className="size-4" />Voltar ao cardápio</Button>
           <h2 className="text-2xl font-medium">Sua lista está pronta</h2>
           <p className="text-base text-muted-foreground">Ingredientes do cardápio, organizados por semana.</p>
           <div className="grid grid-cols-3 gap-2" role="group" aria-label="Lista da semana">
