@@ -176,9 +176,9 @@ function Evolucao() {
             </section>
           </>}
 
-        <button onClick={downloadReport} disabled={inRange.length === 0}
+        <button onClick={downloadReport} disabled={inRange.length === 0 || generating}
           className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-primary-soft font-medium text-primary transition active:scale-[0.98] disabled:opacity-50">
-          <Download className="size-5" />Baixar relatório (PDF)
+          <Download className="size-5" />{generating ? "Gerando seu relatório…" : "Baixar relatório (PDF)"}
         </button>
         <p className="text-center text-xs text-muted-foreground">Feito só com o que você registrou. Só você vê.</p>
       </div>
