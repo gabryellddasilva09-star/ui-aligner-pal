@@ -8,7 +8,7 @@ import { ProgressBar, DialogShell } from "@/components/vl/movement";
 import { Button } from "@/components/ui/button";
 import { FoodVisual } from "@/components/vl/nutrition-visuals";
 import {
-  recipes, shopping, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
+  recipes, tagInfo, type Tag, recipeCategoryLabels, recipeCategoryOrder, type RecipeCategory,
 } from "@/data/anti-inflammatory";
 import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
@@ -60,7 +60,6 @@ function Alimentacao() {
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
-  const [shopWeek, setShopWeek] = useState<1 | 2 | 3>(1);
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<"todas" | RecipeCategory>("todas");
@@ -95,8 +94,11 @@ function Alimentacao() {
     [categoryFilter, search],
   );
   const open = recipes.find((r) => r.id === openRecipe) ?? null;
-  const list = shopping[shopWeek];
-  const boughtCount = list.filter((i) => bought[`${shopWeek}-${i.name}`]).length;
+  const list = useMemo(() => {
+    const chosen = recipes.filter((r) => daysFor(r.id).length > 0);
+    return [...new Set(chosen.flatMap((r) => r.ingredients))];
+  }, [schedule.data]);
+  const boughtCount = list.filter((name) => bought[name]).length;
 
   return (
     <AppShell backAction={tab === "cardapio" ? undefined : { onClick: () => setTab("cardapio"), label: "Voltar ao cardápio" }}>
@@ -228,46 +230,47 @@ function Alimentacao() {
       {tab === "compras" && (
         <div className="mt-6 space-y-5">
           <h2 className="text-2xl font-medium">Sua lista está pronta</h2>
-          <p className="text-base text-muted-foreground">Ingredientes do cardápio, organizados por semana.</p>
-          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Lista da semana">
-            {([1, 2, 3] as const).map((n) => (
-              <Button variant="ghost" key={n} onClick={() => setShopWeek(n)} aria-pressed={shopWeek === n}
-                className={cn("min-h-12 rounded-xl border text-base font-medium transition",
-                  shopWeek === n ? "border-primary bg-primary text-primary-foreground shadow-float" : "bg-card text-muted-foreground")}>
-                Semana {n}
-              </Button>
-            ))}
-          </div>
-          <section className="card-soft p-5">
-            <div className="flex items-baseline justify-between">
-              <p className="flex items-center gap-2 font-medium"><ShoppingBasket className="size-4 text-primary" />Lista da semana {shopWeek}</p>
-              <p className="text-sm text-muted-foreground">{boughtCount} de {list.length}</p>
-            </div>
-            <div className="mt-3"><ProgressBar value={boughtCount / list.length} /></div>
-            <p className="mt-2 text-xs text-muted-foreground">Prefira alimentos naturais, frescos e integrais. Planeje e evite industrializados.</p>
-          </section>
-          <ul className="space-y-2">
-            {list.map((i) => {
-              const k = `${shopWeek}-${i.name}`;
-              const c = !!bought[k];
-              return (
-                <li key={k}>
-                  <Button variant="ghost" role="checkbox" aria-checked={c} onClick={() => setBought((b) => ({ ...b, [k]: !c }))}
-                    className={cn("flex min-h-20 w-full items-center gap-3 rounded-2xl border bg-card px-4 py-4 text-left transition whitespace-normal h-auto justify-start", c && "opacity-70")}>
-                    <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border-2", c ? "border-good bg-good text-primary-foreground" : "border-border")}>
-                      {c && <Check className="size-3.5" />}
-                    </span>
-                    <span className="min-w-0 flex-1"><span className={cn("block text-base font-medium", c && "line-through")}>{i.name}</span><span className="mt-1 block text-base text-muted-foreground">{i.qty}</span></span>
-                  </Button>
-                </li>
-              );
-            })}
-          </ul>
-          {boughtCount > 0 && (
-            <Button variant="ghost" onClick={() => setBought((b) => Object.fromEntries(Object.entries(b).filter(([k]) => !k.startsWith(`${shopWeek}-`))))}
-              className="mx-auto flex min-h-11 items-center gap-2 rounded-full px-4 text-sm text-muted-foreground hover:text-foreground">
-              <RefreshCw className="size-4" />Desmarcar todos
-            </Button>
+          <p className="text-base text-muted-foreground">Ingredientes das receitas que você escolheu para a semana.</p>
+          {list.length === 0 ? (
+            <section className="card-soft p-5 text-center">
+              <ShoppingBasket className="mx-auto size-8 text-primary" />
+              <p className="mt-3 text-base font-medium">Nenhuma receita escolhida ainda</p>
+              <p className="mt-1 text-sm text-muted-foreground">Toque em "Editar cardápio", escolha suas receitas e marque os dias da semana — os ingredientes aparecem aqui.</p>
+              <Button variant="outline" className="mt-4 min-h-12 rounded-2xl text-base" onClick={() => setTab("receitas")}>Editar cardápio<ArrowRight /></Button>
+            </section>
+          ) : (
+            <>
+              <section className="card-soft p-5">
+                <div className="flex items-baseline justify-between">
+                  <p className="flex items-center gap-2 font-medium"><ShoppingBasket className="size-4 text-primary" />Lista da semana</p>
+                  <p className="text-sm text-muted-foreground">{boughtCount} de {list.length}</p>
+                </div>
+                <div className="mt-3"><ProgressBar value={boughtCount / list.length} /></div>
+                <p className="mt-2 text-xs text-muted-foreground">Prefira alimentos naturais, frescos e integrais. Planeje e evite industrializados.</p>
+              </section>
+              <ul className="space-y-2">
+                {list.map((name) => {
+                  const c = !!bought[name];
+                  return (
+                    <li key={name}>
+                      <Button variant="ghost" role="checkbox" aria-checked={c} onClick={() => setBought((b) => ({ ...b, [name]: !c }))}
+                        className={cn("flex min-h-16 w-full items-center gap-3 rounded-2xl border bg-card px-4 py-4 text-left transition whitespace-normal h-auto justify-start", c && "opacity-70")}>
+                        <span className={cn("grid size-6 shrink-0 place-items-center rounded-full border-2", c ? "border-good bg-good text-primary-foreground" : "border-border")}>
+                          {c && <Check className="size-3.5" />}
+                        </span>
+                        <span className={cn("min-w-0 flex-1 text-base font-medium", c && "line-through")}>{name}</span>
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+              {boughtCount > 0 && (
+                <Button variant="ghost" onClick={() => setBought({})}
+                  className="mx-auto flex min-h-11 items-center gap-2 rounded-full px-4 text-sm text-muted-foreground hover:text-foreground">
+                  <RefreshCw className="size-4" />Desmarcar todos
+                </Button>
+              )}
+            </>
           )}
         </div>
       )}
