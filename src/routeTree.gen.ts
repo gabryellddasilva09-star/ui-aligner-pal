@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as DefinirSenhaRouteImport } from './routes/definir-senha'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -33,11 +32,6 @@ import { Route as ApiPublicPushNextRouteImport } from './routes/api/public/push/
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DefinirSenhaRoute = DefinirSenhaRouteImport.update({
-  id: '/definir-senha',
-  path: '/definir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -142,7 +136,6 @@ const ApiPublicPushNextRoute = ApiPublicPushNextRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
-  '/definir-senha': typeof DefinirSenhaRoute
   '/login': typeof LoginRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
@@ -163,7 +156,6 @@ export interface FileRoutesByFullPath {
   '/api/public/push/next': typeof ApiPublicPushNextRoute
 }
 export interface FileRoutesByTo {
-  '/definir-senha': typeof DefinirSenhaRoute
   '/login': typeof LoginRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
@@ -187,7 +179,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/definir-senha': typeof DefinirSenhaRoute
   '/login': typeof LoginRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/alimentacao': typeof AuthenticatedAlimentacaoRoute
@@ -212,7 +203,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/definir-senha'
     | '/login'
     | '/admin'
     | '/alimentacao'
@@ -233,7 +223,6 @@ export interface FileRouteTypes {
     | '/api/public/push/next'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/definir-senha'
     | '/login'
     | '/admin'
     | '/alimentacao'
@@ -256,7 +245,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
-    | '/definir-senha'
     | '/login'
     | '/_authenticated/admin'
     | '/_authenticated/alimentacao'
@@ -280,7 +268,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  DefinirSenhaRoute: typeof DefinirSenhaRoute
   LoginRoute: typeof LoginRoute
   ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
   ApiPublicPushNextRoute: typeof ApiPublicPushNextRoute
@@ -293,13 +280,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/definir-senha': {
-      id: '/definir-senha'
-      path: '/definir-senha'
-      fullPath: '/definir-senha'
-      preLoaderRoute: typeof DefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -481,7 +461,6 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  DefinirSenhaRoute: DefinirSenhaRoute,
   LoginRoute: LoginRoute,
   ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
   ApiPublicPushNextRoute: ApiPublicPushNextRoute,
