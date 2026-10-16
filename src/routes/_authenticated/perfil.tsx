@@ -150,6 +150,24 @@ function Perfil() {
           </div>
           <div className="mt-5"><PushToggle /></div>
         </section>
+
+        <section className="card-soft rounded-3xl p-6 lg:col-span-2">
+          <h2 className="flex items-center gap-2 text-lg font-medium"><HeartPulse className="size-5 text-primary" /> Lembrete do registro diário</h2>
+          <p className="mt-1 text-sm text-muted-foreground">O app pergunta “Como você está se sentindo hoje?” no horário e na frequência que você escolher.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-3 text-sm font-medium"><Switch checked={cOn} onCheckedChange={setCOn} /> {cOn ? "Lembrete ligado" : "Lembrete desligado"}</label>
+            <Input type="time" value={cTime} onChange={e => setCTime(e.target.value)} disabled={!cOn} aria-label="Horário do lembrete do registro" className="h-12 w-36 rounded-xl text-base" />
+            <select value={cFreq} onChange={e => setCFreq(e.target.value)} disabled={!cOn} aria-label="Frequência do lembrete"
+              className="h-12 rounded-xl border border-border bg-background px-3 text-base">
+              <option value="daily">Todos os dias</option>
+              <option value="twice_week">2 vezes por semana</option>
+              <option value="weekly">1 vez por semana</option>
+              <option value="monthly">1 vez por mês</option>
+            </select>
+            <Button onClick={() => saveCheckin.mutate()} disabled={saveCheckin.isPending || !d} className="h-12 rounded-xl px-6">{saveCheckin.isPending ? "Salvando…" : "Salvar lembrete"}</Button>
+            {cSaved && <span role="status" className="text-sm text-good">Lembrete salvo!</span>}
+          </div>
+        </section>
       </div>
     </AppShell>
   );
