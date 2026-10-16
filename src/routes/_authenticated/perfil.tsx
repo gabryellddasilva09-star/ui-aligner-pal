@@ -87,13 +87,21 @@ function Perfil() {
   });
 
   const [time, setTime] = useState("09:00"); const [on, setOn] = useState(false); const [saved, setSaved] = useState(false);
-  useEffect(() => { if (d) { setTime(d.remindTime); setOn(d.remind); } }, [d]);
+  const [cTime, setCTime] = useState("20:00"); const [cOn, setCOn] = useState(false); const [cFreq, setCFreq] = useState("daily"); const [cSaved, setCSaved] = useState(false);
+  useEffect(() => { if (d) { setTime(d.remindTime); setOn(d.remind); setCTime(d.checkinTime); setCOn(d.checkinRemind); setCFreq(d.checkinFreq); } }, [d]);
   const saveRemind = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("training_reminders").upsert({ user_id: d!.id, remind_time: time, remind: on, updated_at: new Date().toISOString() });
       if (error) throw error;
     },
     onSuccess: () => { setSaved(true); qc.invalidateQueries({ queryKey: ["my-profile"] }); setTimeout(() => setSaved(false), 2500); },
+  });
+  const saveCheckin = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("checkin_reminders").upsert({ user_id: d!.id, remind_time: cTime, remind: cOn, frequency: cFreq, updated_at: new Date().toISOString() });
+      if (error) throw error;
+    },
+    onSuccess: () => { setCSaved(true); qc.invalidateQueries({ queryKey: ["my-profile"] }); setTimeout(() => setCSaved(false), 2500); },
   });
 
   return (
