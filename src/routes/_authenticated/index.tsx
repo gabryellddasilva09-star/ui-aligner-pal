@@ -15,6 +15,7 @@ import qaLibrary from "@/assets/qa-library.jpg";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CrisisMode } from "@/components/vl/crisis-mode";
+import { HoldButton } from "@/components/vl/hold-button";
 import { InstallAppButton } from "@/components/vl/install-app";
 import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
