@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound } from "lucide-react";
+import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound, HeartPulse } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,14 +45,16 @@ function Perfil() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("no user");
-      const [{ data: p }, { data: r }] = await Promise.all([
+      const [{ data: p }, { data: r }, { data: c }] = await Promise.all([
         supabase.from("community_profiles").select("avatar_url").eq("user_id", user.id).maybeSingle(),
         supabase.from("training_reminders").select("remind_time, remind").eq("user_id", user.id).maybeSingle(),
+        supabase.from("checkin_reminders").select("remind_time, remind, frequency").eq("user_id", user.id).maybeSingle(),
       ]);
       const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
       return {
         id: user.id, email: user.email ?? "", name: typeof meta["name"] === "string" ? meta["name"] : (user.email?.split("@")[0] ?? ""),
         createdAt: user.created_at, avatar: p?.avatar_url ?? null, remindTime: r?.remind_time ?? "09:00", remind: r?.remind ?? false,
+        checkinTime: c?.remind_time ?? "20:00", checkinRemind: c?.remind ?? false, checkinFreq: c?.frequency ?? "daily",
       };
     },
   });
@@ -85,13 +87,21 @@ function Perfil() {
   });
 
   const [time, setTime] = useState("09:00"); const [on, setOn] = useState(false); const [saved, setSaved] = useState(false);
-  useEffect(() => { if (d) { setTime(d.remindTime); setOn(d.remind); } }, [d]);
+  const [cTime, setCTime] = useState("20:00"); const [cOn, setCOn] = useState(false); const [cFreq, setCFreq] = useState("daily"); const [cSaved, setCSaved] = useState(false);
+  useEffect(() => { if (d) { setTime(d.remindTime); setOn(d.remind); setCTime(d.checkinTime); setCOn(d.checkinRemind); setCFreq(d.checkinFreq); } }, [d]);
   const saveRemind = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("training_reminders").upsert({ user_id: d!.id, remind_time: time, remind: on, updated_at: new Date().toISOString() });
       if (error) throw error;
     },
     onSuccess: () => { setSaved(true); qc.invalidateQueries({ queryKey: ["my-profile"] }); setTimeout(() => setSaved(false), 2500); },
+  });
+  const saveCheckin = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("checkin_reminders").upsert({ user_id: d!.id, remind_time: cTime, remind: cOn, frequency: cFreq, updated_at: new Date().toISOString() });
+      if (error) throw error;
+    },
+    onSuccess: () => { setCSaved(true); qc.invalidateQueries({ queryKey: ["my-profile"] }); setTimeout(() => setCSaved(false), 2500); },
   });
 
   return (
@@ -139,6 +149,24 @@ function Perfil() {
             {saved && <span role="status" className="text-sm text-good">Horário salvo!</span>}
           </div>
           <div className="mt-5"><PushToggle /></div>
+        </section>
+
+        <section className="card-soft rounded-3xl p-6 lg:col-span-2">
+          <h2 className="flex items-center gap-2 text-lg font-medium"><HeartPulse className="size-5 text-primary" /> Lembrete do registro diário</h2>
+          <p className="mt-1 text-sm text-muted-foreground">O app pergunta “Como você está se sentindo hoje?” no horário e na frequência que você escolher.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-3 text-sm font-medium"><Switch checked={cOn} onCheckedChange={setCOn} /> {cOn ? "Lembrete ligado" : "Lembrete desligado"}</label>
+            <Input type="time" value={cTime} onChange={e => setCTime(e.target.value)} disabled={!cOn} aria-label="Horário do lembrete do registro" className="h-12 w-36 rounded-xl text-base" />
+            <select value={cFreq} onChange={e => setCFreq(e.target.value)} disabled={!cOn} aria-label="Frequência do lembrete"
+              className="h-12 rounded-xl border border-border bg-background px-3 text-base">
+              <option value="daily">Todos os dias</option>
+              <option value="twice_week">2 vezes por semana</option>
+              <option value="weekly">1 vez por semana</option>
+              <option value="monthly">1 vez por mês</option>
+            </select>
+            <Button onClick={() => saveCheckin.mutate()} disabled={saveCheckin.isPending || !d} className="h-12 rounded-xl px-6">{saveCheckin.isPending ? "Salvando…" : "Salvar lembrete"}</Button>
+            {cSaved && <span role="status" className="text-sm text-good">Lembrete salvo!</span>}
+          </div>
         </section>
       </div>
     </AppShell>

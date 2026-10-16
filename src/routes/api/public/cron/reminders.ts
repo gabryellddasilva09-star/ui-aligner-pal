@@ -25,12 +25,13 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
         const { data: subs } = await supabaseAdmin.from("push_subscriptions").select("id, user_id, endpoint, time_zone");
         if (!subs?.length) return Response.json({ sent: 0 });
         const users = [...new Set(subs.map(s => s.user_id))];
-        const [{ data: meds }, { data: appts }, { data: progs }, { data: trains }] = await Promise.all([
+        const [{ data: meds }, { data: appts }, { data: progs }, { data: trains }, { data: checkins }] = await Promise.all([
           supabaseAdmin.from("medications").select("id, user_id, name, dose, times").in("user_id", users).eq("active", true).eq("remind", true),
           supabaseAdmin.from("appointments").select("id, user_id, kind, title, starts_at").in("user_id", users).eq("remind", true)
             .gte("starts_at", now.toISOString()).lte("starts_at", new Date(now.getTime() + 25 * 3600e3).toISOString()),
           supabaseAdmin.from("program_enrollments").select("user_id, remind_time, started_on").in("user_id", users).eq("active", true).eq("remind", true),
           supabaseAdmin.from("training_reminders").select("user_id, remind_time").in("user_id", users).eq("remind", true),
+          supabaseAdmin.from("checkin_reminders").select("user_id, remind_time, frequency").in("user_id", users).eq("remind", true),
         ]);
         const jobs: { user: string; key: string; title: string; body: string }[] = [];
         for (const user of users) {
@@ -51,6 +52,17 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
             const [h = 0, mi = 0] = t.remind_time.split(":").map(Number);
             const diff = minutes - (h * 60 + mi);
             if (diff >= 0 && diff < 5) jobs.push({ user, key: `train:${user}:${date}`, title: "Hora de se movimentar", body: "Seus exercícios de hoje estão esperando. Vá no seu ritmo 💜" });
+          }
+          for (const c of checkins ?? []) if (c.user_id === user) {
+            const [h = 0, mi = 0] = c.remind_time.split(":").map(Number);
+            const diff = minutes - (h * 60 + mi);
+            if (diff < 0 || diff >= 5) continue;
+            const d = new Date(`${date}T12:00:00Z`);
+            const dow = d.getUTCDay(); // 0=dom … 6=sáb
+            const dom = d.getUTCDate();
+            const due = c.frequency === "daily" || (c.frequency === "twice_week" && (dow === 1 || dow === 4))
+              || (c.frequency === "weekly" && dow === 1) || (c.frequency === "monthly" && dom === 1);
+            if (due) jobs.push({ user, key: `checkin:${user}:${date}`, title: "Como você está se sentindo hoje?", body: "Reserve um minutinho para registrar como está seu dia 💜" });
           }
           for (const a of appts ?? []) if (a.user_id === user) {
             const mins = (new Date(a.starts_at).getTime() - now.getTime()) / 60000;
