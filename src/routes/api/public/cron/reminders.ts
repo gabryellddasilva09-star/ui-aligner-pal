@@ -53,6 +53,17 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
             const diff = minutes - (h * 60 + mi);
             if (diff >= 0 && diff < 5) jobs.push({ user, key: `train:${user}:${date}`, title: "Hora de se movimentar", body: "Seus exercícios de hoje estão esperando. Vá no seu ritmo 💜" });
           }
+          for (const c of checkins ?? []) if (c.user_id === user) {
+            const [h = 0, mi = 0] = c.remind_time.split(":").map(Number);
+            const diff = minutes - (h * 60 + mi);
+            if (diff < 0 || diff >= 5) continue;
+            const d = new Date(`${date}T12:00:00Z`);
+            const dow = d.getUTCDay(); // 0=dom … 6=sáb
+            const dom = d.getUTCDate();
+            const due = c.frequency === "daily" || (c.frequency === "twice_week" && (dow === 1 || dow === 4))
+              || (c.frequency === "weekly" && dow === 1) || (c.frequency === "monthly" && dom === 1);
+            if (due) jobs.push({ user, key: `checkin:${user}:${date}`, title: "Como você está se sentindo hoje?", body: "Reserve um minutinho para registrar como está seu dia 💜" });
+          }
           for (const a of appts ?? []) if (a.user_id === user) {
             const mins = (new Date(a.starts_at).getTime() - now.getTime()) / 60000;
             const when = new Intl.DateTimeFormat("pt-BR", { timeZone: tz, weekday: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(a.starts_at));
