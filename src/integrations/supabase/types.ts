@@ -65,6 +65,30 @@ export type Database = {
         }
         Relationships: []
       }
+      checkin_reminders: {
+        Row: {
+          frequency: string
+          remind: boolean
+          remind_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          frequency?: string
+          remind?: boolean
+          remind_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          frequency?: string
+          remind?: boolean
+          remind_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_likes: {
         Row: {
           created_at: string
