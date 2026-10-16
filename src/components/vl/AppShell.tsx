@@ -10,7 +10,6 @@ import { useCurrentUser } from "@/lib/user";
 
 const nav = [
   { to: "/", label: "Início", icon: Home },
-  { to: "/diario", label: "Diário", icon: CalendarDays },
   { to: "/plano", label: "Movimento", icon: PersonStanding },
   { to: "/alimentacao", label: "Alimentação", icon: Utensils },
   { to: "/remedios", label: "Remédios", icon: Pill },

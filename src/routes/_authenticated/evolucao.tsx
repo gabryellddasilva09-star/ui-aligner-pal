@@ -115,10 +115,13 @@ function Evolucao() {
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-soft via-card to-primary-soft p-5 shadow-sm">
           <div className="flex items-center gap-4">
             <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-card text-primary"><BarChart3 className="size-8" /></span>
-            <div>
+            <div className="min-w-0">
               <h1 className="font-display text-xl font-semibold">Acompanhe sua jornada!</h1>
               <p className="mt-1 text-sm text-muted-foreground">Veja como estão seus sintomas, descubra padrões e celebre suas conquistas.</p>
             </div>
+            <Link to="/diario" className="ml-auto inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground shadow-float">
+              <CalendarDays className="size-4" /> Histórico
+            </Link>
           </div>
         </section>
 
