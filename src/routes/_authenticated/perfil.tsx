@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound } from "lucide-react";
+import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound, HeartPulse } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,14 +45,16 @@ function Perfil() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("no user");
-      const [{ data: p }, { data: r }] = await Promise.all([
+      const [{ data: p }, { data: r }, { data: c }] = await Promise.all([
         supabase.from("community_profiles").select("avatar_url").eq("user_id", user.id).maybeSingle(),
         supabase.from("training_reminders").select("remind_time, remind").eq("user_id", user.id).maybeSingle(),
+        supabase.from("checkin_reminders").select("remind_time, remind, frequency").eq("user_id", user.id).maybeSingle(),
       ]);
       const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
       return {
         id: user.id, email: user.email ?? "", name: typeof meta["name"] === "string" ? meta["name"] : (user.email?.split("@")[0] ?? ""),
         createdAt: user.created_at, avatar: p?.avatar_url ?? null, remindTime: r?.remind_time ?? "09:00", remind: r?.remind ?? false,
+        checkinTime: c?.remind_time ?? "20:00", checkinRemind: c?.remind ?? false, checkinFreq: c?.frequency ?? "daily",
       };
     },
   });
