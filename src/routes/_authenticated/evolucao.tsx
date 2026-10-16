@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Zap, BedDouble, BatteryMedium, Smile, TrendingUp, BarChart3, Download, ArrowDown, ArrowUp, MessageCircleMore } from "lucide-react";
+import { Zap, BedDouble, BatteryMedium, Smile, TrendingUp, BarChart3, Download, ArrowDown, ArrowUp, MessageCircleMore, CalendarDays } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { useRecords, scoreMaps, fmt, todayKey, type StoredRecord } from "@/lib/records";
 import { cn } from "@/lib/utils";
