@@ -2,7 +2,7 @@
 @source "../src";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
@@ -138,6 +138,53 @@
 }
 
 :root { --gradient-checkin-invitation: linear-gradient(115deg, oklch(0.50 0.18 295), oklch(0.59 0.16 310)); }
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.19 0.008 285);
+  --foreground: oklch(0.86 0.012 285);
+  --card: oklch(0.235 0.01 285);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.25 0.012 285);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.59 0.12 295);
+  --primary-foreground: oklch(0.96 0.008 295);
+  --primary-soft: oklch(0.29 0.045 295);
+  --secondary: oklch(0.28 0.015 285);
+  --secondary-foreground: oklch(0.86 0.018 285);
+  --muted: oklch(0.27 0.01 285);
+  --muted-foreground: oklch(0.72 0.018 285);
+  --accent: oklch(0.31 0.045 295);
+  --accent-foreground: oklch(0.83 0.055 295);
+  --destructive: oklch(0.52 0.15 20);
+  --destructive-foreground: var(--primary-foreground);
+  --border: oklch(0.35 0.012 285);
+  --input: var(--border);
+  --ring: oklch(0.67 0.09 295);
+  --pain: oklch(0.72 0.12 15);
+  --sleep: oklch(0.73 0.1 290);
+  --energy: oklch(0.73 0.1 155);
+  --food: oklch(0.76 0.1 70);
+  --move: oklch(0.73 0.1 250);
+  --mood: oklch(0.73 0.1 320);
+  --good: oklch(0.73 0.1 155);
+  --good-soft: oklch(0.28 0.03 155);
+  --warn: oklch(0.78 0.1 80);
+  --warn-soft: oklch(0.29 0.025 80);
+  --alert: oklch(0.73 0.12 15);
+  --alert-soft: oklch(0.28 0.04 15);
+  --nutrition-blue: oklch(0.74 0.08 235);
+  --nutrition-blue-soft: oklch(0.28 0.025 235);
+  --gradient-checkin: linear-gradient(135deg, oklch(0.28 0.04 300), oklch(0.30 0.04 330));
+  --gradient-insight: linear-gradient(120deg, oklch(0.26 0.025 300), oklch(0.28 0.025 340));
+  --gradient-focus: linear-gradient(120deg, oklch(0.26 0.025 160), oklch(0.28 0.02 180));
+  --gradient-checkin-invitation: linear-gradient(115deg, oklch(0.31 0.075 295), oklch(0.35 0.07 310));
+  --shadow-soft: 0 1px 2px oklch(0.1 0 0 / 0.15), 0 8px 24px -12px oklch(0.1 0 0 / 0.25);
+  --shadow-float: 0 20px 50px -20px oklch(0.1 0 0 / 0.4);
+}
+:root:not(.dark) { color-scheme: light; }
+.dark img { filter: brightness(0.72); }
+.dark .breathe-glow { display: none; }
+.dark .pain-fill { background: linear-gradient(90deg, var(--good-soft), var(--warn-soft) 55%, var(--alert)); }
 .checkin-invitation { background: var(--gradient-checkin-invitation); }
 @keyframes checkin-float {
   0%, 100% { transform: translateY(0); }

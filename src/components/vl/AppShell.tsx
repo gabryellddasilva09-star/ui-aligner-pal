@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { patient } from "@/data/mock";
 import { useCurrentUser } from "@/lib/user";
+import { ThemeToggle } from "@/components/vl/theme";
 
 const nav = [
   { to: "/", label: "Início", icon: Home },
@@ -114,6 +115,7 @@ export function IconButtons() {
   }
   return (
     <div className="flex shrink-0 items-center gap-2">
+      <ThemeToggle />
       {me.data?.isAdmin && (
         <Link to="/admin" aria-label="Cadastrar usuários" title="Cadastrar usuários" className="grid size-10 place-items-center rounded-full border bg-card text-primary transition hover:bg-secondary">
           <UserPlus className="size-[18px]" />

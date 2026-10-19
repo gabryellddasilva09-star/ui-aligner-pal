@@ -1,4 +1,6 @@
 # Cuidado contínuo da paciente
+## Conforto visual
+- [ ] Adicionar modo escuro global, botão nas barras de conta e preferência salva; conferir telas e navegação.
 ## Receitas com troca de ingredientes
 - [x] Destacar ingredientes que têm substituição na tabela e abrir as trocas em modal.
 ## Exercícios do guia enviado
