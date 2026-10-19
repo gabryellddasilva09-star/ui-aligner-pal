@@ -26,3 +26,4 @@
 - Render account and notification controls only through AppShell's viewport-specific top bars, never inside page headers, to prevent duplicate controls.
 - Link recipe ingredients to the cardápio's substitution table through a dedicated matcher module, so supplied PDF text stays verbatim and swap hints are always derived from that table rather than hand-marked.
 - Seed default weekly meal and exercise plans in the shared schedule hooks only when the user has no saved rows, because removals keep rows with empty weekdays so an empty set always means a first visit.
+- Keep theme state in the shared frontend ThemeProvider with browser-local persistence and a pre-paint initializer; all screens and dialogs use global semantic theme tokens to avoid bright flashes and inconsistent dark surfaces.

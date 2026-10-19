@@ -68,7 +68,7 @@ function Index() {
     <AppShell>
       {/* Greeting */}
       <header className="relative -mx-5 -mt-4 overflow-hidden px-5 pb-6 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-8 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
-        <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90" />
+        <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90 dark:opacity-20" />
         <div className="relative">
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-2 lg:hidden">
