@@ -17,7 +17,7 @@ export const emotionalOptions = [
 ] as const;
 export const welcomingMessages = ["Respeitar seus limites também é cuidar de você.", "Pequenas pausas também fazem parte do cuidado.", "Você pode ir no seu próprio ritmo.", "Hoje, faça o que for possível. Não precisa ser perfeito.", "Descansar não é perder tempo."];
 export const safetyMessage = "Se sentir dor, tontura, falta de ar ou outro desconforto, interrompa e volte à respiração natural. Sintomas intensos, novos ou incomuns devem ser avaliados por um profissional de saúde.";
-export const sessionSchema = z.object({ id: z.string(), name: z.string(), date: z.string().datetime(), seconds: z.number().int().min(1) });
+export const sessionSchema = z.object({ id: z.string(), name: z.string(), date: z.string().datetime(), seconds: z.number().int().min(1), completed: z.boolean().optional() });
 export const historySchema = z.array(sessionSchema);
 export type RelaxationRecord = z.infer<typeof sessionSchema>;
 export const reminderSchema = z.object({ enabled: z.boolean(), time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/), days: z.array(z.number().int().min(0).max(6)) });

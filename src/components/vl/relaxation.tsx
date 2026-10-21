@@ -50,9 +50,9 @@ export function RelaxationSession({ activity, duration, onClose, onRecord }: { a
   const active = useRef(false);
   const startedAt = useRef(new Date().toISOString());
   const completed = duration > 0 && elapsed >= duration;
-  function save() {
-    const seconds = Math.floor(measured.current);
-    if (!saved.current && seconds >= 1) { saved.current = true; recordCallback.current({ id: crypto.randomUUID(), name: activity.name, date: startedAt.current, seconds }); }
+  function save(completed = false) {
+    const seconds = Math.max(Math.floor(measured.current), completed ? 1 : 0);
+    if (!saved.current && seconds >= 1) { saved.current = true; recordCallback.current({ id: crypto.randomUUID(), name: activity.name, date: startedAt.current, seconds, completed }); }
   }
   useEffect(() => { setMotion(!window.matchMedia("(prefers-reduced-motion: reduce)").matches); }, []);
   useEffect(() => {
@@ -72,11 +72,11 @@ export function RelaxationSession({ activity, duration, onClose, onRecord }: { a
     document.addEventListener("visibilitychange", hide);
     return () => { document.removeEventListener("visibilitychange", hide); save(); };
   }, []);
-  useEffect(() => { if (completed) { save(); setFinished(true); } }, [completed]);
+  useEffect(() => { if (completed) { save(true); setFinished(true); } }, [completed]);
   const hasNextInstruction = activity.id === "mind" || activity.id === "sleep";
   const currentStep = activity.id === "body" ? step : Math.min(activity.steps.length - 1, Math.max(step, Math.floor((elapsed / Math.max(duration, 1)) * activity.steps.length)));
   const breathingText = elapsed % 10 < 4 ? "Inspire suavemente" : "Expire devagar";
-  function end() { save(); setFinished(true); }
+  function end(done = false) { save(done); setFinished(true); }
   return <Dialog open onOpenChange={open => { if (!open) { save(); onClose(); } }}><DialogContent className="relax-session max-h-[92dvh] overflow-y-auto rounded-3xl sm:max-w-xl">
     <DialogTitle className="pr-7 text-center text-2xl">{activity.name}</DialogTitle>
     <DialogDescription className="text-center">{finished ? "Obrigado por reservar este momento para você." : "Vá no seu ritmo. Você pode parar quando quiser."}</DialogDescription>
@@ -87,9 +87,9 @@ export function RelaxationSession({ activity, duration, onClose, onRecord }: { a
       <div className="min-h-28 text-center"><p className="text-2xl font-medium leading-relaxed">{paused ? "Sua pausa está pausada" : activity.id === "breathing" ? breathingText : activity.steps[currentStep]}</p>{activity.id === "breathing" && <p className="mt-2 text-muted-foreground">Respire no seu ritmo, sem prender o ar.</p>}</div>
       <p className="text-center font-display text-3xl tabular-nums" aria-label={duration > 0 ? "Tempo restante" : "Tempo dedicado"}>{formatSessionTime(duration > 0 ? Math.max(0, duration - elapsed) : elapsed)}</p>
       {activity.id === "breathing" && <label className="flex min-h-12 items-center justify-center gap-3 text-base"><input type="checkbox" checked={!motion} onChange={event => setMotion(!event.target.checked)} className="size-5 accent-primary" />Somente instruções, sem animação</label>}
-      {activity.id === "body" && <div className="flex gap-3"><Button variant="outline" className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(); }}><SkipForward />Pular etapa</Button><Button className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(); }}>{step === activity.steps.length - 1 ? "Concluir" : "Próximo"}</Button></div>}
-      {hasNextInstruction && <Button className="h-12 w-full text-base" disabled={paused} onClick={() => { if (currentStep < activity.steps.length - 1) setStep(currentStep + 1); else end(); }}>{currentStep === activity.steps.length - 1 ? <Check /> : <SkipForward />}{currentStep === activity.steps.length - 1 ? "Concluir" : "Próximo"}</Button>}
-      <div className="flex gap-3"><Button className="h-14 flex-1 rounded-xl text-base" onClick={() => setPaused(!paused)}>{paused ? <Play /> : <Pause />}{paused ? "Retomar" : "Pausar"}</Button><Button variant="outline" className="h-14 flex-1 rounded-xl text-base" onClick={end}>Encerrar sessão</Button></div>
+      {activity.id === "body" && <div className="flex gap-3"><Button variant="outline" className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(); }}><SkipForward />Pular etapa</Button><Button className="h-12 flex-1" onClick={() => { if (step < activity.steps.length - 1) setStep(step + 1); else end(true); }}>{step === activity.steps.length - 1 ? "Concluir" : "Próximo"}</Button></div>}
+      {hasNextInstruction && <Button className="h-12 w-full text-base" disabled={paused} onClick={() => { if (currentStep < activity.steps.length - 1) setStep(currentStep + 1); else end(true); }}>{currentStep === activity.steps.length - 1 ? <Check /> : <SkipForward />}{currentStep === activity.steps.length - 1 ? "Concluir" : "Próximo"}</Button>}
+      <div className="flex gap-3"><Button className="h-14 flex-1 rounded-xl text-base" onClick={() => setPaused(!paused)}>{paused ? <Play /> : <Pause />}{paused ? "Retomar" : "Pausar"}</Button><Button variant="outline" className="h-14 flex-1 rounded-xl text-base" onClick={() => end()}>Encerrar sessão</Button></div>
       <details className="rounded-xl border p-4"><summary className="cursor-pointer text-sm font-medium text-primary">Sons para acompanhar · opcionais</summary><div className="mt-4"><NatureSounds paused={paused} /></div></details>
       <p className="text-sm leading-relaxed text-muted-foreground">{safetyMessage} {activity.id === "body" && "Se uma etapa aumentar o desconforto, interrompa essa etapa. Não force os movimentos."}</p>
     </>}
