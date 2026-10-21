@@ -7,6 +7,7 @@ import { useMovementCompletions, useMovementSchedule } from "@/lib/movement-sche
 import { useRecipeSchedule } from "@/lib/recipe-schedule";
 import { todayKey } from "@/lib/records";
 import { dailyProgress, isSleepDone } from "@/lib/daily-progress";
+import { shouldSaveSnapshot, useSaveProgressSnapshot } from "@/lib/daily-progress-history";
 import { cn } from "@/lib/utils";
 
 function ProgressRing({ pct }: { pct: number }) {
@@ -39,11 +40,14 @@ export function DailyProgressCard() {
   const meals = useRecipeSchedule();
   const [mealDone, setMealDone] = useState<Record<string, boolean>>({});
   const [sleepDone, setSleepDone] = useState(false);
+  const [water, setWater] = useState(0);
+  const saveSnap = useSaveProgressSnapshot();
 
   useEffect(() => {
     const read = () => {
       try { setMealDone(JSON.parse(localStorage.getItem("vl-ai-done") ?? "{}")); } catch { setMealDone({}); }
       setSleepDone(isSleepDone());
+      try { setWater(Number(JSON.parse(localStorage.getItem("vl-ai-water") ?? "{}")[new Date().getDay()]) || 0); } catch { setWater(0); }
     };
     read();
     window.addEventListener("vl-progress", read); window.addEventListener("focus", read);
@@ -58,6 +62,19 @@ export function DailyProgressCard() {
   const pct = dailyProgress({ exDone, exTotal: exIds.length, mealDone: mealCount, mealTotal: mealIds.length, sleepDone });
   const doneCount = Math.min(exDone, exIds.length) + Math.min(mealCount, mealIds.length) + (sleepDone ? 1 : 0);
   const totalCount = exIds.length + mealIds.length + 1;
+
+  const ready = moves.isSuccess && meals.isSuccess && completions.isSuccess;
+  const snapKey = ready ? JSON.stringify([today, pct, exDone, mealCount, sleepDone, water]) : "";
+  useEffect(() => {
+    if (!snapKey) return;
+    const snap = {
+      date: today, pct, water: Math.min(40, water), sleepDone,
+      exercises: exIds.filter(id => doneIds.has(id)), exercisesTotal: exIds.length,
+      meals: mealIds.filter(id => mealDone[`${weekday}-${id}`]), mealsTotal: mealIds.length,
+    };
+    if (shouldSaveSnapshot(snap)) saveSnap.mutate(snap);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapKey]);
 
   const items = [
     {

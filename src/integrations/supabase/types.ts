@@ -195,6 +195,45 @@ export type Database = {
           },
         ]
       }
+      daily_progress: {
+        Row: {
+          exercises: string[]
+          exercises_total: number
+          meals: string[]
+          meals_total: number
+          pct: number
+          progress_date: string
+          sleep_done: boolean
+          updated_at: string
+          user_id: string
+          water_cups: number
+        }
+        Insert: {
+          exercises?: string[]
+          exercises_total?: number
+          meals?: string[]
+          meals_total?: number
+          pct: number
+          progress_date: string
+          sleep_done?: boolean
+          updated_at?: string
+          user_id: string
+          water_cups?: number
+        }
+        Update: {
+          exercises?: string[]
+          exercises_total?: number
+          meals?: string[]
+          meals_total?: number
+          pct?: number
+          progress_date?: string
+          sleep_done?: boolean
+          updated_at?: string
+          user_id?: string
+          water_cups?: number
+        }
+        Relationships: []
+      }
       daily_records: {
         Row: {
           awakenings: number | null
