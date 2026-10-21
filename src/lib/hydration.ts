@@ -1,9 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { todayKey } from "@/lib/records";
 import { adjustWater, waterGoal, waterGoalSchema } from "@/lib/hydration-values";
 
-export function useHydration(date = todayKey()) {
+export function useHydration(selectedDate?: string) {
+  const [today, setToday] = useState(todayKey);
+  useEffect(() => {
+    const timer = window.setInterval(() => setToday(todayKey()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const date = selectedDate ?? today;
   const qc = useQueryClient();
   const account = useQuery({
     queryKey: ["hydration-account"],
@@ -11,7 +18,7 @@ export function useHydration(date = todayKey()) {
       const { data, error } = await supabase.auth.getUser();
       if (error) throw error;
       if (!data.user) throw new Error("Entre na sua conta para registrar água.");
-      return { id: data.user.id, goal: waterGoal(data.user.user_metadata.water_goal_ml) };
+      return { id: data.user.id, goal: waterGoal(data.user.user_metadata["water_goal_ml"]) };
     },
   });
   const id = account.data?.id;
@@ -30,10 +37,15 @@ export function useHydration(date = todayKey()) {
     mutationFn: async (direction: 1 | -1) => {
       if (!id) throw new Error("Sem sessão");
       const amount = adjustWater(consumption.data ?? 0, direction);
+      // Ensure a row exists without replacing a previously saved snapshot.
+      const { error: insertError } = await supabase.from("daily_progress").upsert({
+        user_id: id, progress_date: date, pct: 0,
+      }, { onConflict: "user_id,progress_date", ignoreDuplicates: true });
+      if (insertError) throw insertError;
       // Update only water: the other daily snapshot fields must remain untouched.
-      const { error } = await supabase.from("daily_progress").upsert({
-        user_id: id, progress_date: date, water_cups: amount / 250, updated_at: new Date().toISOString(),
-      }, { onConflict: "user_id,progress_date" });
+      const { error } = await supabase.from("daily_progress").update({
+        water_cups: amount / 250, updated_at: new Date().toISOString(),
+      }).eq("user_id", id).eq("progress_date", date);
       if (error) throw error;
       return amount;
     },

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useHydration } from "@/lib/hydration";
 import { MAX_WATER_ML, waterLabel, waterPercent } from "@/lib/hydration-values";
 
-export function WaterControl({ date }: { date?: string }) {
+export function WaterControl({ date }: { date?: string | undefined }) {
   const water = useHydration(date);
   const pct = waterPercent(water.amount, water.goal);
   const disabled = !water.ready || water.change.isPending;
