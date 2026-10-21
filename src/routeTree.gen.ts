@@ -16,7 +16,6 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAlimentacaoRouteImport } from './routes/_authenticated/alimentacao'
 import { Route as AuthenticatedBibliotecaRouteImport } from './routes/_authenticated/biblioteca'
 import { Route as AuthenticatedComunidadeRouteImport } from './routes/_authenticated/comunidade'
-import { Route as AuthenticatedConsultasRouteImport } from './routes/_authenticated/consultas'
 import { Route as AuthenticatedDiarioRouteImport } from './routes/_authenticated/diario'
 import { Route as AuthenticatedEvolucaoRouteImport } from './routes/_authenticated/evolucao'
 import { Route as AuthenticatedExerciciosRouteImport } from './routes/_authenticated/exercicios'
@@ -25,7 +24,6 @@ import { Route as AuthenticatedPlanoRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedProfissionalRouteImport } from './routes/_authenticated/profissional'
 import { Route as AuthenticatedProgramaRouteImport } from './routes/_authenticated/programa'
 import { Route as AuthenticatedRelaxamentoRouteImport } from './routes/_authenticated/relaxamento'
-import { Route as AuthenticatedRemediosRouteImport } from './routes/_authenticated/remedios'
 import { Route as AuthenticatedConhecimentoAssuntoRouteImport } from './routes/_authenticated/conhecimento.$assunto'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as ApiPublicPushNextRouteImport } from './routes/api/public/push/next'
@@ -63,11 +61,6 @@ const AuthenticatedBibliotecaRoute = AuthenticatedBibliotecaRouteImport.update({
 const AuthenticatedComunidadeRoute = AuthenticatedComunidadeRouteImport.update({
   id: '/comunidade',
   path: '/comunidade',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedConsultasRoute = AuthenticatedConsultasRouteImport.update({
-  id: '/consultas',
-  path: '/consultas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDiarioRoute = AuthenticatedDiarioRouteImport.update({
@@ -112,11 +105,6 @@ const AuthenticatedRelaxamentoRoute =
     path: '/relaxamento',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedRemediosRoute = AuthenticatedRemediosRouteImport.update({
-  id: '/remedios',
-  path: '/remedios',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedConhecimentoAssuntoRoute =
   AuthenticatedConhecimentoAssuntoRouteImport.update({
     id: '/conhecimento/$assunto',
@@ -141,7 +129,6 @@ export interface FileRoutesByFullPath {
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/biblioteca': typeof AuthenticatedBibliotecaRoute
   '/comunidade': typeof AuthenticatedComunidadeRoute
-  '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/exercicios': typeof AuthenticatedExerciciosRoute
@@ -150,7 +137,6 @@ export interface FileRoutesByFullPath {
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/programa': typeof AuthenticatedProgramaRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
-  '/remedios': typeof AuthenticatedRemediosRoute
   '/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
   '/api/public/push/next': typeof ApiPublicPushNextRoute
@@ -161,7 +147,6 @@ export interface FileRoutesByTo {
   '/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/biblioteca': typeof AuthenticatedBibliotecaRoute
   '/comunidade': typeof AuthenticatedComunidadeRoute
-  '/consultas': typeof AuthenticatedConsultasRoute
   '/diario': typeof AuthenticatedDiarioRoute
   '/evolucao': typeof AuthenticatedEvolucaoRoute
   '/exercicios': typeof AuthenticatedExerciciosRoute
@@ -170,7 +155,6 @@ export interface FileRoutesByTo {
   '/profissional': typeof AuthenticatedProfissionalRoute
   '/programa': typeof AuthenticatedProgramaRoute
   '/relaxamento': typeof AuthenticatedRelaxamentoRoute
-  '/remedios': typeof AuthenticatedRemediosRoute
   '/': typeof AuthenticatedIndexRoute
   '/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
@@ -184,7 +168,6 @@ export interface FileRoutesById {
   '/_authenticated/alimentacao': typeof AuthenticatedAlimentacaoRoute
   '/_authenticated/biblioteca': typeof AuthenticatedBibliotecaRoute
   '/_authenticated/comunidade': typeof AuthenticatedComunidadeRoute
-  '/_authenticated/consultas': typeof AuthenticatedConsultasRoute
   '/_authenticated/diario': typeof AuthenticatedDiarioRoute
   '/_authenticated/evolucao': typeof AuthenticatedEvolucaoRoute
   '/_authenticated/exercicios': typeof AuthenticatedExerciciosRoute
@@ -193,7 +176,6 @@ export interface FileRoutesById {
   '/_authenticated/profissional': typeof AuthenticatedProfissionalRoute
   '/_authenticated/programa': typeof AuthenticatedProgramaRoute
   '/_authenticated/relaxamento': typeof AuthenticatedRelaxamentoRoute
-  '/_authenticated/remedios': typeof AuthenticatedRemediosRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/conhecimento/$assunto': typeof AuthenticatedConhecimentoAssuntoRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
@@ -208,7 +190,6 @@ export interface FileRouteTypes {
     | '/alimentacao'
     | '/biblioteca'
     | '/comunidade'
-    | '/consultas'
     | '/diario'
     | '/evolucao'
     | '/exercicios'
@@ -217,7 +198,6 @@ export interface FileRouteTypes {
     | '/profissional'
     | '/programa'
     | '/relaxamento'
-    | '/remedios'
     | '/conhecimento/$assunto'
     | '/api/public/cron/reminders'
     | '/api/public/push/next'
@@ -228,7 +208,6 @@ export interface FileRouteTypes {
     | '/alimentacao'
     | '/biblioteca'
     | '/comunidade'
-    | '/consultas'
     | '/diario'
     | '/evolucao'
     | '/exercicios'
@@ -237,7 +216,6 @@ export interface FileRouteTypes {
     | '/profissional'
     | '/programa'
     | '/relaxamento'
-    | '/remedios'
     | '/'
     | '/conhecimento/$assunto'
     | '/api/public/cron/reminders'
@@ -250,7 +228,6 @@ export interface FileRouteTypes {
     | '/_authenticated/alimentacao'
     | '/_authenticated/biblioteca'
     | '/_authenticated/comunidade'
-    | '/_authenticated/consultas'
     | '/_authenticated/diario'
     | '/_authenticated/evolucao'
     | '/_authenticated/exercicios'
@@ -259,7 +236,6 @@ export interface FileRouteTypes {
     | '/_authenticated/profissional'
     | '/_authenticated/programa'
     | '/_authenticated/relaxamento'
-    | '/_authenticated/remedios'
     | '/_authenticated/'
     | '/_authenticated/conhecimento/$assunto'
     | '/api/public/cron/reminders'
@@ -324,13 +300,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedComunidadeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/consultas': {
-      id: '/_authenticated/consultas'
-      path: '/consultas'
-      fullPath: '/consultas'
-      preLoaderRoute: typeof AuthenticatedConsultasRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/diario': {
       id: '/_authenticated/diario'
       path: '/diario'
@@ -387,13 +356,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRelaxamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/remedios': {
-      id: '/_authenticated/remedios'
-      path: '/remedios'
-      fullPath: '/remedios'
-      preLoaderRoute: typeof AuthenticatedRemediosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/conhecimento/$assunto': {
       id: '/_authenticated/conhecimento/$assunto'
       path: '/conhecimento/$assunto'
@@ -423,7 +385,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAlimentacaoRoute: typeof AuthenticatedAlimentacaoRoute
   AuthenticatedBibliotecaRoute: typeof AuthenticatedBibliotecaRoute
   AuthenticatedComunidadeRoute: typeof AuthenticatedComunidadeRoute
-  AuthenticatedConsultasRoute: typeof AuthenticatedConsultasRoute
   AuthenticatedDiarioRoute: typeof AuthenticatedDiarioRoute
   AuthenticatedEvolucaoRoute: typeof AuthenticatedEvolucaoRoute
   AuthenticatedExerciciosRoute: typeof AuthenticatedExerciciosRoute
@@ -432,7 +393,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProfissionalRoute: typeof AuthenticatedProfissionalRoute
   AuthenticatedProgramaRoute: typeof AuthenticatedProgramaRoute
   AuthenticatedRelaxamentoRoute: typeof AuthenticatedRelaxamentoRoute
-  AuthenticatedRemediosRoute: typeof AuthenticatedRemediosRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConhecimentoAssuntoRoute: typeof AuthenticatedConhecimentoAssuntoRoute
 }
@@ -442,7 +402,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAlimentacaoRoute: AuthenticatedAlimentacaoRoute,
   AuthenticatedBibliotecaRoute: AuthenticatedBibliotecaRoute,
   AuthenticatedComunidadeRoute: AuthenticatedComunidadeRoute,
-  AuthenticatedConsultasRoute: AuthenticatedConsultasRoute,
   AuthenticatedDiarioRoute: AuthenticatedDiarioRoute,
   AuthenticatedEvolucaoRoute: AuthenticatedEvolucaoRoute,
   AuthenticatedExerciciosRoute: AuthenticatedExerciciosRoute,
@@ -451,7 +410,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProfissionalRoute: AuthenticatedProfissionalRoute,
   AuthenticatedProgramaRoute: AuthenticatedProgramaRoute,
   AuthenticatedRelaxamentoRoute: AuthenticatedRelaxamentoRoute,
-  AuthenticatedRemediosRoute: AuthenticatedRemediosRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedConhecimentoAssuntoRoute: AuthenticatedConhecimentoAssuntoRoute,
 }
