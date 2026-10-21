@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageCircleMore, ChevronRight, Lightbulb, Target, Heart, Ear, PersonStanding, Utensils, Flower2, HeartHandshake, TrendingUp, BookOpen, CheckCircle2, type LucideIcon } from "lucide-react";
 import { AppShell, IconButtons, Logo } from "@/components/vl/AppShell";
 import { SectionHeader } from "@/components/vl/primitives";
@@ -50,6 +50,9 @@ const quickActions: { label: string; description: string; icon: LucideIcon; imag
   { label: "Biblioteca de conhecimento", description: "Conteúdos de confiança", icon: BookOpen, image: qaLibrary, to: "/biblioteca" },
 ];
 
+/** Faixa em que a foto do topo se dissolve no fundo da página, logo abaixo do botão de crise. */
+const HERO_FADE = 28;
+
 function Index() {
   const [open, setOpen] = useState(false);
   const [checkInOpen, setCheckInOpen] = useState(false);
@@ -57,6 +60,9 @@ function Index() {
   const { data: records = [] } = useRecords();
   const me = useCurrentUser();
   const save = useSaveRecord();
+  const heroBoxRef = useRef<HTMLDivElement>(null);
+  const heroEndRef = useRef<HTMLDivElement>(null);
+  const [heroH, setHeroH] = useState(0);
   const record: DailyRecord | null = records.find(r => r.date === todayKey()) ?? null;
   const pattern = describePatterns(records);
   const insight = pattern
@@ -65,133 +71,161 @@ function Index() {
   const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - 6);
   const weekDays = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate() + i); return todayKey(d); });
   const weekDone = weekDays.filter(d => records.some(r => r.date === d)).length;
+
+  // A foto do topo vai até a linha do botão "Estou em crise" e não passa para os atalhos.
+  useEffect(() => {
+    const box = heroBoxRef.current;
+    const end = heroEndRef.current;
+    if (!box || !end) return;
+    const measure = () => {
+      const next = Math.round(end.getBoundingClientRect().bottom - box.getBoundingClientRect().top);
+      setHeroH(prev => (Math.abs(prev - next) > 1 ? next : prev));
+    };
+    measure();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(box);
+    ro?.observe(end);
+    window.addEventListener("resize", measure);
+    const timers = [150, 500, 1200, 2500].map(t => window.setTimeout(measure, t));
+    if (document.fonts) document.fonts.ready.then(measure).catch(() => {});
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", measure);
+      timers.forEach(t => window.clearTimeout(t));
+    };
+  }, [record]);
+
   return (
     <AppShell>
-      {/* Greeting */}
-      <header className="relative -mx-5 -mt-4 overflow-hidden px-5 pb-6 pt-8 sm:-mx-8 sm:px-8 lg:mx-0 lg:mb-8 lg:mt-0 lg:rounded-3xl lg:px-10 lg:py-10">
-        <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-right opacity-90 dark:opacity-20" />
+      {/* Fundo: da borda de cima até o botão "Estou em crise" */}
+      <div ref={heroBoxRef} className="relative -mx-5 -mt-4 overflow-hidden px-5 sm:-mx-8 sm:px-8 lg:mx-0 lg:mt-0 lg:rounded-3xl lg:px-10">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 overflow-hidden" style={{ height: heroH ? `${heroH + HERO_FADE}px` : "70vh" }}>
+          <img src={hero} alt="" loading="eager" fetchPriority="high" decoding="async" width={1536} height={640} className="h-full w-full object-cover object-right opacity-90 dark:opacity-20" />
+          <div className="absolute inset-x-0 bottom-0 h-7 bg-gradient-to-b from-transparent to-background" />
+        </div>
+
         <div className="relative">
-          <div className="min-w-0">
-            <div className="flex items-center justify-between gap-2 lg:hidden">
-              <div className="flex min-w-0 items-center gap-2">
-                <Logo className="size-6 shrink-0" />
-                <span className="truncate text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+          <header className="pb-6 pt-8 lg:pb-8 lg:pt-10">
+            <div className="min-w-0">
+              <div className="flex items-center justify-between gap-2 lg:hidden">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Logo className="size-6 shrink-0" />
+                  <span className="truncate text-xs font-medium tracking-wide text-muted-foreground">VivaLeve</span>
+                </div>
+                <IconButtons />
               </div>
-              <IconButtons />
-            </div>
-            <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""}</h1>
-            <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-              Seu acompanhamento está ativo. Você não está sozinha!{" "}
-              <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
-        <div className="space-y-8">
-          {/* Check-in */}
-          {record ? (
-            <section className="rounded-3xl border border-good/25 bg-good-soft p-6 shadow-soft sm:p-7">
-              <p role="status" className="flex items-center gap-3 text-lg font-medium text-good">
-                <CheckCircle2 className="size-6 shrink-0" aria-hidden />
-                Registro do dia feito. Até amanhã! 💜
+              <h1 className="mt-3 text-4xl font-medium lg:mt-0 lg:text-5xl">Olá{me.data?.firstName ? `, ${me.data.firstName}` : ""}</h1>
+              <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
+                Seu acompanhamento está ativo. Você não está sozinha!{" "}
+                <Heart className="inline size-4 fill-primary text-primary" aria-hidden />
               </p>
-            </section>
-          ) : (
-            <section className="checkin-invitation checkin-float relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
-              <div aria-hidden className="breathe-glow" />
-              <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                <div>
-                  <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
-                  <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
-                  <Button onClick={() => setCheckInOpen(true)} variant="secondary" className="group mt-6 flex h-14 w-full items-center justify-start gap-3 rounded-2xl bg-card px-5 text-left text-base text-primary shadow-soft transition hover:bg-card/90 sm:max-w-sm">
-                    <MessageCircleMore className="size-5" />
-                    <span className="flex-1">Registrar</span>
-                    <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
-                  </Button>
-                </div>
-                <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
-                  <Ear className="size-4" /> Eu te escuto, sempre.
-                </div>
-              </div>
-            </section>
-          )}
+            </div>
+          </header>
 
-          <DailyProgressCard />
-
-
-
-          <div className="grid gap-3">
-            <HoldButton onComplete={() => setCrisis(true)}>
-              <LifeBuoy className="size-6" /> Estou em crise
-            </HoldButton>
-          </div>
-
-          {/* Quick actions */}
-          <section>
-            <SectionHeader title="O que você quer fazer hoje?" subtitle="Toque em um atalho para começar." />
-            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 sm:gap-4">
-              {quickActions.map((action, i) => {
-                const Icon = action.icon;
-                const featured = i < 3;
-                const inner = <>
-                  <img src={action.image} alt="" loading="eager" fetchPriority="high" decoding="async" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-110" />
-                  <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10" />
-                  <div aria-hidden className={cn("absolute inset-0 transition duration-500", featured ? "bg-gradient-to-b from-primary/20 via-transparent to-transparent" : "bg-gradient-to-b from-primary/10 via-transparent to-transparent")} />
-                  <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
-                    <span className="grid size-10 place-items-center rounded-full bg-card/90 text-primary shadow-soft backdrop-blur-sm transition duration-500 group-hover:scale-110 sm:size-11">
-                      <Icon className="size-5" strokeWidth={1.8} />
-                    </span>
-                    <p className="mt-3 text-[17px] font-semibold leading-snug tracking-tight sm:text-lg">{action.label}</p>
-                    <p className="mt-1 text-[13px] leading-snug text-muted-foreground sm:text-sm">{action.description}</p>
-                    <span aria-hidden className="mt-3 h-0.5 w-8 rounded-full bg-primary/40 transition-all duration-500 group-hover:w-14 group-hover:bg-primary/60" />
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
+            <div className="space-y-8">
+              {/* Check-in */}
+              {record ? (
+                <section className="rounded-3xl border border-good/25 bg-good-soft p-4 shadow-soft sm:p-5">
+                  <p role="status" className="flex items-center gap-2.5 text-[15px] font-medium text-good">
+                    <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+                    Registro do dia feito. Até amanhã! 💜
+                  </p>
+                </section>
+              ) : (
+                <section className="checkin-invitation checkin-float relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
+                  <div aria-hidden className="breathe-glow" />
+                  <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                    <div>
+                      <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
+                      <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
+                      <Button onClick={() => setCheckInOpen(true)} variant="secondary" className="group mt-6 flex h-14 w-full items-center justify-start gap-3 rounded-2xl bg-card px-5 text-left text-base text-primary shadow-soft transition hover:bg-card/90 sm:max-w-sm">
+                        <MessageCircleMore className="size-5" />
+                        <span className="flex-1">Registrar</span>
+                        <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
+                      </Button>
+                    </div>
+                    <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
+                      <Ear className="size-4" /> Eu te escuto, sempre.
+                    </div>
                   </div>
-                </>;
-                const cardClass = cn(
-                  "card-soft pressable animate-rise group relative block overflow-hidden rounded-3xl border border-primary/10 shadow-soft ring-1 ring-inset ring-card/40 transition duration-300 hover:-translate-y-1 hover:shadow-float",
-                  featured ? "min-h-56 sm:min-h-60" : "min-h-48 sm:min-h-52",
-                );
-                return action.to
-                  ? <Link key={action.label} to={action.to} className={cardClass} style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
-                  : <button key={action.label} type="button" className={cn(cardClass, "text-left")} style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
-              })}
-            </div>
-          </section>
-        </div>
+                </section>
+              )}
 
-        <div className="space-y-4">
-          {/* Insight */}
-          <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="w-full rounded-3xl border bg-insight p-5 text-left transition hover:shadow-float">
-            <div className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-primary"><Lightbulb className="size-5" /></span>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-medium">{insight.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{insight.text}</p>
-                <div className={cn("grid transition-all duration-500", open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
-                  <p className="overflow-hidden text-sm leading-relaxed text-accent-foreground">{insight.detail}</p>
+              <DailyProgressCard />
+
+              <div ref={heroEndRef} className="grid gap-3">
+                <HoldButton onComplete={() => setCrisis(true)}>
+                  <LifeBuoy className="size-6" /> Estou em crise
+                </HoldButton>
+              </div>
+
+              {/* Quick actions */}
+              <section>
+                <SectionHeader title="O que você quer fazer hoje?" subtitle="Toque em um atalho para começar." />
+                <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 sm:gap-4">
+                  {quickActions.map((action, i) => {
+                    const Icon = action.icon;
+                    const featured = i < 3;
+                    const inner = <>
+                      <img src={action.image} alt="" loading="eager" fetchPriority="high" decoding="async" width={768} height={512} className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-110" />
+                      <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-background/10" />
+                      <div aria-hidden className={cn("absolute inset-0 transition duration-500", featured ? "bg-gradient-to-b from-primary/20 via-transparent to-transparent" : "bg-gradient-to-b from-primary/10 via-transparent to-transparent")} />
+                      <div className="relative flex h-full flex-col justify-end p-4 sm:p-5">
+                        <span className="grid size-10 place-items-center rounded-full bg-card/90 text-primary shadow-soft backdrop-blur-sm transition duration-500 group-hover:scale-110 sm:size-11">
+                          <Icon className="size-5" strokeWidth={1.8} />
+                        </span>
+                        <p className="mt-3 text-[17px] font-semibold leading-snug tracking-tight sm:text-lg">{action.label}</p>
+                        <p className="mt-1 text-[13px] leading-snug text-muted-foreground sm:text-sm">{action.description}</p>
+                        <span aria-hidden className="mt-3 h-0.5 w-8 rounded-full bg-primary/40 transition-all duration-500 group-hover:w-14 group-hover:bg-primary/60" />
+                      </div>
+                    </>;
+                    const cardClass = cn(
+                      "card-soft pressable animate-rise group relative block overflow-hidden rounded-3xl border border-primary/10 shadow-soft ring-1 ring-inset ring-card/40 transition duration-300 hover:-translate-y-1 hover:shadow-float",
+                      featured ? "min-h-56 sm:min-h-60" : "min-h-48 sm:min-h-52",
+                    );
+                    return action.to
+                      ? <Link key={action.label} to={action.to} className={cardClass} style={{ animationDelay: `${i * 60}ms` }}>{inner}</Link>
+                      : <button key={action.label} type="button" className={cn(cardClass, "text-left")} style={{ animationDelay: `${i * 60}ms` }}>{inner}</button>;
+                  })}
+                </div>
+              </section>
+            </div>
+
+            <div className="space-y-4">
+              {/* Insight */}
+              <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="w-full rounded-3xl border bg-insight p-5 text-left transition hover:shadow-float">
+                <div className="flex gap-4">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-primary"><Lightbulb className="size-5" /></span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium">{insight.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{insight.text}</p>
+                    <div className={cn("grid transition-all duration-500", open ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+                      <p className="overflow-hidden text-sm leading-relaxed text-accent-foreground">{insight.detail}</p>
+                    </div>
+                  </div>
+                  <ChevronRight className={cn("mt-1 size-5 shrink-0 text-muted-foreground transition", open && "rotate-90")} />
+                </div>
+              </button>
+
+              {/* Focus */}
+              <div className="rounded-3xl border bg-focus p-5">
+                <div className="flex gap-4">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-good"><Target className="size-5" /></span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-medium text-good">Seus últimos 7 dias</h3>
+                    <p className="mt-1 text-sm text-foreground">Você registrou {weekDone} de 7 dias. Cada registro ajuda você a se conhecer melhor — sem cobranças.</p>
+                    <div className="mt-3 flex items-center gap-1.5" aria-label={`${weekDone} de 7 dias registrados`}>
+                      {weekDays.map(d => (
+                        <span key={d} className={cn("h-1.5 flex-1 rounded-full", records.some(r => r.date === d) ? "bg-good" : "bg-card")} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <ChevronRight className={cn("mt-1 size-5 shrink-0 text-muted-foreground transition", open && "rotate-90")} />
-            </div>
-          </button>
 
-          {/* Focus */}
-          <div className="rounded-3xl border bg-focus p-5">
-            <div className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-full bg-card text-good"><Target className="size-5" /></span>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-medium text-good">Seus últimos 7 dias</h3>
-                <p className="mt-1 text-sm text-foreground">Você registrou {weekDone} de 7 dias. Cada registro ajuda você a se conhecer melhor — sem cobranças.</p>
-                <div className="mt-3 flex items-center gap-1.5" aria-label={`${weekDone} de 7 dias registrados`}>
-                  {weekDays.map(d => (
-                    <span key={d} className={cn("h-1.5 flex-1 rounded-full", records.some(r => r.date === d) ? "bg-good" : "bg-card")} />
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -206,7 +240,6 @@ function Index() {
     </AppShell>
   );
 }
-
 function HomeFooter() {
   return (
     <footer className="mt-12 lg:mt-14">
