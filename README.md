@@ -22,8 +22,8 @@ Aplicativo acolhedor para quem vive com fibromialgia, idealizado pela **Dra. Nad
 - Botão para instalar o app no celular e rodapé acolhedor.
 
 ### Notificações
-- Sino com avisos reais: remédios atrasados, consultas nas próximas 24h, registro pendente e atividade do programa.
-- Lembretes no celular (Web Push) para remédios, consultas, treino, registro diário e programa — funcionam no app publicado com notificações ativadas.
+- Sino com avisos reais: registro pendente e atividade do programa.
+- Lembretes no celular (Web Push) para treino, registro diário e programa — funcionam no app publicado com notificações ativadas.
 
 ### Movimento
 - **Meu plano de movimento**: dias Domingo–Sábado com datas, hoje selecionado, apenas exercícios programados, progresso que começa em zero e não passa para outro dia.
@@ -42,10 +42,6 @@ Aplicativo acolhedor para quem vive com fibromialgia, idealizado pela **Dra. Nad
 
 ### Programa guiado de 30 dias
 - Quatro semanas progressivas (acalmar a dor, soltar/fortalecer, sono/energia, autonomia), atividade nova por dia, progresso salvo e lembrete diário.
-
-### Remédios e consultas
-- Remédios com horários, registro de tomada e efeitos colaterais.
-- Consultas e exames com lembretes (24h e 1h antes) e dúvidas para levar.
 
 ### Evolução e relatórios
 - Períodos 30 dias / 3 meses / personalizado; cartões de dor, sono, energia e bem-estar com comparação ao período anterior; gráficos.
@@ -72,7 +68,7 @@ Aplicativo acolhedor para quem vive com fibromialgia, idealizado pela **Dra. Nad
 ## Segurança
 
 - **Login obrigatório** em todas as telas internas; sem cadastro público.
-- **Dados privados por paciente**: todas as tabelas pessoais (registros, remédios, consultas, exercícios, receitas, programa, relaxamento, lembretes, notificações) só podem ser lidas e alteradas pela própria dona.
+- **Dados privados por paciente**: todas as tabelas pessoais (registros, exercícios, receitas, programa, relaxamento, lembretes, notificações) só podem ser lidas e alteradas pela própria dona.
 - **Papéis separados** (admin, moderadora, usuária) em tabela protegida; a verificação de admin é feita no servidor.
 - **Cadastro de usuários** feito no servidor, só após confirmar que quem pede é admin.
 - **Troca de senha** exige a senha atual (na tela e no servidor).
