@@ -28,3 +28,4 @@
 - Seed default weekly exercise plans only when the user has no saved rows, and default meal plans when no saved recipe row has any weekday, so new or fully empty cardápios always start filled.
 - Keep theme state in the shared frontend ThemeProvider with browser-local persistence and a pre-paint initializer; all screens and dialogs use global semantic theme tokens to avoid bright flashes and inconsistent dark surfaces.
 - Snapshot the home Daily Progress card into owner-only daily_progress rows (one per user and date, only when there is progress) so the Diário history shows what was done each day.
+- Share hydration controls across home, nutrition and profile through account-scoped hooks; store dated amounts in daily_progress using its existing cup units and goals in non-privileged user metadata, updating water separately from other snapshot fields to prevent overwrites.

@@ -132,6 +132,9 @@ function RootComponent() {
       queryClient.removeQueries({ queryKey: ["movement-schedule"] });
       queryClient.removeQueries({ queryKey: ["recipe-schedule"] });
       queryClient.removeQueries({ queryKey: ["movement-completions"] });
+      queryClient.removeQueries({ queryKey: ["hydration-account"] });
+      queryClient.removeQueries({ queryKey: ["hydration"] });
+      queryClient.removeQueries({ queryKey: ["daily-progress"] });
       if (event === "SIGNED_OUT") {
         queryClient.removeQueries({ queryKey: ["movement-schedule-user"] });
       } else {
