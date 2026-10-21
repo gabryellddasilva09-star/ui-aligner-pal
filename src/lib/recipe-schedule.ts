@@ -14,12 +14,12 @@ export function useRecipeSchedule() {
     queryFn: async () => {
       const { data, error } = await supabase.from("recipe_schedule").select("recipe_id, weekdays");
       if (error) throw error;
-      if (data && data.length) return data;
-      // First visit: no saved rows ever (removals keep rows with empty days), so apply the default week.
+      if (data && data.some(r => r.weekdays?.length)) return data;
+      // Nothing planned on any day (first visit or empty plan): apply the default week.
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return [];
       const rows = defaultRecipeSchedule().map(r => ({ user_id: auth.user!.id, recipe_id: r.id, weekdays: r.weekdays }));
-      const { error: seedError } = await supabase.from("recipe_schedule").upsert(rows, { onConflict: "user_id,recipe_id", ignoreDuplicates: true });
+      const { error: seedError } = await supabase.from("recipe_schedule").upsert(rows, { onConflict: "user_id,recipe_id", });
       if (seedError) throw seedError;
       return rows.map(r => ({ recipe_id: r.recipe_id, weekdays: r.weekdays }));
     },
