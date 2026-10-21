@@ -1,4 +1,6 @@
 # Cuidado contínuo da paciente
+## Consumo de água
+- [ ] Adicionar controles de 500 ml e nível animado no Progresso Diário, meta inicial de 2 L editável no perfil e verificar histórico.
 ## Conforto visual
 - [x] Adicionar modo escuro global, botão nas barras de conta e preferência salva; conferir telas e navegação.
 ## Receitas com troca de ingredientes
