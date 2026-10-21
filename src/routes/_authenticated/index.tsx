@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { CrisisMode } from "@/components/vl/crisis-mode";
 import { HoldButton } from "@/components/vl/hold-button";
 import { InstallAppButton } from "@/components/vl/install-app";
-import { Pill, CalendarHeart, LifeBuoy } from "lucide-react";
+import { LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
 import { useCurrentUser } from "@/lib/user";
 
@@ -122,10 +122,6 @@ function Index() {
             <HoldButton onComplete={() => setCrisis(true)}>
               <LifeBuoy className="size-6" /> Estou em crise
             </HoldButton>
-            <div className="grid grid-cols-2 gap-3">
-              <Link to="/remedios" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><Pill className="size-5" /></span><span className="font-medium leading-snug">Meus remédios</span></Link>
-              <Link to="/consultas" className="card-soft pressable flex min-h-20 items-center gap-3 p-4"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary-soft text-primary"><CalendarHeart className="size-5" /></span><span className="font-medium leading-snug">Consultas e exames</span></Link>
-            </div>
           </div>
 
           {/* Quick actions */}

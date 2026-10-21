@@ -27,8 +27,8 @@ export function InstallAppButton() {
     if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
     try {
       const s = await enablePush();
-      setMsg(s === "on" ? "Pronto! O VivaLeve está no seu celular e os avisos estão ligados." : "App instalado. Você pode ligar os avisos depois em Meus remédios.");
-    } catch { setMsg("App instalado. Ligue os avisos depois em Meus remédios."); }
+      setMsg(s === "on" ? "Pronto! O VivaLeve está no seu celular e os avisos estão ligados." : "App instalado. Você pode ligar os avisos depois em Meu perfil.");
+    } catch { setMsg("App instalado. Ligue os avisos depois em Meu perfil."); }
   }
 
   async function install() {
