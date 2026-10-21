@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, LineChart, UserRound, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, Pill, CalendarHeart, UserPlus } from "lucide-react";
+import { Home, LineChart, UserRound, PersonStanding, Utensils, ArrowLeft, ChevronLeft, LogOut, UserPlus } from "lucide-react";
 import { NotificationsBell } from "@/components/vl/notifications-bell";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -13,8 +13,6 @@ const nav = [
   { to: "/", label: "Início", icon: Home },
   { to: "/plano", label: "Movimento", icon: PersonStanding },
   { to: "/alimentacao", label: "Alimentação", icon: Utensils },
-  { to: "/remedios", label: "Remédios", icon: Pill },
-  { to: "/consultas", label: "Consultas", icon: CalendarHeart },
   { to: "/evolucao", label: "Evolução", icon: LineChart },
   { to: "/profissional", label: "Quem criou", icon: UserRound },
 ] as const;
