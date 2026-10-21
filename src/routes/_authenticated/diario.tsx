@@ -42,7 +42,7 @@ function ProgressBlock({ p }: { p: ProgressSnapshot }) {
       <li className="flex gap-2"><Dumbbell className="mt-0.5 size-4 shrink-0 text-move" aria-hidden /><span><span className="font-medium">Exercícios {p.exercises.length}/{p.exercisesTotal}</span>{p.exercises.length > 0 && <span className="text-muted-foreground">: {p.exercises.map(exName).join(", ")}</span>}</span></li>
       <li className="flex gap-2"><UtensilsCrossed className="mt-0.5 size-4 shrink-0 text-food" aria-hidden /><span><span className="font-medium">Alimentação {p.meals.length}/{p.mealsTotal}</span>{p.meals.length > 0 && <span className="text-muted-foreground">: {p.meals.map(mealName).join(", ")}</span>}</span></li>
       <li className="flex items-center gap-2"><Moon className="size-4 shrink-0 text-sleep" aria-hidden /><span className="font-medium">Preparar para dormir: {p.sleepDone ? "feito" : "não feito"}</span>{p.sleepDone && <CheckCircle2 className="size-4 text-good" aria-hidden />}</li>
-      <li className="flex items-center gap-2"><Droplets className="size-4 shrink-0 text-primary" aria-hidden /><span className="font-medium">Água: {p.water} {p.water === 1 ? "copo" : "copos"} ({(p.water * 0.25).toLocaleString("pt-BR")} L)</span></li>
+      <li className="flex items-center gap-2"><Droplets className="size-4 shrink-0 text-nutrition-blue" aria-hidden /><span className="font-medium">Água: {(p.water * 250).toLocaleString("pt-BR")} ml · {(p.water * 0.25).toLocaleString("pt-BR")} L</span></li>
     </ul>
   </div>;
 }

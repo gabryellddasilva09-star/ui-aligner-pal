@@ -42,7 +42,7 @@ export function useSaveProgressSnapshot() {
       if (!data.user) return;
       const { error } = await supabase.from("daily_progress").upsert({
         user_id: data.user.id, progress_date: s.date, pct: s.pct, exercises: s.exercises, exercises_total: s.exercisesTotal,
-        meals: s.meals, meals_total: s.mealsTotal, sleep_done: s.sleepDone, water_cups: s.water, updated_at: new Date().toISOString(),
+        meals: s.meals, meals_total: s.mealsTotal, sleep_done: s.sleepDone, updated_at: new Date().toISOString(),
       }, { onConflict: "user_id,progress_date" });
       if (error) throw error;
     },

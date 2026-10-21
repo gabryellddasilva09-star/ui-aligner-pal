@@ -14,6 +14,7 @@ import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
 import { substitutionsFor } from "@/lib/ingredient-substitutions";
+import { WaterControl } from "@/components/vl/water-control";
 
 const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 import { movementWeek } from "@/lib/movement-progress";
@@ -33,7 +34,6 @@ export const Route = createFileRoute("/_authenticated/alimentacao")({
 });
 
 type TabKey = "cardapio" | "receitas" | "compras" | "guia";
-const WATER_GOAL = 10; // copos de 250 ml = 2,5 L
 
 function load<T>(key: string, fallback: T): T {
   try {
@@ -59,7 +59,6 @@ function Alimentacao() {
   const [weekDates, setWeekDates] = useState<{ key: string; label: string }[]>([]);
   useEffect(() => { setWeekDates(movementWeek()); }, []);
   const [done, setDone] = useState<Record<string, boolean>>({});
-  const [water, setWater] = useState<Record<number, number>>({});
   const [bought, setBought] = useState<Record<string, boolean>>({});
   const [openRecipe, setOpenRecipe] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -74,13 +73,11 @@ function Alimentacao() {
   useEffect(() => {
     setDay(new Date().getDay());
     setDone(load("vl-ai-done", {}));
-    setWater(load("vl-ai-water", {}));
     setBought(load("vl-ai-shop", {}));
     setHydrated(true);
   }, []);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-weekday", JSON.stringify(day)); }, [day, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-done", JSON.stringify(done)); }, [done, hydrated]);
-  useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-water", JSON.stringify(water)); }, [water, hydrated]);
   useEffect(() => { if (hydrated) localStorage.setItem("vl-ai-shop", JSON.stringify(bought)); }, [bought, hydrated]);
   useEffect(() => { window.scrollTo({ top: 0 }); }, [tab]);
 
@@ -89,7 +86,6 @@ function Alimentacao() {
     [schedule.data, day],
   );
   const doneToday = mealsOfDay.filter((r) => done[`${day}-${r.id}`]).length;
-  const cups = water[day] ?? 0;
   const visibleRecipes = useMemo(
     () => recipes.filter((r) => (categoryFilter === "todas" || r.category === categoryFilter) && r.name.toLocaleLowerCase("pt-BR").includes(search.toLocaleLowerCase("pt-BR"))),
     [categoryFilter, search],
@@ -180,13 +176,7 @@ function Alimentacao() {
           </ul>
 
           <section className="rounded-2xl bg-nutrition-blue-soft p-5 sm:p-6">
-            <div className="flex items-center gap-3"><Droplets className="size-7 shrink-0 text-nutrition-blue" /><div><h2 className="text-xl font-medium">Sua água de hoje</h2><p className="text-base text-nutrition-blue">{cups} copos · {(cups * 0.25).toLocaleString("pt-BR")} litros</p></div></div>
-            <div className="mt-5 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
-              <Button variant="outline" className="size-12 rounded-full p-0" aria-label="Retirar um copo" disabled={cups === 0} onClick={() => setWater((w) => ({ ...w, [day]: Math.max(0, cups - 1) }))}><Minus /></Button>
-              <div className="grid grid-cols-5 gap-2">{Array.from({ length: WATER_GOAL }, (_, i) => <Droplets key={i} className={cn("mx-auto size-5", i < cups ? "text-nutrition-blue" : "text-nutrition-blue/25")} />)}</div>
-              <Button className="size-12 rounded-full bg-nutrition-blue p-0 hover:bg-nutrition-blue/90" aria-label="Adicionar um copo" disabled={cups >= WATER_GOAL} onClick={() => setWater((w) => ({ ...w, [day]: cups + 1 }))}><Plus /></Button>
-            </div>
-            <p className="mt-4 text-sm text-nutrition-blue">Referência do cardápio: 2,5 L por dia · copos de 250 ml.</p>
+            <WaterControl date={weekDates[day]?.key} />
           </section>
           <div className="space-y-3">
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Editar cardápio<ArrowRight /></Button>
