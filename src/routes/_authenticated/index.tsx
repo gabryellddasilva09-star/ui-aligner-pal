@@ -90,30 +90,33 @@ function Index() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:gap-8">
         <div className="space-y-8">
           {/* Check-in */}
-          <section className={cn("checkin-invitation relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7", !record && "checkin-float")}>
-            {!record && <div aria-hidden className="breathe-glow" />}
-            <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-              <div>
-                <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
-                <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
-                {record ? (
-                  <p role="status" className="mt-6 flex items-center gap-3 rounded-2xl bg-card/20 px-5 py-4 text-base font-medium text-primary-foreground">
-                    <CheckCircle2 className="size-6 shrink-0" aria-hidden />
-                    Registro do dia feito. Até amanhã! 💜
-                  </p>
-                ) : (
+          {record ? (
+            <section className="rounded-3xl border border-good/25 bg-good-soft p-6 shadow-soft sm:p-7">
+              <p role="status" className="flex items-center gap-3 text-lg font-medium text-good">
+                <CheckCircle2 className="size-6 shrink-0" aria-hidden />
+                Registro do dia feito. Até amanhã! 💜
+              </p>
+            </section>
+          ) : (
+            <section className="checkin-invitation checkin-float relative overflow-hidden rounded-3xl p-6 shadow-float sm:p-7">
+              <div aria-hidden className="breathe-glow" />
+              <div className="relative grid gap-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                <div>
+                  <p className="text-xs font-semibold text-primary-foreground/80">HOJE · UM MOMENTO PARA VOCÊ</p>
+                  <h2 className="mt-3 text-3xl font-medium leading-snug text-primary-foreground">Como você<br />está se sentindo hoje?</h2>
                   <Button onClick={() => setCheckInOpen(true)} variant="secondary" className="group mt-6 flex h-14 w-full items-center justify-start gap-3 rounded-2xl bg-card px-5 text-left text-base text-primary shadow-soft transition hover:bg-card/90 sm:max-w-sm">
                     <MessageCircleMore className="size-5" />
                     <span className="flex-1">Registrar</span>
                     <ChevronRight className="size-4 transition group-hover:translate-x-0.5" />
                   </Button>
-                )}
+                </div>
+                <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
+                  <Ear className="size-4" /> Eu te escuto, sempre.
+                </div>
               </div>
-              <div className="hidden items-center gap-2 px-1 py-3 text-sm text-primary-foreground/90 sm:flex">
-                <Ear className="size-4" /> Eu te escuto, sempre.
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
+
 
           <div className="grid gap-3">
             <HoldButton onComplete={() => setCrisis(true)}>
