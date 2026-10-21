@@ -20,6 +20,7 @@ import { InstallAppButton } from "@/components/vl/install-app";
 import { LifeBuoy } from "lucide-react";
 import { DailyCheckIn, type DailyRecord } from "@/components/vl/daily-check-in";
 import { useCurrentUser } from "@/lib/user";
+import { DailyProgressCard } from "@/components/vl/daily-progress";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -116,6 +117,9 @@ function Index() {
               </div>
             </section>
           )}
+
+          <DailyProgressCard />
+
 
 
           <div className="grid gap-3">

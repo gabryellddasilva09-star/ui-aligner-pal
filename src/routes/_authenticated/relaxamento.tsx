@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { markSleepDone } from "@/lib/daily-progress";
 import { ArrowLeft, Wind, Leaf, Brain, Moon, Flower2 } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,9 @@ export const Route = createFileRoute("/_authenticated/relaxamento")({
     { property: "og:title", content: "Respiração guiada — VivaLeve" },
     { property: "og:description", content: "Um momento para você desacelerar, respirar e cuidar de si, sem cobranças." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
-  ] }), component: RelaxationPage,
+  ] }),
+  validateSearch: (search: Record<string, unknown>): { pratica?: string } => (typeof search["pratica"] === "string" ? { pratica: search["pratica"] } : {}),
+  component: RelaxationPage,
 });
 
 const activityIcons = [Wind, Brain, Leaf, Moon, Flower2];
@@ -31,11 +34,14 @@ function RelaxationPage() {
   const [error, setError] = useState("");
   const [confirmation, setConfirmation] = useState("");
   function start(activity: RelaxationActivity) { setSession({ activity, duration: activity.seconds }); }
+  const { pratica } = Route.useSearch();
+  useEffect(() => { const a = relaxationActivities.find(x => x.id === pratica); if (a) start(a); }, [pratica]);
   function saveRecord(record: RelaxationRecord) {
     if (recordsRef.current.some(item => item.id === record.id)) return;
     const next = [record, ...recordsRef.current];
     recordsRef.current = next;
     setRecords(next);
+    if (record.completed && record.name === relaxationActivities.find(a => a.id === "sleep")?.name) markSleepDone();
     supabase.from("relaxation_sessions").insert({ name: record.name, seconds: record.seconds, created_at: record.date })
       .then(({ error }) => { if (error) setError("Não conseguimos guardar esta pausa na sua conta. Confira sua internet."); else setConfirmation("Seu tempo de relaxamento foi registrado na sua conta."); });
   }
