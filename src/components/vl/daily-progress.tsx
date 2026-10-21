@@ -55,7 +55,7 @@ export function DailyProgressCard() {
         {items.map(item => {
           const Icon = item.icon;
           return (
-            <Link key={item.title} to={item.to} search={item.search} className="group min-w-0 rounded-xl px-2 py-1 transition first:pl-0 hover:bg-card/60 sm:px-4">
+            <Link key={item.title} to={item.to} search={(item.search ?? {}) as never} className="group min-w-0 rounded-xl px-2 py-1 transition first:pl-0 hover:bg-card/60 sm:px-4">
               <p className="truncate text-sm font-semibold sm:text-base">{item.title}</p>
               <div className="mt-2 flex items-center gap-2">
                 <Icon className="size-7 shrink-0 text-primary" strokeWidth={1.6} aria-hidden />

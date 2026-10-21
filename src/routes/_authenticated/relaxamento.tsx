@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/relaxamento")({
     { property: "og:description", content: "Um momento para você desacelerar, respirar e cuidar de si, sem cobranças." },
     { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
   ] }),
-  validateSearch: (search: Record<string, unknown>): { pratica?: string } => (typeof search.pratica === "string" ? { pratica: search.pratica } : {}),
+  validateSearch: (search: Record<string, unknown>): { pratica?: string } => (typeof search["pratica"] === "string" ? { pratica: search["pratica"] } : {}),
   component: RelaxationPage,
 });
 
