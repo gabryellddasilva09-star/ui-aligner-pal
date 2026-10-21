@@ -84,7 +84,7 @@ export function DailyProgressCard() {
   ];
 
   return (
-    <section className="rounded-3xl border border-primary/15 bg-card p-5 shadow-soft" aria-label="Progresso diário">
+    <section className="rounded-3xl border border-primary/20 bg-primary-soft/60 p-5 backdrop-blur-sm shadow-soft" aria-label="Progresso diário">
       <div className="flex items-center gap-4">
         <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`${pct}% do dia concluído`}>
           <ProgressRing pct={pct} />
