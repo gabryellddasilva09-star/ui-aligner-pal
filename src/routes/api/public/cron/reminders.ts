@@ -56,12 +56,6 @@ export const Route = createFileRoute("/api/public/cron/reminders")({
               || (c.frequency === "weekly" && dow === 1) || (c.frequency === "monthly" && dom === 1);
             if (due) jobs.push({ user, key: `checkin:${user}:${date}`, title: "Como você está se sentindo hoje?", body: "Reserve um minutinho para registrar como está seu dia 💜" });
           }
-          for (const a of appts ?? []) if (a.user_id === user) {
-            const mins = (new Date(a.starts_at).getTime() - now.getTime()) / 60000;
-            const when = new Intl.DateTimeFormat("pt-BR", { timeZone: tz, weekday: "long", hour: "2-digit", minute: "2-digit" }).format(new Date(a.starts_at));
-            if (mins <= 60 && mins > 50) jobs.push({ user, key: `appt1h:${a.id}`, title: `${a.kind} em 1 hora`, body: `${a.title} — ${when}` });
-            if (mins <= 24 * 60 && mins > 24 * 60 - 10) jobs.push({ user, key: `appt24h:${a.id}`, title: `${a.kind} amanhã`, body: `${a.title} — ${when}. Que tal revisar suas dúvidas?` });
-          }
         }
         let sent = 0;
         for (const job of jobs) {
