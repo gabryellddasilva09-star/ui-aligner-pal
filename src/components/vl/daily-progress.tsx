@@ -9,8 +9,6 @@ import { todayKey } from "@/lib/records";
 import { dailyProgress, isSleepDone } from "@/lib/daily-progress";
 import { shouldSaveSnapshot, useSaveProgressSnapshot } from "@/lib/daily-progress-history";
 import { cn } from "@/lib/utils";
-import { WaterControl } from "@/components/vl/water-control";
-import { useHydration } from "@/lib/hydration";
 
 function ProgressRing({ pct }: { pct: number }) {
   const r = 26;
@@ -42,8 +40,6 @@ export function DailyProgressCard() {
   const meals = useRecipeSchedule();
   const [mealDone, setMealDone] = useState<Record<string, boolean>>({});
   const [sleepDone, setSleepDone] = useState(false);
-  const hydration = useHydration(today);
-  const water = hydration.amount / 250;
   const saveSnap = useSaveProgressSnapshot();
 
   useEffect(() => {
@@ -65,12 +61,12 @@ export function DailyProgressCard() {
   const doneCount = Math.min(exDone, exIds.length) + Math.min(mealCount, mealIds.length) + (sleepDone ? 1 : 0);
   const totalCount = exIds.length + mealIds.length + 1;
 
-  const ready = moves.isSuccess && meals.isSuccess && completions.isSuccess && hydration.ready;
-  const snapKey = ready ? JSON.stringify([today, pct, exDone, mealCount, sleepDone, water]) : "";
+  const ready = moves.isSuccess && meals.isSuccess && completions.isSuccess;
+  const snapKey = ready ? JSON.stringify([today, pct, exDone, mealCount, sleepDone]) : "";
   useEffect(() => {
     if (!snapKey) return;
     const snap = {
-      date: today, pct, water: Math.min(40, water), sleepDone,
+      date: today, pct, water: 0, sleepDone,
       exercises: exIds.filter(id => doneIds.has(id)), exercisesTotal: exIds.length,
       meals: mealIds.filter(id => mealDone[`${weekday}-${id}`]), mealsTotal: mealIds.length,
     };
@@ -152,7 +148,6 @@ export function DailyProgressCard() {
           );
         })}
       </div>
-      <div className="mt-4 border-t border-primary/15 pt-4"><WaterControl date={today} /></div>
     </section>
   );
 }

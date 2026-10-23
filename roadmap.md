@@ -1,5 +1,6 @@
 # Cuidado contínuo da paciente
 ## Consumo de água
+- [x] Remover a seção de água do Progresso Diário, Receitas, Meu perfil e Histórico sem apagar dados antigos.
 - [x] Adicionar controles de 500 ml e nível animado no Progresso Diário, meta inicial de 2 L editável no perfil e verificar histórico.
 ## Conforto visual
 - [x] Adicionar modo escuro global, botão nas barras de conta e preferência salva; conferir telas e navegação.
