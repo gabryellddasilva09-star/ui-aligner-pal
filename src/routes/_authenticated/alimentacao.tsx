@@ -14,7 +14,6 @@ import { planDays } from "@/data/movement";
 import { cn } from "@/lib/utils";
 import { useRecipeSchedule, useSaveRecipeSchedule } from "@/lib/recipe-schedule";
 import { substitutionsFor } from "@/lib/ingredient-substitutions";
-import { WaterControl } from "@/components/vl/water-control";
 
 const weekdayNames = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 import { movementWeek } from "@/lib/movement-progress";
@@ -175,9 +174,6 @@ function Alimentacao() {
             })}
           </ul>
 
-          <section className="rounded-2xl bg-nutrition-blue-soft p-5 sm:p-6">
-            <WaterControl date={weekDates[day]?.key} />
-          </section>
           <div className="space-y-3">
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("receitas")}><ChefHat />Editar cardápio<ArrowRight /></Button>
             <Button variant="outline" className="h-auto min-h-14 w-full whitespace-normal rounded-2xl text-base" onClick={() => setTab("compras")}><ShoppingBasket />Ver compras da semana<ArrowRight /></Button>

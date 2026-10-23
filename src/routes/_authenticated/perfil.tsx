@@ -1,21 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound, HeartPulse, Droplets } from "lucide-react";
+import { Camera, KeyRound, Mail, CalendarDays, Dumbbell, UserRound, HeartPulse } from "lucide-react";
 import { AppShell } from "@/components/vl/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { PushToggle } from "@/components/vl/push-toggle";
 import { supabase } from "@/integrations/supabase/client";
-import { useHydration } from "@/lib/hydration";
-import { waterGoalSchema, waterLabel } from "@/lib/hydration-values";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
   head: () => ({
     meta: [
       { title: "Meu perfil — VivaLeve" },
-      { name: "description", content: "Seus dados de acesso, foto, senha, meta diária de água e lembretes." },
+      { name: "description", content: "Seus dados de acesso, foto, senha e lembretes." },
       { property: "og:title", content: "Meu perfil — VivaLeve" },
       { property: "og:description", content: "Ajuste sua conta e seus lembretes no VivaLeve." },
       { property: "og:type", content: "website" },
@@ -40,9 +38,6 @@ function resize(file: File): Promise<string> {
 }
 
 function Perfil() {
-  const hydration = useHydration();
-  const [goalMl, setGoalMl] = useState(2000);
-  useEffect(() => { setGoalMl(hydration.goal); }, [hydration.goal]);
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
   const profile = useQuery({
@@ -141,17 +136,6 @@ function Perfil() {
             <Input type="password" autoComplete="new-password" placeholder="Repita a nova senha" value={pw2} onChange={e => setPw2(e.target.value)} className="h-12 rounded-xl" />
             <Button type="submit" disabled={changePw.isPending || !pwOld || !pw} className="h-12 w-full rounded-xl text-base">{changePw.isPending ? "Salvando…" : "Salvar nova senha"}</Button>
             {pwMsg && <p role="status" className={pwMsg.ok ? "text-sm text-good" : "text-sm text-destructive"}>{pwMsg.text}</p>}
-          </form>
-        </section>
-
-        <section className="card-soft rounded-3xl p-6 lg:col-span-2" aria-label="Meta diária de água">
-          <h2 className="flex items-center gap-2 text-lg font-medium"><Droplets className="size-5 text-nutrition-blue" /> Meta diária de água</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Escolha sua meta conforme a orientação do seu profissional de saúde.</p>
-          <form className="mt-4 flex flex-wrap items-end gap-4" onSubmit={e => { e.preventDefault(); hydration.saveGoal.mutate(goalMl); }}>
-            <label className="space-y-2 text-sm font-medium"><span className="block">Meta em ml por dia</span><Input type="number" min={500} max={10000} step={500} value={goalMl} onChange={e => { setGoalMl(Number(e.target.value)); hydration.saveGoal.reset(); }} aria-label="Meta diária de água em ml" className="h-12 w-40 rounded-xl text-base" /></label>
-            <Button type="submit" disabled={!hydration.ready || hydration.saveGoal.isPending || !waterGoalSchema.safeParse(goalMl).success} className="h-12 rounded-xl px-6">{hydration.saveGoal.isPending ? "Salvando…" : "Salvar meta"}</Button>
-            {hydration.saveGoal.isSuccess && <p role="status" className="text-sm text-good">Meta salva: {waterLabel(hydration.goal)} por dia.</p>}
-            {hydration.saveGoal.isError && <p role="alert" className="text-sm text-destructive">Não foi possível salvar sua meta. Tente novamente.</p>}
           </form>
         </section>
 
